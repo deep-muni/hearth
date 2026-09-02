@@ -38,11 +38,12 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
   const [itemUnitName, setItemUnitName] = useState<string>(helper?.itemUnitName || 'items');
   const [paidLeaves, setPaidLeaves] = useState<string | number>(helper?.paidLeavesAllowance ?? 2);
   const [weeklyOff, setWeeklyOff] = useState<number>(helper?.weeklyOffDay ?? 0);
+  const [nameError, setNameError] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      alert('Please enter a name');
+      setNameError('Please enter a name');
       return;
     }
 
@@ -89,7 +90,11 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
           <Input
             label="Name *"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            error={nameError}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (nameError) setNameError('');
+            }}
             placeholder="e.g. Sunita"
             required
           />

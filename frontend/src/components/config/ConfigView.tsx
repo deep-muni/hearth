@@ -8,6 +8,7 @@ import { StaffFormModal } from './StaffFormModal';
 import { BackupModal } from './BackupModal';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Plus, Edit2, Trash2, Download, Upload, RotateCcw } from 'lucide-react';
 
 interface ConfigViewProps {
@@ -38,6 +39,8 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
   const [editingHelper, setEditingHelper] = useState<HouseHelp | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [helperToRemove, setHelperToRemove] = useState<HouseHelp | null>(null);
+  const [helperToHardDelete, setHelperToHardDelete] = useState<HouseHelp | null>(null);
 
   const activeHelpers = helpers.filter((h) => h.isActive !== false);
   const formerHelpers = helpers.filter((h) => h.isActive === false);
@@ -111,18 +114,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                 <Button
                   variant="danger"
                   size="xs"
-                  onClick={() => {
-                    const monthLabel = currentMonth
-                      ? formatMonthDisplay(currentMonth)
-                      : 'this month';
-                    if (
-                      confirm(
-                        `Remove ${h.name} from ${monthLabel} onwards?\n\nTheir previous months' attendance, payments, and salary history will remain completely preserved in past months.`
-                      )
-                    ) {
-                      onDeleteHelper(h.id);
-                    }
-                  }}
+                  onClick={() => setHelperToRemove(h)}
                   icon={<Trash2 size={12} />}
                   aria-label="Delete staff member"
                   style={{ padding: '5px 7px' }}
@@ -168,15 +160,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                     <Button
                       variant="ghost"
                       size="xs"
-                      onClick={() => {
-                        if (
-                          confirm(
-                            `Permanently delete ${h.name} and all historical records?\n\nThis will completely remove them and their past history from all months. This cannot be undone.`
-                          )
-                        ) {
-                          onHardDeleteHelper(h.id);
-                        }
-                      }}
+                      onClick={() => setHelperToHardDelete(h)}
                       icon={<Trash2 size={11} color="#94a3b8" />}
                       aria-label="Permanently delete staff member"
                       style={{ padding: '5px 7px' }}
@@ -248,6 +232,34 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         isOpen={isBackupModalOpen}
         onClose={() => setIsBackupModalOpen(false)}
         onImport={onImportBackup}
+      />
+
+      <ConfirmDialog
+        isOpen={!!helperToRemove}
+        onClose={() => setHelperToRemove(null)}
+        onConfirm={() => {
+          if (helperToRemove) {
+            onDeleteHelper(helperToRemove.id);
+          }
+        }}
+        title={`Remove ${helperToRemove?.name || 'Staff Member'}?`}
+        description={`Remove ${helperToRemove?.name} from ${currentMonth ? formatMonthDisplay(currentMonth) : 'this month'} onwards? Their previous months' attendance, payments, and salary history will remain completely preserved in past months.`}
+        confirmLabel="Remove Staff"
+        variant="danger"
+      />
+
+      <ConfirmDialog
+        isOpen={!!helperToHardDelete}
+        onClose={() => setHelperToHardDelete(null)}
+        onConfirm={() => {
+          if (helperToHardDelete) {
+            onHardDeleteHelper?.(helperToHardDelete.id);
+          }
+        }}
+        title={`Permanently Delete ${helperToHardDelete?.name || 'Staff Member'}?`}
+        description={`Permanently delete ${helperToHardDelete?.name} and all their historical records? This will completely remove them and their past history from all months. This action cannot be undone.`}
+        confirmLabel="Delete Permanently"
+        variant="danger"
       />
     </VStack>
   );
