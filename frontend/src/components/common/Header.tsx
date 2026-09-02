@@ -38,35 +38,28 @@ export const Header: React.FC<HeaderProps> = ({
   totalMonthlyBudget,
 }) => {
   return (
-    <>
-      {/* Sleek Top Navigation Bar */}
-      <Box
-        as="header"
-        bg="rgba(255, 255, 255, 0.9)"
-        backdropFilter="blur(16px)"
-        borderBottom="1px solid #f1f5f9"
-        py={3}
-        px={{ base: 4, md: 8 }}
-        position="sticky"
-        top={0}
-        zIndex={40}
-      >
-        <Flex
-          align="center"
-          justify="space-between"
-          maxW="540px"
-          mx="auto"
-        >
+    <Box
+      as="header"
+      bg="rgba(255, 255, 255, 0.96)"
+      backdropFilter="blur(16px)"
+      borderBottom="1px solid #e2e8f0"
+      position="sticky"
+      top={0}
+      zIndex={40}
+    >
+      <Box maxW="440px" mx="auto" px={3} pt={3} pb={2.5}>
+        {/* Top Row: Brand, Month Switcher, Budget */}
+        <Flex align="center" justify="space-between" mb={2.5}>
           {/* Logo */}
           <HStack gap={1.5}>
             <Sparkles size={16} color="#f43f5e" />
-            <Text fontSize="sm" fontWeight="700" color="#0f172a" letterSpacing="-0.3px">
+            <Text fontSize="sm" fontWeight="800" color="#0f172a" letterSpacing="-0.3px">
               HouseHelp
             </Text>
           </HStack>
 
           {/* Minimal Month Switcher */}
-          <HStack gap={1} bg="#f8fafc" px={1.5} py={1} borderRadius="full" border="1px solid #e2e8f0">
+          <HStack gap={0.5} bg="#f8fafc" px={1} py={0.5} borderRadius="full" border="1px solid #e2e8f0">
             <button
               onClick={() => onMonthChange(getPreviousMonth(currentMonth))}
               style={{
@@ -80,14 +73,14 @@ export const Header: React.FC<HeaderProps> = ({
               }}
               aria-label="Previous month"
             >
-              <ChevronLeft size={15} />
+              <ChevronLeft size={14} />
             </button>
 
             <Text
-              fontSize="12px"
+              fontSize="11px"
               fontWeight="600"
               color="#0f172a"
-              minW="95px"
+              minW="85px"
               textAlign="center"
               userSelect="none"
             >
@@ -107,74 +100,59 @@ export const Header: React.FC<HeaderProps> = ({
               }}
               aria-label="Next month"
             >
-              <ChevronRight size={15} />
+              <ChevronRight size={14} />
             </button>
           </HStack>
 
           {/* Budget Text */}
-          <Text fontSize="12px" fontWeight="700" color="#0f172a">
+          <Text fontSize="12px" fontWeight="800" color="#0f172a">
             {formatCurrency(totalMonthlyBudget)}
           </Text>
         </Flex>
-      </Box>
 
-      {/* Floating Minimal Bottom Navigation (Mobile & Desktop) */}
-      <Box
-        position="fixed"
-        bottom={{ base: 0, md: 4 }}
-        left={0}
-        right={0}
-        zIndex={50}
-        pointerEvents="none"
-      >
-        <Box
-          maxW="340px"
-          mx="auto"
-          bg="rgba(255, 255, 255, 0.95)"
-          backdropFilter="blur(20px)"
-          borderRadius={{ base: '0', md: 'full' }}
-          borderTop={{ base: '1px solid #f1f5f9', md: 'none' }}
-          border={{ base: 'none', md: '1px solid #e2e8f0' }}
-          boxShadow="0 4px 20px rgba(0, 0, 0, 0.06)"
-          px={3}
-          py={2}
-          pb={{ base: 'calc(env(safe-area-inset-bottom, 8px) + 8px)', md: 2 }}
-          pointerEvents="auto"
+        {/* Top Navigation Tabs */}
+        <Flex
+          bg="#f1f5f9"
+          p={1}
+          borderRadius="xl"
+          justify="space-between"
+          gap={1}
         >
-          <Flex justify="space-around" align="center">
-            {[
-              { tab: 'calendar' as const, label: 'Calendar', icon: Calendar },
-              { tab: 'summary' as const, label: 'Summary', icon: Receipt },
-              { tab: 'config' as const, label: 'Staff', icon: Users },
-            ].map(({ tab, label, icon: Icon }) => {
-              const isActive = activeTab === tab;
-              return (
-                <button
-                  key={tab}
-                  onClick={() => onTabChange(tab)}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '3px',
-                    border: 'none',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    color: isActive ? '#f43f5e' : '#94a3b8',
-                    padding: '4px 18px',
-                    transition: 'color 0.15s ease',
-                  }}
-                >
-                  <Icon size={18} strokeWidth={isActive ? 2.3 : 1.8} />
-                  <Text fontSize="10px" fontWeight={isActive ? '700' : '500'}>
-                    {label}
-                  </Text>
-                </button>
-              );
-            })}
-          </Flex>
-        </Box>
+          {[
+            { tab: 'calendar' as const, label: 'Calendar', icon: Calendar },
+            { tab: 'summary' as const, label: 'Summary', icon: Receipt },
+            { tab: 'config' as const, label: 'Staff', icon: Users },
+          ].map(({ tab, label, icon: Icon }) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => onTabChange(tab)}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  padding: '6px 10px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: isActive ? '#ffffff' : 'transparent',
+                  color: isActive ? '#0f172a' : '#64748b',
+                  fontSize: '12px',
+                  fontWeight: isActive ? 700 : 500,
+                  cursor: 'pointer',
+                  boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <Icon size={14} strokeWidth={isActive ? 2.3 : 1.8} color={isActive ? '#f43f5e' : '#64748b'} />
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </Flex>
       </Box>
-    </>
+    </Box>
   );
 };

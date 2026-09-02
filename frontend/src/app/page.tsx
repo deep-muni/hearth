@@ -130,8 +130,8 @@ export default function HomePage() {
       />
 
       {/* Main Content View */}
-      <Box as="main" flex="1" py={{ base: 3, md: 5 }} px={{ base: 3, md: 4 }} pb={{ base: "84px", md: "24px" }}>
-        <Container maxW="580px" p={0}>
+      <Box as="main" flex="1" pt={4} pb={12} px={3}>
+        <Container maxW="440px" p={0}>
           {activeTab === 'calendar' && (
             <CalendarView
               helpers={helpers}
