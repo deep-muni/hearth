@@ -155,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
                   gap: '6px',
                   padding: '6px 10px',
                   borderRadius: '10px',
-                  border: 'none',
+                  border: isActive ? '1px solid var(--border-color)' : '1px solid transparent',
                   background: isActive ? 'var(--bg-nav-active)' : 'transparent',
                   color: isActive ? 'var(--text-nav-active)' : 'var(--text-muted)',
                   fontSize: '12px',
