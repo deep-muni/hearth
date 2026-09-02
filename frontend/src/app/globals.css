@@ -1,42 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fffcf8;
-  --foreground: #2d3748;
+  --background: #fdfbf7;
+  --foreground: #1e293b;
 }
 
 body {
-  background-color: #fffcf8;
-  background-image: radial-gradient(#ffd4dc 0.65px, transparent 0.65px), radial-gradient(#d1fae5 0.65px, #fffcf8 0.65px);
-  background-size: 26px 26px;
-  background-position: 0 0, 13px 13px;
-  color: #2d3748;
+  background-color: #fdfbf7;
+  color: #1e293b;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Custom cute scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Hide scrollbar for clean horizontal swipe lists */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-::-webkit-scrollbar-track {
-  background: #fdf2f4;
-}
-::-webkit-scrollbar-thumb {
-  background: #fbb6ce;
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #f687b3;
-}
-
-/* Keyframes for subtle bounce/pulse */
-@keyframes cute-float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
-}
-
-.cute-float {
-  animation: cute-float 3s ease-in-out infinite;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

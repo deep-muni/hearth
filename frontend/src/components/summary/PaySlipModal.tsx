@@ -7,8 +7,6 @@ import {
   HStack,
   VStack,
   Text,
-  Badge,
-  SimpleGrid,
 } from '@chakra-ui/react';
 import { HelperSalaryCalculation } from '@/types';
 import { formatCurrency } from '@/utils/dateUtils';
@@ -29,59 +27,37 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
 
   const { helper, monthName, adjustment } = calculation;
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <Box
       position="fixed"
       inset={0}
-      bg="rgba(15, 23, 42, 0.6)"
-      backdropFilter="blur(5px)"
+      bg="rgba(15, 23, 42, 0.45)"
+      backdropFilter="blur(3px)"
       display="flex"
       alignItems="center"
       justifyContent="center"
       zIndex={100}
-      p={4}
+      p={3}
     >
       <Box
         bg="#ffffff"
-        borderRadius="3xl"
-        boxShadow="0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-        border="2px solid #ffd4dc"
-        maxW="520px"
+        borderRadius="2xl"
+        maxW="380px"
         w="100%"
-        overflow="hidden"
+        p={5}
+        boxShadow="0 20px 40px rgba(0,0,0,0.15)"
+        border="1px solid #fed7e2"
       >
         {/* Header */}
-        <Flex
-          bg="linear-gradient(135deg, #fff0f4 0%, #fdf2f8 100%)"
-          p={5}
-          borderBottom="2px dashed #fbcfe8"
-          align="center"
-          justify="space-between"
-        >
-          <HStack gap={3}>
-            <Box
-              w="44px"
-              h="44px"
-              borderRadius="xl"
-              bg="#ffffff"
-              border="2px solid #fbb6ce"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontSize="24px"
-            >
-              {helper.avatarEmoji}
-            </Box>
+        <Flex justify="space-between" align="center" mb={3}>
+          <HStack gap={2}>
+            <Text fontSize="20px">{helper.avatarEmoji}</Text>
             <Box>
-              <Text fontSize="lg" fontWeight="800" color="#831843">
-                Monthly Salary Receipt
+              <Text fontSize="sm" fontWeight="800" color="#1e293b">
+                {helper.name} • Pay Slip
               </Text>
-              <Text fontSize="xs" color="#9d174d" fontWeight="600">
-                {monthName} • {helper.role}
+              <Text fontSize="11px" color="#64748b">
+                {monthName} ({helper.role})
               </Text>
             </Box>
           </HStack>
@@ -89,170 +65,123 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
           <button
             onClick={onClose}
             style={{
-              background: '#ffffff',
-              border: '1px solid #fecdd3',
+              background: '#f8fafc',
+              border: 'none',
               borderRadius: '9999px',
               padding: '6px',
               cursor: 'pointer',
-              color: '#9f1239',
-              display: 'flex',
-              alignItems: 'center',
+              color: '#64748b',
             }}
           >
             <X size={16} />
           </button>
         </Flex>
 
-        {/* Content */}
-        <VStack p={6} gap={4} align="stretch">
-          {/* Helper Details */}
-          <Box p={4} borderRadius="2xl" bg="#fffafb" border="1.5px solid #ffe4e6">
-            <Flex justify="space-between" align="center" mb={2}>
-              <Text fontSize="md" fontWeight="800" color="#1e293b">
-                {helper.name}
-              </Text>
-              <Badge
-                bg={adjustment.isPaid ? '#ecfdf5' : '#fffbeb'}
-                color={adjustment.isPaid ? '#047857' : '#b45309'}
-                border="1px solid"
-                borderColor={adjustment.isPaid ? '#a7f3d0' : '#fde68a'}
-                borderRadius="full"
-                px={2}
-                py={0.5}
-                fontSize="xs"
-                fontWeight="700"
-              >
-                {adjustment.isPaid ? `Paid via ${adjustment.paymentMethod || 'Cash'} ✅` : 'Payment Pending ⏳'}
-              </Badge>
-            </Flex>
-            {helper.phone && (
-              <Text fontSize="xs" color="#64748b">
-                Phone: {helper.phone}
-              </Text>
-            )}
-            <Text fontSize="xs" color="#64748b">
-              Salary Type: {helper.salaryType === 'FIXED_MONTHLY' ? 'Fixed Monthly' : helper.salaryType === 'DAILY_WAGE' ? 'Daily Wage' : 'Flat Monthly'}
+        {/* Breakdown Box */}
+        <VStack
+          gap={2}
+          align="stretch"
+          p={3.5}
+          borderRadius="xl"
+          bg="#f8fafc"
+          border="1px solid #f1f5f9"
+          fontSize="12px"
+          mb={4}
+        >
+          <Flex justify="space-between">
+            <Text color="#64748b">Working days present:</Text>
+            <Text fontWeight="700">{calculation.daysPresent} days</Text>
+          </Flex>
+
+          <Flex justify="space-between">
+            <Text color="#64748b">Leaves taken:</Text>
+            <Text fontWeight="700">
+              {calculation.totalLeavesCount} ({calculation.deductibleLeavesCount} deducted)
             </Text>
-          </Box>
+          </Flex>
 
-          {/* Attendance Breakdown */}
-          <SimpleGrid columns={3} gap={2} textAlign="center">
-            <Box p={2.5} borderRadius="xl" bg="#f0fdf4" border="1px solid #bbf7d0">
-              <Text fontSize="10px" fontWeight="700" color="#166534" textTransform="uppercase">
-                Days Present
-              </Text>
-              <Text fontSize="md" fontWeight="800" color="#14532d">
-                {calculation.daysPresent}
-              </Text>
-            </Box>
-            <Box p={2.5} borderRadius="xl" bg="#fff1f2" border="1px solid #fecdd3">
-              <Text fontSize="10px" fontWeight="700" color="#9f1239" textTransform="uppercase">
-                Leaves Taken
-              </Text>
-              <Text fontSize="md" fontWeight="800" color="#881337">
-                {calculation.totalLeavesCount}
-              </Text>
-            </Box>
-            <Box p={2.5} borderRadius="xl" bg="#f5f3ff" border="1px solid #ddd6fe">
-              <Text fontSize="10px" fontWeight="700" color="#5b21b6" textTransform="uppercase">
-                Paid Leaves
-              </Text>
-              <Text fontSize="md" fontWeight="800" color="#4c1d95">
-                {calculation.paidLeavesCount} / {helper.paidLeavesAllowance}
-              </Text>
-            </Box>
-          </SimpleGrid>
+          <Box borderTop="1px dashed #e2e8f0" my={1} />
 
-          {/* Salary Breakdown Table */}
-          <Box p={4} borderRadius="2xl" bg="#ffffff" border="1.5px solid #e2e8f0">
-            <VStack gap={2.5} align="stretch" fontSize="13px">
-              <Flex justify="space-between">
-                <Text color="#475569">Base Salary / Earnings:</Text>
-                <Text fontWeight="700" color="#1e293b">
-                  {formatCurrency(calculation.baseAmount)}
-                </Text>
-              </Flex>
+          <Flex justify="space-between">
+            <Text color="#64748b">Base Salary:</Text>
+            <Text fontWeight="700">{formatCurrency(calculation.baseAmount)}</Text>
+          </Flex>
 
-              {calculation.deductions > 0 && (
-                <Flex justify="space-between">
-                  <Text color="#e11d48">
-                    Leaves Deduction ({calculation.deductibleLeavesCount} days @ {formatCurrency(calculation.perDayRate)}):
-                  </Text>
-                  <Text fontWeight="700" color="#e11d48">
-                    - {formatCurrency(calculation.deductions)}
-                  </Text>
-                </Flex>
-              )}
+          {calculation.deductions > 0 && (
+            <Flex justify="space-between" color="#e11d48">
+              <Text>Leave Deduction:</Text>
+              <Text fontWeight="700">-{formatCurrency(calculation.deductions)}</Text>
+            </Flex>
+          )}
 
-              {calculation.bonus > 0 && (
-                <Flex justify="space-between">
-                  <Text color="#059669">Festival Bonus / Extra Gift (+):</Text>
-                  <Text fontWeight="700" color="#059669">
-                    + {formatCurrency(calculation.bonus)}
-                  </Text>
-                </Flex>
-              )}
+          {calculation.bonus > 0 && (
+            <Flex justify="space-between" color="#059669">
+              <Text>Bonus:</Text>
+              <Text fontWeight="700">+{formatCurrency(calculation.bonus)}</Text>
+            </Flex>
+          )}
 
-              {calculation.advanceDeduction > 0 && (
-                <Flex justify="space-between">
-                  <Text color="#d97706">Advance Borrowed / Repayment (-):</Text>
-                  <Text fontWeight="700" color="#d97706">
-                    - {formatCurrency(calculation.advanceDeduction)}
-                  </Text>
-                </Flex>
-              )}
+          {calculation.advanceDeduction > 0 && (
+            <Flex justify="space-between" color="#d97706">
+              <Text>Advance Deduction:</Text>
+              <Text fontWeight="700">-{formatCurrency(calculation.advanceDeduction)}</Text>
+            </Flex>
+          )}
 
-              <Box borderTop="1.5px dashed #cbd5e1" my={1} />
+          <Box borderTop="1.5px solid #cbd5e1" my={1} />
 
-              <Flex justify="space-between" align="center">
-                <Text fontSize="sm" fontWeight="800" color="#0f172a">
-                  Final Net Payable:
-                </Text>
-                <Text fontSize="lg" fontWeight="900" color="#e11d48">
-                  {formatCurrency(calculation.netPayable)}
-                </Text>
-              </Flex>
-            </VStack>
+          <Flex justify="space-between" align="center">
+            <Text fontWeight="800" color="#0f172a">
+              Net Payable:
+            </Text>
+            <Text fontSize="md" fontWeight="900" color="#e11d48">
+              {formatCurrency(calculation.netPayable)}
+            </Text>
+          </Flex>
+
+          <Box pt={1} textAlign="center">
+            <span
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: adjustment.isPaid ? '#047857' : '#b45309',
+              }}
+            >
+              {adjustment.isPaid ? `Paid via ${adjustment.paymentMethod || 'Cash'} ✅` : 'Pending Payout ⏳'}
+            </span>
           </Box>
         </VStack>
 
         {/* Footer */}
-        <Flex
-          p={4}
-          bg="#f8fafc"
-          borderTop="1px solid #e2e8f0"
-          justify="space-between"
-          align="center"
-        >
+        <Flex justify="space-between" align="center">
           <button
-            onClick={handlePrint}
+            onClick={() => window.print()}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '8px 16px',
-              borderRadius: '12px',
+              gap: '4px',
+              padding: '6px 12px',
+              borderRadius: '8px',
               border: '1px solid #cbd5e1',
               background: '#ffffff',
-              color: '#334155',
-              fontSize: '13px',
+              fontSize: '11px',
               fontWeight: '600',
               cursor: 'pointer',
             }}
           >
-            <Printer size={15} />
-            <span>Print Slip</span>
+            <Printer size={13} />
+            <span>Print</span>
           </button>
 
           <button
             onClick={onClose}
             style={{
-              padding: '8px 20px',
-              borderRadius: '12px',
+              padding: '6px 16px',
+              borderRadius: '8px',
               border: 'none',
-              background: '#f43f5e',
+              background: '#e11d48',
               color: '#ffffff',
-              fontSize: '13px',
+              fontSize: '12px',
               fontWeight: '700',
               cursor: 'pointer',
             }}

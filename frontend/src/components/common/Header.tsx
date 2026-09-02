@@ -6,21 +6,18 @@ import {
   Flex,
   HStack,
   Text,
-  Badge,
 } from '@chakra-ui/react';
 import {
   ChevronLeft,
   ChevronRight,
   Calendar as CalendarIcon,
-  DollarSign,
+  Wallet,
   Users,
-  RotateCcw,
 } from 'lucide-react';
 import {
   formatMonthDisplay,
   getNextMonth,
   getPreviousMonth,
-  getCurrentMonth,
   formatCurrency,
 } from '@/utils/dateUtils';
 
@@ -30,8 +27,6 @@ interface HeaderProps {
   activeTab: 'calendar' | 'summary' | 'config';
   onTabChange: (tab: 'calendar' | 'summary' | 'config') => void;
   totalMonthlyBudget: number;
-  totalHelpersCount: number;
-  onResetDemo: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -40,255 +35,238 @@ export const Header: React.FC<HeaderProps> = ({
   activeTab,
   onTabChange,
   totalMonthlyBudget,
-  totalHelpersCount,
-  onResetDemo,
 }) => {
-  const isActualCurrentMonth = currentMonth === getCurrentMonth();
-
   return (
-    <Box
-      as="header"
-      bg="rgba(255, 255, 255, 0.9)"
-      backdropFilter="blur(10px)"
-      borderBottom="1px solid"
-      borderColor="pink.100"
-      py={4}
-      px={{ base: 4, md: 8 }}
-      position="sticky"
-      top={0}
-      zIndex={30}
-      boxShadow="0 4px 20px -2px rgba(255, 182, 193, 0.15)"
-    >
-      <Flex
-        direction={{ base: 'column', md: 'row' }}
-        align="center"
-        justify="space-between"
-        gap={4}
-        maxW="1400px"
-        mx="auto"
+    <>
+      {/* Top Bar */}
+      <Box
+        as="header"
+        bg="rgba(255, 255, 255, 0.95)"
+        backdropFilter="blur(12px)"
+        borderBottom="1px solid #f1f5f9"
+        py={2.5}
+        px={{ base: 3, md: 6 }}
+        position="sticky"
+        top={0}
+        zIndex={40}
       >
-        {/* Logo & Brand */}
-        <HStack gap={3}>
-          <Box
-            w="48px"
-            h="48px"
-            bg="pink.50"
-            border="2px solid"
-            borderColor="pink.200"
-            borderRadius="2xl"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="26px"
-            boxShadow="0 2px 8px rgba(255, 107, 139, 0.2)"
-            className="cute-float"
-          >
-            🌸
-          </Box>
-          <Box>
-            <HStack gap={2}>
-              <Text
-                fontSize={{ base: 'xl', md: '2xl' }}
-                fontWeight="800"
-                bgGradient="to-r"
-                gradientFrom="pink.500"
-                gradientTo="purple.600"
-                color="pink.600"
-                letterSpacing="-0.5px"
-              >
-                HouseHelp Budget
-              </Text>
-              <Badge
-                bg="purple.50"
-                color="purple.600"
-                border="1px solid"
-                borderColor="purple.200"
-                borderRadius="full"
-                px={2.5}
-                py={0.5}
-                fontSize="xs"
-                fontWeight="bold"
-              >
-                Cute Edition ✨
-              </Badge>
-              <Badge
-                bg="pink.50"
-                color="pink.700"
-                border="1px solid"
-                borderColor="pink.200"
-                borderRadius="full"
-                px={2.5}
-                py={0.5}
-                fontSize="xs"
-                fontWeight="700"
-                display={{ base: 'none', lg: 'inline-flex' }}
-              >
-                Total: {formatCurrency(totalMonthlyBudget)} ({totalHelpersCount} staff)
-              </Badge>
-            </HStack>
-            <Text fontSize="xs" color="gray.500" fontWeight="500">
-              Happy staff, happy home • Monthly attendance & smart salary calculator
-            </Text>
-          </Box>
-        </HStack>
-
-        {/* Month Picker / Navigator */}
-        <HStack
-          bg="pink.50"
-          border="1.5px solid"
-          borderColor="pink.200"
-          p={1.5}
-          borderRadius="2xl"
-          boxShadow="inner"
+        <Flex
+          align="center"
+          justify="space-between"
+          maxW="900px"
+          mx="auto"
+          gap={2}
         >
-          <button
-            onClick={() => onMonthChange(getPreviousMonth(currentMonth))}
-            title="Previous Month"
-            style={{
-              padding: '6px 10px',
-              borderRadius: '12px',
-              border: 'none',
-              background: '#ffffff',
-              cursor: 'pointer',
-              color: '#d53f8c',
-              display: 'flex',
-              alignItems: 'center',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            }}
-          >
-            <ChevronLeft size={18} />
-          </button>
-
-          <HStack px={3} gap={2}>
-            <Text fontSize="sm" fontWeight="800" color="pink.700" minW="135px" textAlign="center">
-              📅 {formatMonthDisplay(currentMonth)}
+          {/* Brand */}
+          <HStack gap={1.5}>
+            <Text fontSize="18px">🌸</Text>
+            <Text fontSize="md" fontWeight="800" color="#e11d48" letterSpacing="-0.3px">
+              HouseHelp
             </Text>
-            {!isActualCurrentMonth && (
+          </HStack>
+
+          {/* Compact Month Switcher */}
+          <HStack
+            bg="#fff1f2"
+            border="1px solid #fecdd3"
+            borderRadius="full"
+            px={1}
+            py={0.5}
+            gap={0.5}
+          >
+            <button
+              onClick={() => onMonthChange(getPreviousMonth(currentMonth))}
+              aria-label="Previous month"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '5px 7px',
+                cursor: 'pointer',
+                color: '#e11d48',
+                display: 'flex',
+                alignItems: 'center',
+                borderRadius: '9999px',
+              }}
+            >
+              <ChevronLeft size={16} strokeWidth={2.5} />
+            </button>
+
+            <Text
+              fontSize="xs"
+              fontWeight="700"
+              color="#9f1239"
+              minW="105px"
+              textAlign="center"
+              userSelect="none"
+            >
+              {formatMonthDisplay(currentMonth)}
+            </Text>
+
+            <button
+              onClick={() => onMonthChange(getNextMonth(currentMonth))}
+              aria-label="Next month"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '5px 7px',
+                cursor: 'pointer',
+                color: '#e11d48',
+                display: 'flex',
+                alignItems: 'center',
+                borderRadius: '9999px',
+              }}
+            >
+              <ChevronRight size={16} strokeWidth={2.5} />
+            </button>
+          </HStack>
+
+          {/* Total Budget Pill & Desktop Tabs */}
+          <HStack gap={2}>
+            <Box
+              bg="#ecfdf5"
+              border="1px solid #a7f3d0"
+              borderRadius="full"
+              px={2.5}
+              py={1}
+              fontSize="11px"
+              fontWeight="800"
+              color="#065f46"
+            >
+              {formatCurrency(totalMonthlyBudget)}
+            </Box>
+
+            {/* Desktop-only Tab Switcher */}
+            <HStack display={{ base: 'none', md: 'flex' }} gap={1} bg="#f8fafc" p={1} borderRadius="full" border="1px solid #e2e8f0">
               <button
-                onClick={() => onMonthChange(getCurrentMonth())}
+                onClick={() => onTabChange('calendar')}
                 style={{
-                  fontSize: '11px',
-                  fontWeight: '700',
-                  padding: '3px 8px',
+                  padding: '5px 12px',
                   borderRadius: '9999px',
-                  border: '1px solid #f687b3',
-                  background: '#fbb6ce',
-                  color: '#702459',
+                  border: 'none',
+                  fontSize: '12px',
+                  fontWeight: activeTab === 'calendar' ? 700 : 500,
+                  background: activeTab === 'calendar' ? '#ffffff' : 'transparent',
+                  color: activeTab === 'calendar' ? '#e11d48' : '#64748b',
+                  boxShadow: activeTab === 'calendar' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                   cursor: 'pointer',
                 }}
               >
-                Today
+                Calendar
               </button>
-            )}
+              <button
+                onClick={() => onTabChange('summary')}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '9999px',
+                  border: 'none',
+                  fontSize: '12px',
+                  fontWeight: activeTab === 'summary' ? 700 : 500,
+                  background: activeTab === 'summary' ? '#ffffff' : 'transparent',
+                  color: activeTab === 'summary' ? '#e11d48' : '#64748b',
+                  boxShadow: activeTab === 'summary' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Summary
+              </button>
+              <button
+                onClick={() => onTabChange('config')}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '9999px',
+                  border: 'none',
+                  fontSize: '12px',
+                  fontWeight: activeTab === 'config' ? 700 : 500,
+                  background: activeTab === 'config' ? '#ffffff' : 'transparent',
+                  color: activeTab === 'config' ? '#e11d48' : '#64748b',
+                  boxShadow: activeTab === 'config' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Staff
+              </button>
+            </HStack>
           </HStack>
+        </Flex>
+      </Box>
 
-          <button
-            onClick={() => onMonthChange(getNextMonth(currentMonth))}
-            title="Next Month"
-            style={{
-              padding: '6px 10px',
-              borderRadius: '12px',
-              border: 'none',
-              background: '#ffffff',
-              cursor: 'pointer',
-              color: '#d53f8c',
-              display: 'flex',
-              alignItems: 'center',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            }}
-          >
-            <ChevronRight size={18} />
-          </button>
-        </HStack>
-
-        {/* Navigation Tabs */}
-        <HStack gap={2} bg="gray.100" p={1} borderRadius="2xl">
+      {/* Mobile Bottom Navigation Bar (iPhone 14 / iPhone 16 optimized) */}
+      <Box
+        display={{ base: 'block', md: 'none' }}
+        position="fixed"
+        bottom={0}
+        left={0}
+        right={0}
+        bg="rgba(255, 255, 255, 0.96)"
+        backdropFilter="blur(16px)"
+        borderTop="1px solid #f1f5f9"
+        zIndex={50}
+        px={3}
+        pt={1.5}
+        pb="calc(env(safe-area-inset-bottom, 8px) + 6px)"
+      >
+        <Flex justify="space-around" align="center" maxW="400px" mx="auto">
           <button
             onClick={() => onTabChange('calendar')}
             style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              borderRadius: '14px',
+              gap: '2px',
               border: 'none',
-              fontWeight: 700,
-              fontSize: '13px',
+              background: 'transparent',
+              color: activeTab === 'calendar' ? '#e11d48' : '#94a3b8',
               cursor: 'pointer',
-              transition: 'all 0.2s',
-              background: activeTab === 'calendar' ? '#ffffff' : 'transparent',
-              color: activeTab === 'calendar' ? '#e53e3e' : '#4a5568',
-              boxShadow: activeTab === 'calendar' ? '0 2px 8px rgba(229, 62, 62, 0.15)' : 'none',
+              padding: '4px 14px',
             }}
           >
-            <CalendarIcon size={16} />
-            <span>Calendar</span>
+            <CalendarIcon size={20} strokeWidth={activeTab === 'calendar' ? 2.5 : 1.8} />
+            <Text fontSize="10px" fontWeight={activeTab === 'calendar' ? '800' : '600'}>
+              Calendar
+            </Text>
           </button>
 
           <button
             onClick={() => onTabChange('summary')}
             style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              borderRadius: '14px',
+              gap: '2px',
               border: 'none',
-              fontWeight: 700,
-              fontSize: '13px',
+              background: 'transparent',
+              color: activeTab === 'summary' ? '#e11d48' : '#94a3b8',
               cursor: 'pointer',
-              transition: 'all 0.2s',
-              background: activeTab === 'summary' ? '#ffffff' : 'transparent',
-              color: activeTab === 'summary' ? '#3182ce' : '#4a5568',
-              boxShadow: activeTab === 'summary' ? '0 2px 8px rgba(49, 130, 206, 0.15)' : 'none',
+              padding: '4px 14px',
             }}
           >
-            <DollarSign size={16} />
-            <span>Pay Summary</span>
+            <Wallet size={20} strokeWidth={activeTab === 'summary' ? 2.5 : 1.8} />
+            <Text fontSize="10px" fontWeight={activeTab === 'summary' ? '800' : '600'}>
+              Summary
+            </Text>
           </button>
 
           <button
             onClick={() => onTabChange('config')}
             style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              borderRadius: '14px',
+              gap: '2px',
               border: 'none',
-              fontWeight: 700,
-              fontSize: '13px',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              background: activeTab === 'config' ? '#ffffff' : 'transparent',
-              color: activeTab === 'config' ? '#805ad5' : '#4a5568',
-              boxShadow: activeTab === 'config' ? '0 2px 8px rgba(128, 90, 213, 0.15)' : 'none',
-            }}
-          >
-            <Users size={16} />
-            <span>Staff Config</span>
-          </button>
-
-          <button
-            onClick={onResetDemo}
-            title="Reset to Demo Data"
-            style={{
-              padding: '8px 10px',
-              borderRadius: '14px',
-              border: 'none',
-              fontWeight: 600,
-              fontSize: '12px',
-              cursor: 'pointer',
               background: 'transparent',
-              color: '#718096',
-              display: 'flex',
-              alignItems: 'center',
+              color: activeTab === 'config' ? '#e11d48' : '#94a3b8',
+              cursor: 'pointer',
+              padding: '4px 14px',
             }}
           >
-            <RotateCcw size={14} />
+            <Users size={20} strokeWidth={activeTab === 'config' ? 2.5 : 1.8} />
+            <Text fontSize="10px" fontWeight={activeTab === 'config' ? '800' : '600'}>
+              Staff
+            </Text>
           </button>
-        </HStack>
-      </Flex>
-    </Box>
+        </Flex>
+      </Box>
+    </>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo, useSyncExternalStore } from 'react';
-import { Box, Container, Text, HStack, Badge, Flex } from '@chakra-ui/react';
+import { Box, Container, Text } from '@chakra-ui/react';
 import { Header } from '@/components/common/Header';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { MonthlySummaryView } from '@/components/summary/MonthlySummaryView';
@@ -9,7 +9,6 @@ import { storageService, EMPTY_HELPERS, EMPTY_ATTENDANCE } from '@/services/stor
 import { getCurrentMonth } from '@/utils/dateUtils';
 import { calculateMonthlySalary } from '@/utils/salaryCalculator';
 import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
-import { Heart, Server } from 'lucide-react';
 
 const subscribeStorage = (cb: () => void) => storageService.subscribe(cb);
 const getHelpersSnapshot = () => storageService.getHelpers();
@@ -132,13 +131,11 @@ export default function HomePage() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         totalMonthlyBudget={totalMonthlyBudget}
-        totalHelpersCount={helpers.length}
-        onResetDemo={handleResetDemo}
       />
 
       {/* Main Content View */}
-      <Box as="main" flex="1" py={8} px={{ base: 4, md: 8 }}>
-        <Container maxW="1400px" p={0}>
+      <Box as="main" flex="1" py={{ base: 3, md: 5 }} px={{ base: 3, md: 4 }} pb={{ base: "84px", md: "24px" }}>
+        <Container maxW="580px" p={0}>
           {activeTab === 'calendar' && (
             <CalendarView
               helpers={helpers}
@@ -172,62 +169,6 @@ export default function HomePage() {
             />
           )}
         </Container>
-      </Box>
-
-      {/* Cute Footer */}
-      <Box
-        as="footer"
-        py={6}
-        px={4}
-        mt="auto"
-        borderTop="1px solid"
-        borderColor="pink.100"
-        bg="rgba(255, 255, 255, 0.7)"
-        backdropFilter="blur(6px)"
-      >
-        <Flex
-          maxW="1400px"
-          mx="auto"
-          direction={{ base: 'column', md: 'row' }}
-          align="center"
-          justify="space-between"
-          gap={3}
-          fontSize="xs"
-          color="gray.500"
-        >
-          <HStack gap={2}>
-            <Text fontWeight="700" color="pink.600">
-              🌸 HouseHelp Budget
-            </Text>
-            <Text>•</Text>
-            <Text>Built with TypeScript, Next.js, Chakra UI & Go</Text>
-          </HStack>
-
-          <HStack gap={3}>
-            <Badge
-              bg="emerald.50"
-              color="emerald.700"
-              border="1px solid"
-              borderColor="emerald.200"
-              borderRadius="full"
-              px={2.5}
-              py={0.5}
-              fontSize="10px"
-              display="flex"
-              alignItems="center"
-              gap={1}
-            >
-              <Server size={10} />
-              <span>In-Memory / LocalStorage Active • Go API Ready</span>
-            </Badge>
-
-            <HStack gap={1} color="pink.600" fontWeight="600">
-              <span>Crafted with</span>
-              <Heart size={13} fill="#ec4899" stroke="#ec4899" />
-              <span>for happy households</span>
-            </HStack>
-          </HStack>
-        </Flex>
       </Box>
     </Box>
   );
