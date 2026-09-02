@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"net/url"
 	"os"
 )
 
@@ -24,7 +26,15 @@ func Load() Config {
 
 	mongoURI := os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
-		mongoURI = "mongodb://localhost:27017"
+		user := os.Getenv("MONGODB_USER")
+		pass := os.Getenv("MONGODB_PASSWORD")
+		host := os.Getenv("MONGODB_HOST")
+
+		if user != "" && pass != "" && host != "" {
+			mongoURI = fmt.Sprintf("mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority", url.QueryEscape(user), url.QueryEscape(pass), host)
+		} else {
+			mongoURI = "mongodb://localhost:27017"
+		}
 	}
 
 	dbName := os.Getenv("MONGODB_DATABASE")
