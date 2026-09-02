@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { Box, Flex, HStack, VStack, Text, SimpleGrid } from '@chakra-ui/react';
@@ -7,12 +7,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import {
-  EMOJI_OPTIONS,
-  PRESET_ROLES,
-  SALARY_TYPES,
-  WEEKDAY_OPTIONS,
-} from '@/constants';
+import { EMOJI_OPTIONS, PRESET_ROLES, SALARY_TYPES, WEEKDAY_OPTIONS } from '@/constants';
 import { normalizeSalaryType } from '@/utils/salaryCalculator';
 
 interface StaffFormModalProps {
@@ -22,12 +17,7 @@ interface StaffFormModalProps {
   onSave: (helper: HouseHelp) => void;
 }
 
-const StaffFormDialog: React.FC<StaffFormModalProps> = ({
-  isOpen,
-  onClose,
-  helper,
-  onSave,
-}) => {
+const StaffFormDialog: React.FC<StaffFormModalProps> = ({ isOpen, onClose, helper, onSave }) => {
   const [name, setName] = useState(helper?.name || '');
   const [role, setRole] = useState(helper?.role || 'Cook');
   const [emoji, setEmoji] = useState(helper?.avatarEmoji || '👩‍🍳');
@@ -38,12 +28,8 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
   const [ratePerItem, setRatePerItem] = useState<string | number>(
     helper?.ratePerItem ?? (helper?.salaryType === 'COUNT_BASED' ? helper.baseSalary : 25)
   );
-  const [itemUnitName, setItemUnitName] = useState<string>(
-    helper?.itemUnitName || 'items'
-  );
-  const [paidLeaves, setPaidLeaves] = useState<string | number>(
-    helper?.paidLeavesAllowance ?? 2
-  );
+  const [itemUnitName, setItemUnitName] = useState<string>(helper?.itemUnitName || 'items');
+  const [paidLeaves, setPaidLeaves] = useState<string | number>(helper?.paidLeavesAllowance ?? 2);
   const [weeklyOff, setWeeklyOff] = useState<number>(helper?.weeklyOffDay ?? 0);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -62,9 +48,10 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
       avatarEmoji: emoji,
       colorTheme: 'pink',
       salaryType: normalized,
-      baseSalary: normalized === 'COUNT_BASED'
-        ? Math.max(0, Number(ratePerItem) || 0)
-        : Math.max(0, Number(baseSalary) || 0),
+      baseSalary:
+        normalized === 'COUNT_BASED'
+          ? Math.max(0, Number(ratePerItem) || 0)
+          : Math.max(0, Number(baseSalary) || 0),
       ratePerItem: normalized === 'COUNT_BASED' ? Math.max(0, Number(ratePerItem) || 0) : undefined,
       itemUnitName: normalized === 'COUNT_BASED' ? itemUnitName.trim() || 'items' : undefined,
       paidLeavesAllowance: normalized === 'DAYS_LEAVES' ? Math.max(0, Number(paidLeaves) || 0) : 0,
@@ -288,10 +275,5 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
 
 export const StaffFormModal: React.FC<StaffFormModalProps> = (props) => {
   if (!props.isOpen) return null;
-  return (
-    <StaffFormDialog
-      key={props.helper ? props.helper.id : 'new_helper'}
-      {...props}
-    />
-  );
+  return <StaffFormDialog key={props.helper ? props.helper.id : 'new_helper'} {...props} />;
 };

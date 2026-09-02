@@ -1,26 +1,10 @@
 export type SalaryType =
-  | 'DAYS_LEAVES'
-  | 'FIXED'
-  | 'COUNT_BASED'
-  | 'FIXED_MONTHLY'
-  | 'DAILY_WAGE'
-  | 'STRICT_FLAT';
+  'DAYS_LEAVES' | 'FIXED' | 'COUNT_BASED' | 'FIXED_MONTHLY' | 'DAILY_WAGE' | 'STRICT_FLAT';
 
 export type AttendanceStatus =
-  | 'PRESENT'
-  | 'FULL_LEAVE'
-  | 'HALF_LEAVE'
-  | 'PAID_LEAVE'
-  | 'WEEKLY_OFF';
+  'PRESENT' | 'FULL_LEAVE' | 'HALF_LEAVE' | 'PAID_LEAVE' | 'WEEKLY_OFF';
 
-export type HelperColorTheme =
-  | 'pink'
-  | 'purple'
-  | 'teal'
-  | 'orange'
-  | 'blue'
-  | 'emerald'
-  | 'rose';
+export type HelperColorTheme = 'pink' | 'purple' | 'teal' | 'orange' | 'blue' | 'emerald' | 'rose';
 
 export interface HouseHelp {
   id: string;

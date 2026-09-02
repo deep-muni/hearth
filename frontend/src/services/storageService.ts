@@ -182,8 +182,7 @@ class StorageService {
     if (isBrowser) {
       try {
         localStorage.setItem(HELPERS_KEY, JSON.stringify(this.helpers));
-      } catch {
-      }
+      } catch {}
     }
     this.notify();
   }
@@ -192,8 +191,7 @@ class StorageService {
     if (isBrowser) {
       try {
         localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(this.attendance));
-      } catch {
-      }
+      } catch {}
     }
     this.notify();
   }
@@ -202,8 +200,7 @@ class StorageService {
     if (isBrowser) {
       try {
         localStorage.setItem(ADJUSTMENTS_KEY, JSON.stringify(this.adjustments));
-      } catch {
-      }
+      } catch {}
     }
     this.notify();
   }
@@ -304,7 +301,10 @@ class StorageService {
 
     const fullRecord: AttendanceRecord = {
       ...record,
-      id: existingIndex >= 0 ? this.attendance[existingIndex].id : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id:
+        existingIndex >= 0
+          ? this.attendance[existingIndex].id
+          : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       updatedAt: new Date().toISOString(),
     };
 
@@ -338,7 +338,10 @@ class StorageService {
     }
 
     const fullRecord: AttendanceRecord = {
-      id: existingIndex >= 0 ? this.attendance[existingIndex].id : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id:
+        existingIndex >= 0
+          ? this.attendance[existingIndex].id
+          : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       helperId,
       date,
       itemCount: count,
@@ -359,9 +362,7 @@ class StorageService {
   }
 
   public removeAttendance(helperId: string, date: string): void {
-    this.attendance = this.attendance.filter(
-      (a) => !(a.helperId === helperId && a.date === date)
-    );
+    this.attendance = this.attendance.filter((a) => !(a.helperId === helperId && a.date === date));
     this.saveAttendance();
   }
 

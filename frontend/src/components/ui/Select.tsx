@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { SelectHTMLAttributes, forwardRef } from 'react';
 
@@ -45,9 +45,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           {children}
         </select>
         {error && (
-          <div style={{ fontSize: '10px', color: '#ef4444', marginTop: '2px' }}>
-            {error}
-          </div>
+          <div style={{ fontSize: '10px', color: '#ef4444', marginTop: '2px' }}>{error}</div>
         )}
       </div>
     );

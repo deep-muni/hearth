@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { InputHTMLAttributes, forwardRef } from 'react';
 
@@ -61,9 +61,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <div style={{ fontSize: '10px', color: '#ef4444', marginTop: '2px' }}>
-            {error}
-          </div>
+          <div style={{ fontSize: '10px', color: '#ef4444', marginTop: '2px' }}>{error}</div>
         )}
       </div>
     );

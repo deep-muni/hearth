@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { HTMLAttributes } from 'react';
 
@@ -16,12 +16,7 @@ const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string; border: st
   neutral: { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' },
 };
 
-export const Badge: React.FC<BadgeProps> = ({
-  children,
-  variant = 'neutral',
-  style,
-  ...props
-}) => {
+export const Badge: React.FC<BadgeProps> = ({ children, variant = 'neutral', style, ...props }) => {
   const s = BADGE_STYLES[variant];
   return (
     <span

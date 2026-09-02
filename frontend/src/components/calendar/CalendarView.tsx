@@ -1,14 +1,7 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
-import {
-  Box,
-  Flex,
-  HStack,
-  VStack,
-  Text,
-  SimpleGrid,
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, VStack, Text, SimpleGrid } from '@chakra-ui/react';
 import { AttendanceRecord, AttendanceStatus, HelperSalaryCalculation, HouseHelp } from '@/types';
 import { buildCalendarDays, CalendarDayInfo, formatCurrency } from '@/utils/dateUtils';
 import { normalizeSalaryType } from '@/utils/salaryCalculator';
@@ -26,8 +19,19 @@ interface CalendarViewProps {
   onSelectHelper: (id: string) => void;
   currentMonth: string;
   attendance: AttendanceRecord[];
-  onSetAttendance: (helperId: string, date: string, status: AttendanceStatus, note?: string) => void;
-  onSetItemCount?: (helperId: string, date: string, count: number, note?: string, customRate?: number) => void;
+  onSetAttendance: (
+    helperId: string,
+    date: string,
+    status: AttendanceStatus,
+    note?: string
+  ) => void;
+  onSetItemCount?: (
+    helperId: string,
+    date: string,
+    count: number,
+    note?: string,
+    customRate?: number
+  ) => void;
   onRemoveAttendance: (helperId: string, date: string) => void;
   salaryCalculation?: HelperSalaryCalculation;
   onNavigateToSummary?: () => void;
@@ -72,11 +76,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const handleFillPresent = () => {
-    if (confirm(`Fill remaining working days in ${currentMonth} as Present for ${selectedHelper.name}?`)) {
+    if (
+      confirm(
+        `Fill remaining working days in ${currentMonth} as Present for ${selectedHelper.name}?`
+      )
+    ) {
       calendarDays
         .filter((d) => d.isCurrentMonth)
         .forEach((d) => {
-          const isWeeklyOff = selectedHelper.weeklyOffDay >= 0 && d.dayOfWeek === selectedHelper.weeklyOffDay;
+          const isWeeklyOff =
+            selectedHelper.weeklyOffDay >= 0 && d.dayOfWeek === selectedHelper.weeklyOffDay;
           if (isWeeklyOff) {
             onSetAttendance(selectedHelper.id, d.dateStr, 'WEEKLY_OFF');
           } else {
@@ -194,7 +203,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       >
         <Box>
           <Text fontWeight="700" color="#0f172a">
-            {selectedHelper.name} <span style={{ color: '#94a3b8', fontWeight: 400 }}>• {selectedHelper.role}</span>
+            {selectedHelper.name}{' '}
+            <span style={{ color: '#94a3b8', fontWeight: 400 }}>• {selectedHelper.role}</span>
           </Text>
           <Text fontSize="11px" color="#64748b">
             {normalizedType === 'DAYS_LEAVES' &&
@@ -243,8 +253,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               </Text>
               <Text fontSize="12px" color="#64748b" maxW="320px" mx="auto" lineHeight="1.5">
                 {selectedHelper.name} receives a fixed flat salary of{' '}
-                <strong>{formatCurrency(selectedHelper.baseSalary)}</strong> every month. Daily attendance
-                or leave deductions are not tracked on a calendar.
+                <strong>{formatCurrency(selectedHelper.baseSalary)}</strong> every month. Daily
+                attendance or leave deductions are not tracked on a calendar.
               </Text>
             </Box>
 

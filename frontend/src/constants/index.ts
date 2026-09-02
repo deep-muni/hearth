@@ -1,11 +1,5 @@
 import { AttendanceStatus, SalaryType } from '@/types';
-import {
-  Check,
-  X as XIcon,
-  Minus,
-  Gift,
-  Coffee,
-} from 'lucide-react';
+import { Check, X as XIcon, Minus, Gift, Coffee } from 'lucide-react';
 
 export const EMOJI_OPTIONS = ['👩‍🍳', '🧹', '🚗', '👶', '🌿', '🧺', '🛡️', '🌸', '🐕'] as const;
 

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { Box, HStack, VStack, Text, Flex, SimpleGrid } from '@chakra-ui/react';
@@ -51,11 +51,7 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
   });
 
   const handleSave = () => {
-    onSave(
-      numCount,
-      note.trim() || undefined,
-      numRate !== defaultRate ? numRate : undefined
-    );
+    onSave(numCount, note.trim() || undefined, numRate !== defaultRate ? numRate : undefined);
     onClose();
   };
 
@@ -111,9 +107,7 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
           border="1px solid #e2e8f0"
           fontSize="12px"
         >
-          <Text color="#64748b">
-            Total for {formattedDate}:
-          </Text>
+          <Text color="#64748b">Total for {formattedDate}:</Text>
           <Text fontWeight="800" color="#0f172a" fontSize="13px">
             {formatCurrency(totalCost)}
           </Text>

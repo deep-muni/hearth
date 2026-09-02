@@ -1,4 +1,10 @@
-import { AttendanceRecord, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment, SalaryType } from '../types';
+import {
+  AttendanceRecord,
+  HelperSalaryCalculation,
+  HouseHelp,
+  MonthlyAdjustment,
+  SalaryType,
+} from '../types';
 import { formatMonthDisplay, getDaysCountInMonth } from './dateUtils';
 
 export function normalizeSalaryType(type: SalaryType): 'DAYS_LEAVES' | 'FIXED' | 'COUNT_BASED' {
@@ -24,11 +30,10 @@ export function calculateMonthlySalary(
     }
   }
 
-  const totalWorkingDays = helper.weeklyOffDay >= 0 ? Math.max(1, totalDaysInMonth - weeklyOffsCount) : totalDaysInMonth;
+  const totalWorkingDays =
+    helper.weeklyOffDay >= 0 ? Math.max(1, totalDaysInMonth - weeklyOffsCount) : totalDaysInMonth;
 
-  const helperRecords = records.filter(
-    (r) => r.helperId === helper.id && r.date.startsWith(month)
-  );
+  const helperRecords = records.filter((r) => r.helperId === helper.id && r.date.startsWith(month));
 
   let fullLeavesCount = 0;
   let halfLeavesCount = 0;
@@ -43,9 +48,8 @@ export function calculateMonthlySalary(
   helperRecords.forEach((r) => {
     if (typeof r.itemCount === 'number' && !isNaN(r.itemCount)) {
       totalItemCount += r.itemCount;
-      const effectiveRate = typeof r.customRate === 'number' && r.customRate > 0
-        ? r.customRate
-        : ratePerItem;
+      const effectiveRate =
+        typeof r.customRate === 'number' && r.customRate > 0 ? r.customRate : ratePerItem;
       totalItemEarnings += r.itemCount * effectiveRate;
     }
 
@@ -101,7 +105,7 @@ export function calculateMonthlySalary(
   } else {
     if (helper.salaryType === 'DAILY_WAGE') {
       perDayRate = helper.baseSalary;
-      const billableDays = daysPresent + (halfLeavesCount * 0.5) + paidLeavesCount;
+      const billableDays = daysPresent + halfLeavesCount * 0.5 + paidLeavesCount;
       baseAmount = Math.round(billableDays * perDayRate);
       deductions = 0;
       deductibleLeavesCount = totalLeavesCount;

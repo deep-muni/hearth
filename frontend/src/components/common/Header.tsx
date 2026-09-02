@@ -1,12 +1,7 @@
-"use client";
+'use client';
 
 import React from 'react';
-import {
-  Box,
-  Flex,
-  HStack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, Text } from '@chakra-ui/react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -56,7 +51,14 @@ export const Header: React.FC<HeaderProps> = ({
             </Text>
           </HStack>
 
-          <HStack gap={0.5} bg="#f8fafc" px={1} py={0.5} borderRadius="full" border="1px solid #e2e8f0">
+          <HStack
+            gap={0.5}
+            bg="#f8fafc"
+            px={1}
+            py={0.5}
+            borderRadius="full"
+            border="1px solid #e2e8f0"
+          >
             <button
               onClick={() => onMonthChange(getPreviousMonth(currentMonth))}
               style={{
@@ -106,13 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
           </Text>
         </Flex>
 
-        <Flex
-          bg="#f1f5f9"
-          p={1}
-          borderRadius="xl"
-          justify="space-between"
-          gap={1}
-        >
+        <Flex bg="#f1f5f9" p={1} borderRadius="xl" justify="space-between" gap={1}>
           {[
             { tab: 'calendar' as const, label: 'Calendar', icon: Calendar },
             { tab: 'summary' as const, label: 'Summary', icon: ReceiptIndianRupee },
@@ -141,7 +137,11 @@ export const Header: React.FC<HeaderProps> = ({
                   transition: 'all 0.15s ease',
                 }}
               >
-                <Icon size={14} strokeWidth={isActive ? 2.3 : 1.8} color={isActive ? '#f43f5e' : '#64748b'} />
+                <Icon
+                  size={14}
+                  strokeWidth={isActive ? 2.3 : 1.8}
+                  color={isActive ? '#f43f5e' : '#64748b'}
+                />
                 <span>{label}</span>
               </button>
             );

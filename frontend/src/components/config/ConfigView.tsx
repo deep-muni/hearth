@@ -1,27 +1,14 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
-import {
-  Box,
-  Flex,
-  HStack,
-  VStack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, VStack, Text } from '@chakra-ui/react';
 import { HouseHelp } from '@/types';
 import { formatCurrency } from '@/utils/dateUtils';
 import { StaffFormModal } from './StaffFormModal';
 import { BackupModal } from './BackupModal';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import {
-  Plus,
-  Edit2,
-  Trash2,
-  Download,
-  Upload,
-  RotateCcw,
-} from 'lucide-react';
+import { Plus, Edit2, Trash2, Download, Upload, RotateCcw } from 'lucide-react';
 
 interface ConfigViewProps {
   helpers: HouseHelp[];

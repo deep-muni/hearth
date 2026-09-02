@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
@@ -71,9 +71,7 @@ export const Modal: React.FC<ModalProps> = ({
           >
             <div>
               {title && (
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
-                  {title}
-                </div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{title}</div>
               )}
               {description && (
                 <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>

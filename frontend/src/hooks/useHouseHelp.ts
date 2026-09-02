@@ -1,7 +1,12 @@
-"use client";
+'use client';
 
 import { useState, useMemo, useSyncExternalStore } from 'react';
-import { storageService, EMPTY_HELPERS, EMPTY_ATTENDANCE, EMPTY_ADJUSTMENTS } from '@/services/storageService';
+import {
+  storageService,
+  EMPTY_HELPERS,
+  EMPTY_ATTENDANCE,
+  EMPTY_ADJUSTMENTS,
+} from '@/services/storageService';
 import { getCurrentMonth } from '@/utils/dateUtils';
 import { calculateMonthlySalary } from '@/utils/salaryCalculator';
 import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
@@ -82,11 +87,22 @@ export function useHouseHelp() {
     return calculations.reduce((sum, c) => sum + c.netPayable, 0);
   }, [calculations]);
 
-  const setAttendance = (helperId: string, date: string, status: AttendanceStatus, note?: string) => {
+  const setAttendance = (
+    helperId: string,
+    date: string,
+    status: AttendanceStatus,
+    note?: string
+  ) => {
     storageService.setAttendance({ helperId, date, status, note });
   };
 
-  const setItemCount = (helperId: string, date: string, count: number, note?: string, customRate?: number) => {
+  const setItemCount = (
+    helperId: string,
+    date: string,
+    count: number,
+    note?: string,
+    customRate?: number
+  ) => {
     storageService.setItemCount(helperId, date, count, note, customRate);
   };
 

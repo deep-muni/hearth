@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { HStack } from '@chakra-ui/react';
@@ -11,11 +11,7 @@ interface BackupModalProps {
   onImport: (json: string) => boolean;
 }
 
-export const BackupModal: React.FC<BackupModalProps> = ({
-  isOpen,
-  onClose,
-  onImport,
-}) => {
+export const BackupModal: React.FC<BackupModalProps> = ({ isOpen, onClose, onImport }) => {
   const [jsonText, setJsonText] = useState('');
 
   const handleImport = () => {

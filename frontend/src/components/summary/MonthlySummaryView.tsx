@@ -1,11 +1,7 @@
-"use client";
+'use client';
 
 import React, { useState, useCallback } from 'react';
-import {
-  Flex,
-  VStack,
-  Text,
-} from '@chakra-ui/react';
+import { Flex, VStack, Text } from '@chakra-ui/react';
 import { HelperSalaryCalculation, MonthlyAdjustment } from '@/types';
 import { formatCurrency, formatMonthDisplay } from '@/utils/dateUtils';
 import { SalaryCard } from './SalaryCard';
@@ -32,43 +28,51 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
     .reduce((acc, c) => acc + c.netPayable, 0);
   const totalPending = totalBudget - totalPaid;
 
-  const handleTogglePaid = useCallback((calc: HelperSalaryCalculation) => {
-    const isCurrentlyPaid = calc.adjustment.isPaid;
+  const handleTogglePaid = useCallback(
+    (calc: HelperSalaryCalculation) => {
+      const isCurrentlyPaid = calc.adjustment.isPaid;
 
-    if (!isCurrentlyPaid) {
-      try {
-        confetti({
-          particleCount: 50,
-          spread: 50,
-          origin: { y: 0.7 },
-        });
-      } catch {
+      if (!isCurrentlyPaid) {
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 50,
+            origin: { y: 0.7 },
+          });
+        } catch {}
       }
-    }
 
-    onUpdateAdjustment({
-      ...calc.adjustment,
-      isPaid: !isCurrentlyPaid,
-      paidOn: !isCurrentlyPaid
-        ? new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        : undefined,
-      paymentMethod: !isCurrentlyPaid ? 'UPI' : undefined,
-    });
-  }, [onUpdateAdjustment]);
+      onUpdateAdjustment({
+        ...calc.adjustment,
+        isPaid: !isCurrentlyPaid,
+        paidOn: !isCurrentlyPaid
+          ? new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+          : undefined,
+        paymentMethod: !isCurrentlyPaid ? 'UPI' : undefined,
+      });
+    },
+    [onUpdateAdjustment]
+  );
 
-  const handleBonusChange = useCallback((calc: HelperSalaryCalculation, val: number) => {
-    onUpdateAdjustment({
-      ...calc.adjustment,
-      bonus: Math.max(0, val),
-    });
-  }, [onUpdateAdjustment]);
+  const handleBonusChange = useCallback(
+    (calc: HelperSalaryCalculation, val: number) => {
+      onUpdateAdjustment({
+        ...calc.adjustment,
+        bonus: Math.max(0, val),
+      });
+    },
+    [onUpdateAdjustment]
+  );
 
-  const handleAdvanceChange = useCallback((calc: HelperSalaryCalculation, val: number) => {
-    onUpdateAdjustment({
-      ...calc.adjustment,
-      advanceDeduction: Math.max(0, val),
-    });
-  }, [onUpdateAdjustment]);
+  const handleAdvanceChange = useCallback(
+    (calc: HelperSalaryCalculation, val: number) => {
+      onUpdateAdjustment({
+        ...calc.adjustment,
+        advanceDeduction: Math.max(0, val),
+      });
+    },
+    [onUpdateAdjustment]
+  );
 
   return (
     <VStack gap={3} align="stretch" w="100%">

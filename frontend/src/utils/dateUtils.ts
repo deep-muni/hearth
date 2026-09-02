@@ -46,7 +46,7 @@ export function buildCalendarDays(monthStr: string): CalendarDayInfo[] {
   const [year, month] = monthStr.split('-').map(Number);
   const totalDays = new Date(year, month, 0).getDate();
   const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
-  
+
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 

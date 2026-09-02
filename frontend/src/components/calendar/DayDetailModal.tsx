@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { Box, HStack, VStack, Text } from '@chakra-ui/react';

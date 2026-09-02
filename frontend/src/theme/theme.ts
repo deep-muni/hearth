@@ -11,7 +11,7 @@ export const system = createSystem(
             pinkHover: { value: '#FA5276' },
             softPink: { value: '#FFF0F4' },
             borderPink: { value: '#FFE0E9' },
-            
+
             lavender: { value: '#8B5CF6' },
             softLavender: { value: '#F5F3FF' },
             borderLavender: { value: '#EDE9FE' },
