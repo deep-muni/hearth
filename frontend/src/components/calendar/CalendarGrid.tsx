@@ -77,26 +77,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(({
           borderTop="1px solid #f1f5f9"
           justify="center"
           align="center"
-          gap={3}
+          gap={2}
           fontSize="11px"
           color="#64748b"
         >
-          <HStack gap={1.5}>
-            <Box
-              px={1.5}
-              py={0.2}
-              borderRadius="full"
-              bg="#2563eb"
-              color="#ffffff"
-              fontSize="9px"
-              fontWeight="700"
-            >
-              12
-            </Box>
-            <Text>Items given on date</Text>
-          </HStack>
+          <Box w="6px" h="6px" borderRadius="full" bg="#2563eb" />
+          <Text>Items logged on date</Text>
           <Text color="#cbd5e1">•</Text>
-          <Text color="#94a3b8">Click any day to log count</Text>
+          <Text color="#94a3b8">Click any day to log count & cost</Text>
         </Flex>
       ) : (
         <Flex
