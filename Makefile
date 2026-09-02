@@ -1,4 +1,7 @@
-.PHONY: dev-frontend dev-backend build-frontend build-backend build test-frontend test-backend test check-all clean run
+.PHONY: dev dev-frontend dev-backend build-frontend build-backend build test-frontend test-backend test check-all clean run
+
+dev:
+	pnpm dev
 
 dev-frontend:
 	pnpm --filter frontend dev

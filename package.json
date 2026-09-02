@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,magenta\" \"pnpm dev:backend\" \"pnpm dev:frontend\"",
     "dev:frontend": "dotenvx run -- pnpm --filter frontend dev",
     "build:frontend": "pnpm --filter frontend build",
     "dev:backend": "dotenvx run -- bash -c \"cd backend && go run cmd/server/main.go\"",
@@ -12,6 +13,7 @@
     "check-all": "make check-all"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^2.23.0"
+    "@dotenvx/dotenvx": "^2.23.0",
+    "concurrently": "^10.0.5"
   }
 }
