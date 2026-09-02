@@ -43,7 +43,6 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
           origin: { y: 0.7 },
         });
       } catch {
-        // ignore
       }
     }
 
@@ -73,7 +72,6 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
 
   return (
     <VStack gap={3} align="stretch" w="100%">
-      {/* 1. Minimal Overview Stats */}
       <Card style={{ padding: '14px' }}>
         <Flex justify="space-between" align="center" mb={1.5}>
           <Text fontSize="12px" fontWeight="600" color="#64748b">
@@ -94,7 +92,6 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
         </Flex>
       </Card>
 
-      {/* 2. Staff Compensation Cards */}
       <VStack gap={2} align="stretch">
         {calculations.map((calc) => (
           <SalaryCard
@@ -108,7 +105,6 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
         ))}
       </VStack>
 
-      {/* Pay Slip Modal */}
       {activeSlipCalc && (
         <PaySlipModal
           isOpen={!!activeSlipCalc}

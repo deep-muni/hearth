@@ -66,7 +66,6 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
       description="Select attendance status for this date"
       maxWidth="350px"
     >
-      {/* Status List */}
       <VStack gap={1.5} align="stretch" mb={3}>
         {ORDERED_STATUSES.map((statusKey) => {
           const cfg = STATUS_CONFIGS[statusKey];
@@ -100,7 +99,6 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
         })}
       </VStack>
 
-      {/* Note input */}
       <Box mb={3}>
         <Input
           value={note}
@@ -109,7 +107,6 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
         />
       </Box>
 
-      {/* Actions */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         {currentRecord ? (
           <Button

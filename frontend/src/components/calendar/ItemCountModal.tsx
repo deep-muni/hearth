@@ -78,7 +78,6 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
       maxWidth="350px"
     >
       <VStack gap={3} align="stretch">
-        {/* Count & Cost Inputs */}
         <SimpleGrid columns={2} gap={2}>
           <Input
             label={`Count (${unitLabel}) *`}
@@ -102,7 +101,6 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
           />
         </SimpleGrid>
 
-        {/* Calculated Total for this Date */}
         <Flex
           justify="space-between"
           align="center"
@@ -121,7 +119,6 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
           </Text>
         </Flex>
 
-        {/* Note input */}
         <Box>
           <Input
             label="Note (optional)"
@@ -131,7 +128,6 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
           />
         </Box>
 
-        {/* Actions */}
         <Flex justify="space-between" align="center" pt={1}>
           {currentRecord && (currentRecord.itemCount !== undefined || currentRecord.note) ? (
             <Button

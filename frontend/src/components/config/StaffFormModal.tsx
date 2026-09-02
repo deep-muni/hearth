@@ -90,7 +90,6 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
     >
       <form onSubmit={handleSubmit}>
         <VStack gap={2.5} align="stretch">
-          {/* Name */}
           <Input
             label="Name *"
             value={name}
@@ -99,7 +98,6 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
             required
           />
 
-          {/* Role Presets & Custom Role */}
           <Box>
             <Text fontSize="11px" fontWeight="600" color="#64748b" mb={1}>
               Role
@@ -135,7 +133,6 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
             />
           </Box>
 
-          {/* Emoji Avatar */}
           <Box>
             <Text fontSize="11px" fontWeight="600" color="#64748b" mb={1}>
               Avatar Icon
@@ -163,7 +160,6 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
             </Flex>
           </Box>
 
-          {/* Salary Model / 3 Types */}
           <Box>
             <Text fontSize="11px" fontWeight="600" color="#64748b" mb={1}>
               Salary Model *
@@ -193,13 +189,11 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
               ))}
             </SimpleGrid>
 
-            {/* Model Description Hint */}
             <Text fontSize="10px" color="#94a3b8" mt={1}>
               {SALARY_TYPES.find((s) => s.type === normalized)?.description}
             </Text>
           </Box>
 
-          {/* Dynamic Fields for Type 1: DAYS_LEAVES */}
           {normalized === 'DAYS_LEAVES' && (
             <>
               <SimpleGrid columns={2} gap={1.5}>
@@ -236,7 +230,6 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
             </>
           )}
 
-          {/* Dynamic Fields for Type 2: FIXED */}
           {normalized === 'FIXED' && (
             <Box>
               <Input
@@ -254,7 +247,6 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
             </Box>
           )}
 
-          {/* Dynamic Fields for Type 3: COUNT_BASED */}
           {normalized === 'COUNT_BASED' && (
             <>
               <SimpleGrid columns={2} gap={1.5}>

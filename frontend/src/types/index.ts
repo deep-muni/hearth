@@ -29,11 +29,11 @@ export interface HouseHelp {
   avatarEmoji: string;
   colorTheme: HelperColorTheme;
   salaryType: SalaryType;
-  baseSalary: number; // monthly fixed salary or base rate
-  ratePerItem?: number; // rate per item for COUNT_BASED (defaults to baseSalary)
-  itemUnitName?: string; // unit label e.g. "items", "clothes", "tiffin" (default "items")
-  paidLeavesAllowance: number; // e.g. 2 free leaves allowed per month for DAYS_LEAVES
-  weeklyOffDay: number; // 0 = Sunday, 1 = Monday ... 6 = Saturday, -1 = None
+  baseSalary: number;
+  ratePerItem?: number;
+  itemUnitName?: string;
+  paidLeavesAllowance: number;
+  weeklyOffDay: number;
   phone?: string;
   notes?: string;
   joinDate?: string;
@@ -44,17 +44,17 @@ export interface HouseHelp {
 export interface AttendanceRecord {
   id: string;
   helperId: string;
-  date: string; // YYYY-MM-DD
-  status?: AttendanceStatus; // For DAYS_LEAVES
-  itemCount?: number; // For COUNT_BASED: number of items given on this date
-  customRate?: number; // Optional custom rate/cost per item for this date
+  date: string;
+  status?: AttendanceStatus;
+  itemCount?: number;
+  customRate?: number;
   note?: string;
   updatedAt: string;
 }
 
 export interface MonthlyAdjustment {
   helperId: string;
-  month: string; // YYYY-MM
+  month: string;
   bonus: number;
   advanceDeduction: number;
   note?: string;
@@ -65,7 +65,7 @@ export interface MonthlyAdjustment {
 
 export interface HelperSalaryCalculation {
   helper: HouseHelp;
-  month: string; // YYYY-MM
+  month: string;
   monthName: string;
   totalDaysInMonth: number;
   totalWorkingDays: number;
@@ -74,14 +74,12 @@ export interface HelperSalaryCalculation {
   fullLeavesCount: number;
   halfLeavesCount: number;
   paidLeavesCount: number;
-  totalLeavesCount: number; // fullLeaves + halfLeaves*0.5
+  totalLeavesCount: number;
   deductibleLeavesCount: number;
   perDayRate: number;
-  // For COUNT_BASED
   totalItemCount: number;
   ratePerItem: number;
   itemUnitName: string;
-  // Financials
   baseAmount: number;
   deductions: number;
   bonus: number;

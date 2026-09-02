@@ -31,7 +31,7 @@ type HouseHelp struct {
 	RatePerItem         float64    `json:"ratePerItem,omitempty"`
 	ItemUnitName        string     `json:"itemUnitName,omitempty"`
 	PaidLeavesAllowance int        `json:"paidLeavesAllowance"`
-	WeeklyOffDay        int        `json:"weeklyOffDay"` // 0 = Sunday, 1 = Monday... -1 = None
+	WeeklyOffDay        int        `json:"weeklyOffDay"`
 	Phone               string     `json:"phone,omitempty"`
 	Notes               string     `json:"notes,omitempty"`
 	JoinDate            *time.Time `json:"joinDate,omitempty"`
@@ -43,7 +43,7 @@ type HouseHelp struct {
 type AttendanceRecord struct {
 	ID         string            `json:"id"`
 	HelperID   string            `json:"helperId"`
-	Date       string            `json:"date"` // YYYY-MM-DD
+	Date       string            `json:"date"`
 	Status     *AttendanceStatus `json:"status,omitempty"`
 	ItemCount  *int              `json:"itemCount,omitempty"`
 	CustomRate *float64          `json:"customRate,omitempty"`
@@ -53,7 +53,7 @@ type AttendanceRecord struct {
 
 type MonthlySalarySummary struct {
 	HelperID       string  `json:"helperId"`
-	Month          string  `json:"month"` // YYYY-MM
+	Month          string  `json:"month"`
 	WorkingDays    int     `json:"workingDays"`
 	DaysPresent    float64 `json:"daysPresent"`
 	TotalLeaves    float64 `json:"totalLeaves"`

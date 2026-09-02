@@ -11,7 +11,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, style, id, type, onChange, onFocus, ...props }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (type === 'number' && e.target.value) {
-        // Strip leading zeros if followed by a digit (e.g., '0500' -> '500', '00' -> '0'), keeping '0' and '0.X'
         e.target.value = e.target.value.replace(/^0+(?=\d)/, '');
       }
       onChange?.(e);

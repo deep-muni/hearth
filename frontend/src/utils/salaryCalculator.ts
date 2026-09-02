@@ -16,7 +16,6 @@ export function calculateMonthlySalary(
   const [year, monthNum] = month.split('-').map(Number);
   const totalDaysInMonth = getDaysCountInMonth(month);
 
-  // Count weekly offs in the month
   let weeklyOffsCount = 0;
   for (let day = 1; day <= totalDaysInMonth; day++) {
     const dayOfWeek = new Date(year, monthNum - 1, day).getDay();
@@ -27,7 +26,6 @@ export function calculateMonthlySalary(
 
   const totalWorkingDays = helper.weeklyOffDay >= 0 ? Math.max(1, totalDaysInMonth - weeklyOffsCount) : totalDaysInMonth;
 
-  // Filter records for this helper and month
   const helperRecords = records.filter(
     (r) => r.helperId === helper.id && r.date.startsWith(month)
   );
@@ -67,7 +65,6 @@ export function calculateMonthlySalary(
     }
   });
 
-  // Effective leave days
   const totalLeavesCount = fullLeavesCount + halfLeavesCount * 0.5;
 
   const calculatedDaysPresent = Math.max(
@@ -92,19 +89,16 @@ export function calculateMonthlySalary(
   const normalizedType = normalizeSalaryType(helper.salaryType);
 
   if (normalizedType === 'COUNT_BASED') {
-    // 3rd Type: Salary based on count (items given per date, cost can be default rate or custom per date)
     baseAmount = Math.round(totalItemEarnings);
     deductions = 0;
     deductibleLeavesCount = 0;
     perDayRate = 0;
   } else if (normalizedType === 'FIXED') {
-    // 2nd Type: Fixed monthly salary (no calendar tracking)
     baseAmount = helper.baseSalary;
     deductions = 0;
     deductibleLeavesCount = 0;
     perDayRate = Math.round((helper.baseSalary / totalDaysInMonth) * 100) / 100;
   } else {
-    // 1st Type: Salary based on days (leaves) - uses calendar
     if (helper.salaryType === 'DAILY_WAGE') {
       perDayRate = helper.baseSalary;
       const billableDays = daysPresent + (halfLeavesCount * 0.5) + paidLeavesCount;
@@ -112,7 +106,6 @@ export function calculateMonthlySalary(
       deductions = 0;
       deductibleLeavesCount = totalLeavesCount;
     } else {
-      // Standard DAYS_LEAVES / FIXED_MONTHLY
       perDayRate = Math.round((helper.baseSalary / totalWorkingDays) * 100) / 100;
       deductibleLeavesCount = Math.max(0, totalLeavesCount - (helper.paidLeavesAllowance || 0));
       deductions = Math.round(deductibleLeavesCount * perDayRate);

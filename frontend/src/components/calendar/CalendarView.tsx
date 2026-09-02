@@ -92,7 +92,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     <VStack gap={3} align="stretch" w="100%">
-      {/* 1. Staff Selector (Responsive Grid) */}
       <SimpleGrid
         columns={helpers.length <= 3 ? helpers.length : helpers.length === 4 ? 2 : 3}
         gap={1.5}
@@ -183,7 +182,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         })}
       </SimpleGrid>
 
-      {/* 2. Staff Overview & Quick Action */}
       <Flex
         bg="#ffffff"
         borderRadius="xl"
@@ -223,7 +221,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </HStack>
       </Flex>
 
-      {/* 3. Main Content: Calendar Grid OR Fixed Salary Notice */}
       {normalizedType === 'FIXED' ? (
         <Card style={{ padding: '28px 20px', textAlign: 'center' }}>
           <VStack gap={3} align="center">
@@ -294,7 +291,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         />
       )}
 
-      {/* 4. Modal for Days & Leaves */}
       {modalDate && normalizedType === 'DAYS_LEAVES' && (
         <DayDetailModal
           key={modalDate}
@@ -312,7 +308,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         />
       )}
 
-      {/* 5. Modal for Count Based (Items Given) */}
       {modalDate && normalizedType === 'COUNT_BASED' && (
         <ItemCountModal
           key={modalDate}

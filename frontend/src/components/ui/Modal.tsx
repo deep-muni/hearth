@@ -60,7 +60,6 @@ export const Modal: React.FC<ModalProps> = ({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
         {(title || description) && (
           <div
             style={{

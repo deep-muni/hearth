@@ -13,10 +13,10 @@ const INITIAL_HELPERS: HouseHelp[] = [
     role: 'Chef & Cook',
     avatarEmoji: '👩‍🍳',
     colorTheme: 'pink',
-    salaryType: 'DAYS_LEAVES', // 1st Type: based on days (leaves) - needs calendar
+    salaryType: 'DAYS_LEAVES',
     baseSalary: 8000,
     paidLeavesAllowance: 2,
-    weeklyOffDay: 0, // Sunday
+    weeklyOffDay: 0,
     phone: '+91 98765 43210',
     notes: 'Prepares lunch and dinner; specialist in North Indian dishes.',
     joinDate: '2025-01-10',
@@ -28,7 +28,7 @@ const INITIAL_HELPERS: HouseHelp[] = [
     role: 'Personal Driver',
     avatarEmoji: '🚗',
     colorTheme: 'blue',
-    salaryType: 'FIXED', // 2nd Type: fixed salary - no calendar needed
+    salaryType: 'FIXED',
     baseSalary: 12000,
     paidLeavesAllowance: 0,
     weeklyOffDay: -1,
@@ -43,7 +43,7 @@ const INITIAL_HELPERS: HouseHelp[] = [
     role: 'Ironing & Laundry',
     avatarEmoji: '🧺',
     colorTheme: 'purple',
-    salaryType: 'COUNT_BASED', // 3rd Type: based on count - needs items given per date
+    salaryType: 'COUNT_BASED',
     baseSalary: 20,
     ratePerItem: 20,
     itemUnitName: 'clothes',
@@ -59,7 +59,6 @@ const INITIAL_HELPERS: HouseHelp[] = [
 function generateInitialAttendance(): AttendanceRecord[] {
   const currentMonth = getCurrentMonth();
   const records: AttendanceRecord[] = [
-    // Sunita (DAYS_LEAVES): took leave on 4th, half leave on 12th
     {
       id: `rec-1`,
       helperId: 'helper-1',
@@ -76,7 +75,6 @@ function generateInitialAttendance(): AttendanceRecord[] {
       note: 'Doctor appointment morning',
       updatedAt: new Date().toISOString(),
     },
-    // Pinky (COUNT_BASED): on what date how many items were given
     {
       id: `rec-3`,
       helperId: 'helper-3',
@@ -125,13 +123,12 @@ export const EMPTY_HELPERS: HouseHelp[] = [];
 export const EMPTY_ATTENDANCE: AttendanceRecord[] = [];
 export const EMPTY_ADJUSTMENTS: Record<string, MonthlyAdjustment> = {};
 
-// Check for window/localStorage availability
 const isBrowser = typeof window !== 'undefined';
 
 class StorageService {
   private helpers: HouseHelp[] = [];
   private attendance: AttendanceRecord[] = [];
-  private adjustments: Record<string, MonthlyAdjustment> = {}; // key: `${helperId}_${month}`
+  private adjustments: Record<string, MonthlyAdjustment> = {};
   private listeners: Set<() => void> = new Set();
 
   constructor() {
@@ -174,10 +171,10 @@ class StorageService {
       } else {
         this.adjustments = {};
       }
-    } catch (e) {
-      console.warn('Could not read from localStorage, using in-memory data', e);
+    } catch {
       this.helpers = [...INITIAL_HELPERS];
       this.attendance = generateInitialAttendance();
+      this.adjustments = {};
     }
   }
 
@@ -185,8 +182,7 @@ class StorageService {
     if (isBrowser) {
       try {
         localStorage.setItem(HELPERS_KEY, JSON.stringify(this.helpers));
-      } catch (e) {
-        console.warn('LocalStorage error:', e);
+      } catch {
       }
     }
     this.notify();
@@ -196,8 +192,7 @@ class StorageService {
     if (isBrowser) {
       try {
         localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(this.attendance));
-      } catch (e) {
-        console.warn('LocalStorage error:', e);
+      } catch {
       }
     }
     this.notify();
@@ -207,8 +202,7 @@ class StorageService {
     if (isBrowser) {
       try {
         localStorage.setItem(ADJUSTMENTS_KEY, JSON.stringify(this.adjustments));
-      } catch (e) {
-        console.warn('LocalStorage error:', e);
+      } catch {
       }
     }
     this.notify();
@@ -225,7 +219,6 @@ class StorageService {
     this.listeners.forEach((l) => l());
   }
 
-  // --- Helpers CRUD ---
   public getHelpers(): HouseHelp[] {
     return this.helpers;
   }
@@ -259,7 +252,6 @@ class StorageService {
       return h;
     });
     this.saveHelpers();
-    // Historical attendance and adjustments are preserved for past months!
   }
 
   public restoreHelper(id: string): void {
@@ -291,7 +283,6 @@ class StorageService {
     this.saveAdjustments();
   }
 
-  // --- Attendance CRUD ---
   public getAttendance(month?: string, helperId?: string): AttendanceRecord[] {
     if (!month && !helperId) {
       return this.attendance;
@@ -381,7 +372,6 @@ class StorageService {
     this.saveAttendance();
   }
 
-  // --- Adjustments (Bonus / Advance / Paid Status) ---
   public getAdjustments(): Record<string, MonthlyAdjustment> {
     return this.adjustments;
   }
@@ -405,7 +395,6 @@ class StorageService {
     this.saveAdjustments();
   }
 
-  // --- Demo data & Backup ---
   public resetToDemoData(): void {
     this.helpers = [...INITIAL_HELPERS];
     this.attendance = generateInitialAttendance();
@@ -442,12 +431,10 @@ class StorageService {
         return true;
       }
       return false;
-    } catch (e) {
-      console.error('Import failed:', e);
+    } catch {
       return false;
     }
   }
 }
 
-// Export singleton instance
 export const storageService = new StorageService();

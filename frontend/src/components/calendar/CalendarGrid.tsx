@@ -30,7 +30,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(({
       border="1px solid #e2e8f0"
       boxShadow="0 1px 3px rgba(0, 0, 0, 0.02)"
     >
-      {/* Day of Week Headers */}
       <SimpleGrid columns={7} gap={1} mb={2}>
         {WEEKDAYS_SHORT.map((day, idx) => (
           <Box key={idx} textAlign="center" py={0.5}>
@@ -41,7 +40,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(({
         ))}
       </SimpleGrid>
 
-      {/* Days Matrix */}
       <SimpleGrid columns={7} gap={1}>
         {calendarDays.map((dayInfo, idx) => {
           const isWeeklyOffDay =
@@ -69,7 +67,6 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(({
         })}
       </SimpleGrid>
 
-      {/* Legend Row (only needed for Days & Leaves status icons) */}
       {!isCountBased && (
         <Flex
           mt={3}

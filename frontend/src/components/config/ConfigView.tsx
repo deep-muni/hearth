@@ -63,7 +63,6 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 
   return (
     <VStack gap={3} align="stretch" w="100%">
-      {/* 1. Header with Add Button */}
       <Flex justify="space-between" align="center" px={1}>
         <Text fontSize="14px" fontWeight="700" color="#0f172a">
           Active Staff ({activeHelpers.length})
@@ -79,7 +78,6 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         </Button>
       </Flex>
 
-      {/* 2. Staff Cards */}
       <VStack gap={2} align="stretch">
         {activeHelpers.map((h) => (
           <Card key={h.id} style={{ padding: '12px' }}>
@@ -141,7 +139,6 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         ))}
       </VStack>
 
-      {/* Former Staff (History Preserved) */}
       {formerHelpers.length > 0 && (
         <VStack gap={2} align="stretch" pt={2}>
           <Text fontSize="12px" fontWeight="600" color="#64748b" px={1}>
@@ -178,7 +175,6 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         </VStack>
       )}
 
-      {/* 3. Minimal Backup / Reset Footer */}
       <Flex justify="center" gap={3} pt={3} pb={4} fontSize="11px" color="#94a3b8">
         <button
           onClick={onExportBackup}
@@ -226,7 +222,6 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         </button>
       </Flex>
 
-      {/* Modals */}
       <StaffFormModal
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}

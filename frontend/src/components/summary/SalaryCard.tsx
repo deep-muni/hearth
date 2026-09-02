@@ -59,7 +59,6 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
 
   return (
     <Card style={{ padding: '12px' }}>
-      {/* Top Row: Info & Net Pay */}
       <Flex justify="space-between" align="center" mb={1.5}>
         <HStack gap={2}>
           <Text fontSize="16px">{helper.avatarEmoji}</Text>
@@ -82,7 +81,6 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
         </Box>
       </Flex>
 
-      {/* Math breakdown line */}
       <Flex
         justify="space-between"
         align="center"
@@ -117,7 +115,6 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
         )}
       </Flex>
 
-      {/* Quick Bonus & Advance Inputs */}
       <HStack gap={1.5} mb={2}>
         <Box flex={1}>
           <input
@@ -161,7 +158,6 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
         </Box>
       </HStack>
 
-      {/* Actions Row */}
       <Flex justify="space-between" align="center" pt={1}>
         <Button
           variant="ghost"

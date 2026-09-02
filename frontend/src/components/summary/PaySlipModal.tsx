@@ -40,7 +40,6 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
       description={`${monthName} • ${helper.role}`}
       maxWidth="340px"
     >
-      {/* Itemized Breakdown Box */}
       <Card variant="subtle" style={{ padding: '12px', marginBottom: '12px' }}>
         <VStack gap={1.5} align="stretch" fontSize="11px">
           {normalizedType === 'DAYS_LEAVES' && (
@@ -142,7 +141,6 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
         </VStack>
       </Card>
 
-      {/* Footer */}
       <Flex justify="flex-end" align="center">
         <Button variant="primary" size="sm" onClick={onClose}>
           Done

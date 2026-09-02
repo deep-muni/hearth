@@ -48,9 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
       zIndex={40}
     >
       <Box maxW="440px" mx="auto" px={3} pt={3} pb={2.5}>
-        {/* Top Row: Brand, Month Switcher, Budget */}
         <Flex align="center" justify="space-between" mb={2.5}>
-          {/* Logo */}
           <HStack gap={1.5}>
             <Sparkles size={16} color="#f43f5e" />
             <Text fontSize="sm" fontWeight="800" color="#0f172a" letterSpacing="-0.3px">
@@ -58,7 +56,6 @@ export const Header: React.FC<HeaderProps> = ({
             </Text>
           </HStack>
 
-          {/* Minimal Month Switcher */}
           <HStack gap={0.5} bg="#f8fafc" px={1} py={0.5} borderRadius="full" border="1px solid #e2e8f0">
             <button
               onClick={() => onMonthChange(getPreviousMonth(currentMonth))}
@@ -104,13 +101,11 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </HStack>
 
-          {/* Budget Text */}
           <Text fontSize="12px" fontWeight="800" color="#0f172a">
             {formatCurrency(totalMonthlyBudget)}
           </Text>
         </Flex>
 
-        {/* Top Navigation Tabs */}
         <Flex
           bg="#f1f5f9"
           p={1}

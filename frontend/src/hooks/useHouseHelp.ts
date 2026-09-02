@@ -37,28 +37,23 @@ export function useHouseHelp() {
     getAdjustmentsServerSnapshot
   );
 
-  // Active helpers for the viewed month
   const monthHelpers = useMemo(() => {
     return helpers.filter((h) => {
-      // If helper has attendance in this month, always include
       const hasAttendance = attendance.some(
         (a) => a.helperId === h.id && a.date.startsWith(currentMonth)
       );
       if (hasAttendance) return true;
 
-      // Check joinDate: if joined in a later month, don't show in earlier months
       if (h.joinDate) {
         const joinMonth = h.joinDate.substring(0, 7);
         if (currentMonth < joinMonth) return false;
       }
 
-      // Check leftDate: if left in an earlier month, don't show in later months
       if (h.leftDate) {
         const leftMonth = h.leftDate.substring(0, 7);
         if (currentMonth > leftMonth) return false;
       }
 
-      // If marked inactive without a leftDate, only show if they had records
       if (h.isActive === false) return false;
 
       return true;
@@ -69,13 +64,12 @@ export function useHouseHelp() {
     (monthHelpers.some((h) => h.id === selectedHelperId) ? selectedHelperId : '') ||
     (monthHelpers[0]?.id ?? '');
 
-  // Memoized calculations for helpers active in currentMonth
   const calculations: HelperSalaryCalculation[] = useMemo(() => {
     return monthHelpers.map((helper) => {
       const helperRecords = attendance.filter(
         (a) => a.helperId === helper.id && a.date.startsWith(currentMonth)
       );
-      const adjustment = storageService.getAdjustment(helper.id, currentMonth);
+      const adjustment = adjustments[`${helper.id}_${currentMonth}`];
       return calculateMonthlySalary(helper, currentMonth, helperRecords, adjustment);
     });
   }, [monthHelpers, attendance, adjustments, currentMonth]);

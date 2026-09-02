@@ -34,10 +34,10 @@ export function getDaysCountInMonth(monthStr: string): number {
 }
 
 export interface CalendarDayInfo {
-  dateStr: string; // YYYY-MM-DD
+  dateStr: string;
   dayNumber: number;
-  dayOfWeek: number; // 0 = Sunday, 1 = Monday ... 6 = Saturday
-  dayName: string; // "Sun", "Mon", etc.
+  dayOfWeek: number;
+  dayName: string;
   isCurrentMonth: boolean;
   isToday: boolean;
 }
@@ -45,14 +45,13 @@ export interface CalendarDayInfo {
 export function buildCalendarDays(monthStr: string): CalendarDayInfo[] {
   const [year, month] = monthStr.split('-').map(Number);
   const totalDays = new Date(year, month, 0).getDate();
-  const firstDayOfWeek = new Date(year, month - 1, 1).getDay(); // 0 is Sunday
+  const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
   
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   const days: CalendarDayInfo[] = [];
 
-  // Padding days from previous month
   const prevMonthTotalDays = new Date(year, month - 1, 0).getDate();
   for (let i = firstDayOfWeek - 1; i >= 0; i--) {
     const dayNum = prevMonthTotalDays - i;
@@ -68,7 +67,6 @@ export function buildCalendarDays(monthStr: string): CalendarDayInfo[] {
     });
   }
 
-  // Days in current month
   for (let d = 1; d <= totalDays; d++) {
     const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const date = new Date(year, month - 1, d);
@@ -83,7 +81,6 @@ export function buildCalendarDays(monthStr: string): CalendarDayInfo[] {
     });
   }
 
-  // Padding days to fill 7 columns grid
   const remaining = (7 - (days.length % 7)) % 7;
   for (let i = 1; i <= remaining; i++) {
     const nextDate = new Date(year, month, i);
