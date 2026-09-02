@@ -102,9 +102,10 @@ export function buildCalendarDays(monthStr: string): CalendarDayInfo[] {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(Math.round(amount));
+  const rounded = Math.round(Number(amount) || 0);
+  try {
+    return `₹${rounded.toLocaleString('en-IN')}`;
+  } catch {
+    return `₹${rounded.toLocaleString()}`;
+  }
 }
