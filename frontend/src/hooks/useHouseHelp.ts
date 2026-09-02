@@ -1,12 +1,6 @@
 'use client';
 
-import { useState, useMemo, useSyncExternalStore } from 'react';
-import {
-  storageService,
-  EMPTY_HELPERS,
-  EMPTY_ATTENDANCE,
-  EMPTY_ADJUSTMENTS,
-} from '@/services/storageService';
+import { useState, useMemo } from 'react';
 import { getCurrentMonth } from '@/utils/dateUtils';
 import { calculateMonthlySalary } from '@/utils/salaryCalculator';
 import {
@@ -16,14 +10,20 @@ import {
   HouseHelp,
   MonthlyAdjustment,
 } from '@/types';
-
-const subscribeStorage = (cb: () => void) => storageService.subscribe(cb);
-const getHelpersSnapshot = () => storageService.getHelpers();
-const getAttendanceSnapshot = () => storageService.getAttendance();
-const getAdjustmentsSnapshot = () => storageService.getAdjustments();
-const getHelpersServerSnapshot = () => EMPTY_HELPERS;
-const getAttendanceServerSnapshot = () => EMPTY_ATTENDANCE;
-const getAdjustmentsServerSnapshot = () => EMPTY_ADJUSTMENTS;
+import {
+  useHelpersQuery,
+  useSaveHelperMutation,
+  useDeleteHelperMutation,
+  useRestoreHelperMutation,
+} from '@/queries/useHelpers';
+import {
+  useAttendanceQuery,
+  useSetAttendanceMutation,
+  useRemoveAttendanceMutation,
+} from '@/queries/useAttendance';
+import { useAdjustmentsQuery, useUpdateAdjustmentMutation } from '@/queries/useAdjustments';
+import { apiClient } from '@/api/client';
+import { storageService } from '@/services/storageService';
 
 export function isHelperActiveInMonth(
   helper: HouseHelp,
@@ -62,23 +62,24 @@ export function useHouseHelp() {
   const [activeTab, setActiveTab] = useState<'calendar' | 'summary' | 'config'>('calendar');
   const [selectedHelperId, setSelectedHelperId] = useState<string>('');
 
-  const helpers = useSyncExternalStore(
-    subscribeStorage,
-    getHelpersSnapshot,
-    getHelpersServerSnapshot
-  );
+  const { data: helpers = [] } = useHelpersQuery(true);
+  const { data: attendance = [] } = useAttendanceQuery();
+  const { data: adjustmentsList = [] } = useAdjustmentsQuery();
 
-  const attendance = useSyncExternalStore(
-    subscribeStorage,
-    getAttendanceSnapshot,
-    getAttendanceServerSnapshot
-  );
+  const adjustments = useMemo(() => {
+    const map: Record<string, MonthlyAdjustment> = {};
+    for (const a of adjustmentsList) {
+      map[`${a.helperId}_${a.month}`] = a;
+    }
+    return map;
+  }, [adjustmentsList]);
 
-  const adjustments = useSyncExternalStore(
-    subscribeStorage,
-    getAdjustmentsSnapshot,
-    getAdjustmentsServerSnapshot
-  );
+  const saveHelperMutation = useSaveHelperMutation();
+  const deleteHelperMutation = useDeleteHelperMutation();
+  const restoreHelperMutation = useRestoreHelperMutation();
+  const setAttendanceMutation = useSetAttendanceMutation();
+  const removeAttendanceMutation = useRemoveAttendanceMutation();
+  const updateAdjustmentMutation = useUpdateAdjustmentMutation();
 
   const monthHelpers = useMemo(() => {
     return helpers.filter((h) => isHelperActiveInMonth(h, currentMonth, attendance, adjustments));
@@ -112,7 +113,7 @@ export function useHouseHelp() {
     status: AttendanceStatus,
     note?: string
   ) => {
-    storageService.setAttendance({ helperId, date, status, note });
+    setAttendanceMutation.mutate({ helperId, date, status, note });
   };
 
   const setItemCount = (
@@ -122,37 +123,37 @@ export function useHouseHelp() {
     note?: string,
     customRate?: number
   ) => {
-    storageService.setItemCount(helperId, date, count, note, customRate);
+    setAttendanceMutation.mutate({ helperId, date, itemCount: count, note, customRate });
   };
 
   const removeAttendance = (helperId: string, date: string) => {
-    storageService.removeAttendance(helperId, date);
+    removeAttendanceMutation.mutate({ helperId, date });
   };
 
   const updateAdjustment = (adj: MonthlyAdjustment) => {
-    storageService.saveAdjustment(adj);
+    updateAdjustmentMutation.mutate(adj);
   };
 
   const saveHelper = (helper: HouseHelp) => {
-    storageService.saveHelper(helper);
+    saveHelperMutation.mutate(helper);
     if (!selectedHelperId) {
       setSelectedHelperId(helper.id);
     }
   };
 
   const deleteHelper = (id: string) => {
-    storageService.deleteHelper(id, currentMonth);
+    deleteHelperMutation.mutate({ id, hard: false, leftDate: currentMonth });
     if (selectedHelperId === id) {
       setSelectedHelperId('');
     }
   };
 
   const restoreHelper = (id: string) => {
-    storageService.restoreHelper(id);
+    restoreHelperMutation.mutate(id);
   };
 
   const hardDeleteHelper = (id: string) => {
-    storageService.hardDeleteHelper(id);
+    deleteHelperMutation.mutate({ id, hard: true });
     if (selectedHelperId === id) {
       setSelectedHelperId('');
     }
@@ -160,10 +161,12 @@ export function useHouseHelp() {
 
   const resetDemo = () => {
     storageService.resetToDemoData();
+    window.location.reload();
   };
 
-  const exportBackup = () => {
-    const json = storageService.exportBackup();
+  const exportBackup = async () => {
+    const data = await apiClient.exportBackup();
+    const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -173,8 +176,17 @@ export function useHouseHelp() {
     URL.revokeObjectURL(url);
   };
 
-  const importBackup = (json: string) => {
-    return storageService.importBackup(json);
+  const importBackup = (json: string): boolean => {
+    try {
+      const data = JSON.parse(json);
+      if (!data || !Array.isArray(data.helpers)) return false;
+      apiClient.importBackup(data).then(() => {
+        window.location.reload();
+      });
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   return {

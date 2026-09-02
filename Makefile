@@ -1,23 +1,30 @@
-.PHONY: dev build dev-frontend dev-backend build-frontend build-backend test lint
-
-dev:
-	pnpm --filter frontend dev
-
-build:
-	pnpm --filter frontend build
-	cd backend && go build -o bin/server cmd/server/main.go
+.PHONY: dev-frontend dev-backend build-frontend build-backend build test-frontend test-backend test check-all clean run
 
 dev-frontend:
 	pnpm --filter frontend dev
 
+dev-backend:
+	cd backend && APP_ENV=development go run cmd/server/main.go
+
 build-frontend:
 	pnpm --filter frontend build
-
-dev-backend:
-	cd backend && go run cmd/server/main.go
+	rm -rf backend/internal/static/dist/*
+	cp -r frontend/out/* backend/internal/static/dist/
 
 build-backend:
-	cd backend && go build -o bin/server cmd/server/main.go
+	cd backend && CGO_ENABLED=0 go build -ldflags="-w -s" -o bin/server cmd/server/main.go
 
-lint:
-	pnpm --filter frontend lint
+build: build-frontend build-backend
+
+test-frontend:
+	pnpm --filter frontend check-all
+
+test-backend:
+	cd backend && APP_ENV=test go test ./...
+
+test: test-frontend test-backend
+
+check-all: test
+
+clean:
+	rm -rf frontend/out frontend/.next backend/bin

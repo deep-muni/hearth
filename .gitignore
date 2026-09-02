@@ -11,6 +11,8 @@ frontend/dist
 # Go build
 backend/bin
 backend/tmp
+backend/internal/static/dist/*
+!backend/internal/static/dist/.gitkeep
 *.exe
 *.exe~
 *.dll
