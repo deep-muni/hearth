@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Box, Flex, HStack, VStack, Text } from '@chakra-ui/react';
 import { HouseHelp } from '@/types';
-import { formatCurrency } from '@/utils/dateUtils';
+import { formatCurrency, formatMonthDisplay } from '@/utils/dateUtils';
 import { StaffFormModal } from './StaffFormModal';
 import { BackupModal } from './BackupModal';
 import { Card } from '@/components/ui/Card';
@@ -12,9 +12,11 @@ import { Plus, Edit2, Trash2, Download, Upload, RotateCcw } from 'lucide-react';
 
 interface ConfigViewProps {
   helpers: HouseHelp[];
+  currentMonth?: string;
   onSaveHelper: (helper: HouseHelp) => void;
   onDeleteHelper: (id: string) => void;
   onRestoreHelper?: (id: string) => void;
+  onHardDeleteHelper?: (id: string) => void;
   onResetDemo: () => void;
   onExportBackup: () => void;
   onImportBackup: (json: string) => boolean;
@@ -24,9 +26,11 @@ const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export const ConfigView: React.FC<ConfigViewProps> = ({
   helpers,
+  currentMonth,
   onSaveHelper,
   onDeleteHelper,
   onRestoreHelper,
+  onHardDeleteHelper,
   onResetDemo,
   onExportBackup,
   onImportBackup,
@@ -108,9 +112,12 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                   variant="danger"
                   size="xs"
                   onClick={() => {
+                    const monthLabel = currentMonth
+                      ? formatMonthDisplay(currentMonth)
+                      : 'this month';
                     if (
                       confirm(
-                        `Remove ${h.name}?\n\nTheir past attendance, payments, and salary history will remain completely preserved in previous months.`
+                        `Remove ${h.name} from ${monthLabel} onwards?\n\nTheir previous months' attendance, payments, and salary history will remain completely preserved in past months.`
                       )
                     ) {
                       onDeleteHelper(h.id);
@@ -141,21 +148,41 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                       {h.name}
                     </Text>
                     <Text fontSize="10px" color="#94a3b8">
-                      {h.role} • Left {h.leftDate || 'recently'}
+                      {h.role} • Left {h.leftDate ? formatMonthDisplay(h.leftDate) : 'recently'}
                     </Text>
                   </Box>
                 </HStack>
 
-                {onRestoreHelper && (
-                  <Button
-                    variant="outline"
-                    size="xs"
-                    onClick={() => onRestoreHelper(h.id)}
-                    icon={<RotateCcw size={11} />}
-                  >
-                    Restore
-                  </Button>
-                )}
+                <HStack gap={1}>
+                  {onRestoreHelper && (
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      onClick={() => onRestoreHelper(h.id)}
+                      icon={<RotateCcw size={11} />}
+                    >
+                      Restore
+                    </Button>
+                  )}
+                  {onHardDeleteHelper && (
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      onClick={() => {
+                        if (
+                          confirm(
+                            `Permanently delete ${h.name} and all historical records?\n\nThis will completely remove them and their past history from all months. This cannot be undone.`
+                          )
+                        ) {
+                          onHardDeleteHelper(h.id);
+                        }
+                      }}
+                      icon={<Trash2 size={11} color="#94a3b8" />}
+                      aria-label="Permanently delete staff member"
+                      style={{ padding: '5px 7px' }}
+                    />
+                  )}
+                </HStack>
               </Flex>
             </Card>
           ))}
@@ -214,6 +241,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         onClose={() => setIsFormModalOpen(false)}
         helper={editingHelper}
         onSave={onSaveHelper}
+        currentMonth={currentMonth}
       />
 
       <BackupModal

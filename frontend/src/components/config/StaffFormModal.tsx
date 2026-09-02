@@ -15,9 +15,16 @@ interface StaffFormModalProps {
   onClose: () => void;
   helper: HouseHelp | null;
   onSave: (helper: HouseHelp) => void;
+  currentMonth?: string;
 }
 
-const StaffFormDialog: React.FC<StaffFormModalProps> = ({ isOpen, onClose, helper, onSave }) => {
+const StaffFormDialog: React.FC<StaffFormModalProps> = ({
+  isOpen,
+  onClose,
+  helper,
+  onSave,
+  currentMonth,
+}) => {
   const [name, setName] = useState(helper?.name || '');
   const [role, setRole] = useState(helper?.role || 'Cook');
   const [emoji, setEmoji] = useState(helper?.avatarEmoji || '👩‍🍳');
@@ -58,7 +65,9 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({ isOpen, onClose, helpe
       weeklyOffDay: normalized === 'DAYS_LEAVES' ? Number(weeklyOff) : -1,
       phone: helper?.phone || '',
       isActive: true,
-      joinDate: helper?.joinDate || new Date().toISOString().split('T')[0],
+      joinDate:
+        helper?.joinDate ||
+        (currentMonth ? `${currentMonth}-01` : new Date().toISOString().split('T')[0]),
     };
 
     onSave(helperToSave);

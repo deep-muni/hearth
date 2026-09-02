@@ -29,6 +29,7 @@ export default function HomePage() {
     saveHelper,
     deleteHelper,
     restoreHelper,
+    hardDeleteHelper,
     resetDemo,
     exportBackup,
     importBackup,
@@ -72,9 +73,11 @@ export default function HomePage() {
           {activeTab === 'config' && (
             <ConfigView
               helpers={helpers}
+              currentMonth={currentMonth}
               onSaveHelper={saveHelper}
               onDeleteHelper={deleteHelper}
               onRestoreHelper={restoreHelper}
+              onHardDeleteHelper={hardDeleteHelper}
               onResetDemo={resetDemo}
               onExportBackup={exportBackup}
               onImportBackup={importBackup}

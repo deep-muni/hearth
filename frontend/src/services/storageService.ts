@@ -248,7 +248,18 @@ class StorageService {
       }
       return h;
     });
+    this.attendance = this.attendance.filter(
+      (a) => !(a.helperId === id && a.date.substring(0, 7) >= targetMonth)
+    );
+    for (const key of Object.keys(this.adjustments)) {
+      const [adjHelperId, adjMonth] = key.split('_');
+      if (adjHelperId === id && adjMonth >= targetMonth) {
+        delete this.adjustments[key];
+      }
+    }
     this.saveHelpers();
+    this.saveAttendance();
+    this.saveAdjustments();
   }
 
   public restoreHelper(id: string): void {

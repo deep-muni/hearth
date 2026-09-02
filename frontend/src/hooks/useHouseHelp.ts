@@ -49,6 +49,11 @@ export function useHouseHelp() {
       );
       if (hasAttendance) return true;
 
+      const adj = adjustments[`${h.id}_${currentMonth}`];
+      if (adj && (adj.isPaid || adj.bonus > 0 || adj.advanceDeduction > 0 || adj.note)) {
+        return true;
+      }
+
       if (h.joinDate) {
         const joinMonth = h.joinDate.substring(0, 7);
         if (currentMonth < joinMonth) return false;
@@ -56,14 +61,15 @@ export function useHouseHelp() {
 
       if (h.leftDate) {
         const leftMonth = h.leftDate.substring(0, 7);
-        if (currentMonth > leftMonth) return false;
+        if (currentMonth >= leftMonth) return false;
+        return true;
       }
 
       if (h.isActive === false) return false;
 
       return true;
     });
-  }, [helpers, attendance, currentMonth]);
+  }, [helpers, attendance, adjustments, currentMonth]);
 
   const activeHelperId =
     (monthHelpers.some((h) => h.id === selectedHelperId) ? selectedHelperId : '') ||
