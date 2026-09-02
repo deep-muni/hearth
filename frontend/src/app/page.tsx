@@ -74,10 +74,6 @@ export default function HomePage() {
     storageService.removeAttendance(helperId, date);
   };
 
-  const handleClearMonth = (helperId: string, month: string) => {
-    storageService.clearMonthAttendance(helperId, month);
-  };
-
   const handleUpdateAdjustment = (adj: MonthlyAdjustment) => {
     storageService.saveAdjustment(adj);
   };
@@ -145,7 +141,6 @@ export default function HomePage() {
               attendance={attendance}
               onSetAttendance={handleSetAttendance}
               onRemoveAttendance={handleRemoveAttendance}
-              onClearMonth={handleClearMonth}
               salaryCalculation={selectedHelperCalc}
             />
           )}

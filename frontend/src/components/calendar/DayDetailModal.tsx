@@ -9,24 +9,31 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { AttendanceRecord, AttendanceStatus, HouseHelp } from '@/types';
-import { X, Trash2 } from 'lucide-react';
+import {
+  Check,
+  X as XIcon,
+  Minus,
+  Gift,
+  Coffee,
+  Trash2,
+} from 'lucide-react';
 
 interface DayDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   helper: HouseHelp;
-  dateStr: string; // YYYY-MM-DD
+  dateStr: string;
   currentRecord?: AttendanceRecord;
   onSave: (status: AttendanceStatus, note?: string) => void;
   onRemove: () => void;
 }
 
-const STATUS_LIST: { status: AttendanceStatus; label: string; emoji: string; bg: string; color: string; border: string }[] = [
-  { status: 'PRESENT', label: 'Present', emoji: '✅', bg: '#ecfdf5', color: '#065f46', border: '#a7f3d0' },
-  { status: 'FULL_LEAVE', label: 'Full Leave', emoji: '🚫', bg: '#fff1f2', color: '#9f1239', border: '#fecdd3' },
-  { status: 'HALF_LEAVE', label: 'Half Day', emoji: '🌓', bg: '#fffbeb', color: '#92400e', border: '#fde68a' },
-  { status: 'PAID_LEAVE', label: 'Paid Leave', emoji: '🎁', bg: '#f5f3ff', color: '#5b21b6', border: '#ddd6fe' },
-  { status: 'WEEKLY_OFF', label: 'Weekly Off', emoji: '☕', bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' },
+const STATUS_ITEMS = [
+  { status: 'PRESENT' as const, label: 'Present', icon: Check, color: '#10b981' },
+  { status: 'FULL_LEAVE' as const, label: 'Full Day Leave', icon: XIcon, color: '#ef4444' },
+  { status: 'HALF_LEAVE' as const, label: 'Half Day Leave', icon: Minus, color: '#f59e0b' },
+  { status: 'PAID_LEAVE' as const, label: 'Paid Leave', icon: Gift, color: '#8b5cf6' },
+  { status: 'WEEKLY_OFF' as const, label: 'Weekly Off', icon: Coffee, color: '#94a3b8' },
 ];
 
 export const DayDetailModal: React.FC<DayDetailModalProps> = ({
@@ -64,8 +71,8 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
     <Box
       position="fixed"
       inset={0}
-      bg="rgba(15, 23, 42, 0.45)"
-      backdropFilter="blur(3px)"
+      bg="rgba(15, 23, 42, 0.4)"
+      backdropFilter="blur(4px)"
       display="flex"
       alignItems={{ base: 'flex-end', sm: 'center' }}
       justifyContent="center"
@@ -74,72 +81,64 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
     >
       <Box
         bg="#ffffff"
-        borderRadius={{ base: '28px 28px 0 0', sm: '24px' }}
-        maxW="400px"
+        borderRadius={{ base: '24px 24px 0 0', sm: '20px' }}
+        maxW="360px"
         w="100%"
-        p={5}
-        boxShadow="0 25px 50px -12px rgba(0,0,0,0.2)"
-        border="1px solid #fed7e2"
+        p={4}
+        boxShadow="0 20px 40px rgba(0,0,0,0.12)"
+        border="1px solid #e2e8f0"
       >
         {/* Header */}
         <Flex justify="space-between" align="center" mb={3}>
-          <HStack gap={2}>
-            <Text fontSize="20px">{helper.avatarEmoji}</Text>
-            <Box>
-              <Text fontSize="sm" fontWeight="800" color="#1e293b">
-                {helper.name}
-              </Text>
-              <Text fontSize="xs" color="#64748b">
-                {formattedDate}
-              </Text>
-            </Box>
-          </HStack>
+          <Box>
+            <Text fontSize="13px" fontWeight="700" color="#0f172a">
+              {helper.name}
+            </Text>
+            <Text fontSize="11px" color="#64748b">
+              {formattedDate}
+            </Text>
+          </Box>
 
           <button
             onClick={onClose}
             style={{
-              background: '#f8fafc',
+              background: 'transparent',
               border: 'none',
-              borderRadius: '9999px',
-              padding: '6px',
               cursor: 'pointer',
-              color: '#64748b',
+              color: '#94a3b8',
+              padding: '4px',
             }}
           >
-            <X size={16} />
+            <XIcon size={16} />
           </button>
         </Flex>
 
-        {/* Status Selection Buttons */}
-        <VStack gap={2} align="stretch" mb={4}>
-          {STATUS_LIST.map((item) => {
-            const isSelected = selectedStatus === item.status;
+        {/* Status List */}
+        <VStack gap={1.5} align="stretch" mb={3}>
+          {STATUS_ITEMS.map(({ status, label, icon: Icon, color }) => {
+            const isSelected = selectedStatus === status;
             return (
               <Box
-                key={item.status}
-                onClick={() => setSelectedStatus(item.status)}
+                key={status}
+                onClick={() => setSelectedStatus(status)}
                 p={2.5}
-                borderRadius="xl"
-                border="1.5px solid"
-                borderColor={isSelected ? item.color : '#f1f5f9'}
-                bg={isSelected ? item.bg : '#ffffff'}
+                borderRadius="lg"
+                bg={isSelected ? '#f8fafc' : '#ffffff'}
+                border="1px solid"
+                borderColor={isSelected ? '#0f172a' : '#f1f5f9'}
                 cursor="pointer"
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
               >
                 <HStack gap={2.5}>
-                  <Text fontSize="16px">{item.emoji}</Text>
-                  <Text
-                    fontSize="13px"
-                    fontWeight={isSelected ? '800' : '500'}
-                    color={isSelected ? item.color : '#334155'}
-                  >
-                    {item.label}
+                  <Icon size={14} color={color} strokeWidth={2.5} />
+                  <Text fontSize="12px" fontWeight={isSelected ? '600' : '400'} color="#0f172a">
+                    {label}
                   </Text>
                 </HStack>
                 {isSelected && (
-                  <Box w="6px" h="6px" borderRadius="full" bg={item.color} />
+                  <Box w="5px" h="5px" borderRadius="full" bg="#0f172a" />
                 )}
               </Box>
             );
@@ -147,22 +146,21 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
         </VStack>
 
         {/* Note input */}
-        <Box mb={4}>
-          <input
-            type="text"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Add note (optional)..."
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              borderRadius: '10px',
-              border: '1px solid #e2e8f0',
-              fontSize: '12px',
-              outline: 'none',
-            }}
-          />
-        </Box>
+        <input
+          type="text"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Note / reason (optional)"
+          style={{
+            width: '100%',
+            padding: '7px 10px',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            fontSize: '11px',
+            outline: 'none',
+            marginBottom: '12px',
+          }}
+        />
 
         {/* Actions */}
         <Flex justify="space-between" align="center">
@@ -172,32 +170,32 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
+                gap: '3px',
                 background: 'transparent',
                 border: 'none',
-                color: '#e11d48',
-                fontSize: '12px',
-                fontWeight: '600',
+                color: '#ef4444',
+                fontSize: '11px',
+                fontWeight: '500',
                 cursor: 'pointer',
               }}
             >
-              <Trash2 size={13} />
+              <Trash2 size={12} />
               <span>Reset</span>
             </button>
           ) : (
             <Box />
           )}
 
-          <HStack gap={2}>
+          <HStack gap={1.5}>
             <button
               onClick={onClose}
               style={{
-                padding: '7px 14px',
-                borderRadius: '10px',
-                border: '1px solid #cbd5e1',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: '1px solid #e2e8f0',
                 background: '#ffffff',
-                fontSize: '12px',
-                fontWeight: '600',
+                fontSize: '11px',
+                fontWeight: '500',
                 cursor: 'pointer',
               }}
             >
@@ -206,17 +204,17 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             <button
               onClick={handleSave}
               style={{
-                padding: '7px 18px',
-                borderRadius: '10px',
+                padding: '6px 14px',
+                borderRadius: '8px',
                 border: 'none',
-                background: '#e11d48',
+                background: '#0f172a',
                 color: '#ffffff',
-                fontSize: '12px',
-                fontWeight: '700',
+                fontSize: '11px',
+                fontWeight: '600',
                 cursor: 'pointer',
               }}
             >
-              Done
+              Save
             </button>
           </HStack>
         </Flex>

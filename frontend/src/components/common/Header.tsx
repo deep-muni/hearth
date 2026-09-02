@@ -10,9 +10,10 @@ import {
 import {
   ChevronLeft,
   ChevronRight,
-  Calendar as CalendarIcon,
-  Wallet,
+  Calendar,
+  Receipt,
   Users,
+  Sparkles,
 } from 'lucide-react';
 import {
   formatMonthDisplay,
@@ -38,14 +39,14 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <>
-      {/* Top Bar */}
+      {/* Sleek Top Navigation Bar */}
       <Box
         as="header"
-        bg="rgba(255, 255, 255, 0.95)"
-        backdropFilter="blur(12px)"
+        bg="rgba(255, 255, 255, 0.9)"
+        backdropFilter="blur(16px)"
         borderBottom="1px solid #f1f5f9"
-        py={2.5}
-        px={{ base: 3, md: 6 }}
+        py={3}
+        px={{ base: 4, md: 8 }}
         position="sticky"
         top={0}
         zIndex={40}
@@ -53,49 +54,40 @@ export const Header: React.FC<HeaderProps> = ({
         <Flex
           align="center"
           justify="space-between"
-          maxW="900px"
+          maxW="540px"
           mx="auto"
-          gap={2}
         >
-          {/* Brand */}
+          {/* Logo */}
           <HStack gap={1.5}>
-            <Text fontSize="18px">🌸</Text>
-            <Text fontSize="md" fontWeight="800" color="#e11d48" letterSpacing="-0.3px">
+            <Sparkles size={16} color="#f43f5e" />
+            <Text fontSize="sm" fontWeight="700" color="#0f172a" letterSpacing="-0.3px">
               HouseHelp
             </Text>
           </HStack>
 
-          {/* Compact Month Switcher */}
-          <HStack
-            bg="#fff1f2"
-            border="1px solid #fecdd3"
-            borderRadius="full"
-            px={1}
-            py={0.5}
-            gap={0.5}
-          >
+          {/* Minimal Month Switcher */}
+          <HStack gap={1} bg="#f8fafc" px={1.5} py={1} borderRadius="full" border="1px solid #e2e8f0">
             <button
               onClick={() => onMonthChange(getPreviousMonth(currentMonth))}
-              aria-label="Previous month"
               style={{
                 background: 'transparent',
                 border: 'none',
-                padding: '5px 7px',
+                padding: '3px 6px',
                 cursor: 'pointer',
-                color: '#e11d48',
+                color: '#64748b',
                 display: 'flex',
                 alignItems: 'center',
-                borderRadius: '9999px',
               }}
+              aria-label="Previous month"
             >
-              <ChevronLeft size={16} strokeWidth={2.5} />
+              <ChevronLeft size={15} />
             </button>
 
             <Text
-              fontSize="xs"
-              fontWeight="700"
-              color="#9f1239"
-              minW="105px"
+              fontSize="12px"
+              fontWeight="600"
+              color="#0f172a"
+              minW="95px"
               textAlign="center"
               userSelect="none"
             >
@@ -104,168 +96,84 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => onMonthChange(getNextMonth(currentMonth))}
-              aria-label="Next month"
               style={{
                 background: 'transparent',
                 border: 'none',
-                padding: '5px 7px',
+                padding: '3px 6px',
                 cursor: 'pointer',
-                color: '#e11d48',
+                color: '#64748b',
                 display: 'flex',
                 alignItems: 'center',
-                borderRadius: '9999px',
               }}
+              aria-label="Next month"
             >
-              <ChevronRight size={16} strokeWidth={2.5} />
+              <ChevronRight size={15} />
             </button>
           </HStack>
 
-          {/* Total Budget Pill & Desktop Tabs */}
-          <HStack gap={2}>
-            <Box
-              bg="#ecfdf5"
-              border="1px solid #a7f3d0"
-              borderRadius="full"
-              px={2.5}
-              py={1}
-              fontSize="11px"
-              fontWeight="800"
-              color="#065f46"
-            >
-              {formatCurrency(totalMonthlyBudget)}
-            </Box>
-
-            {/* Desktop-only Tab Switcher */}
-            <HStack display={{ base: 'none', md: 'flex' }} gap={1} bg="#f8fafc" p={1} borderRadius="full" border="1px solid #e2e8f0">
-              <button
-                onClick={() => onTabChange('calendar')}
-                style={{
-                  padding: '5px 12px',
-                  borderRadius: '9999px',
-                  border: 'none',
-                  fontSize: '12px',
-                  fontWeight: activeTab === 'calendar' ? 700 : 500,
-                  background: activeTab === 'calendar' ? '#ffffff' : 'transparent',
-                  color: activeTab === 'calendar' ? '#e11d48' : '#64748b',
-                  boxShadow: activeTab === 'calendar' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Calendar
-              </button>
-              <button
-                onClick={() => onTabChange('summary')}
-                style={{
-                  padding: '5px 12px',
-                  borderRadius: '9999px',
-                  border: 'none',
-                  fontSize: '12px',
-                  fontWeight: activeTab === 'summary' ? 700 : 500,
-                  background: activeTab === 'summary' ? '#ffffff' : 'transparent',
-                  color: activeTab === 'summary' ? '#e11d48' : '#64748b',
-                  boxShadow: activeTab === 'summary' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Summary
-              </button>
-              <button
-                onClick={() => onTabChange('config')}
-                style={{
-                  padding: '5px 12px',
-                  borderRadius: '9999px',
-                  border: 'none',
-                  fontSize: '12px',
-                  fontWeight: activeTab === 'config' ? 700 : 500,
-                  background: activeTab === 'config' ? '#ffffff' : 'transparent',
-                  color: activeTab === 'config' ? '#e11d48' : '#64748b',
-                  boxShadow: activeTab === 'config' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Staff
-              </button>
-            </HStack>
-          </HStack>
+          {/* Budget Text */}
+          <Text fontSize="12px" fontWeight="700" color="#0f172a">
+            {formatCurrency(totalMonthlyBudget)}
+          </Text>
         </Flex>
       </Box>
 
-      {/* Mobile Bottom Navigation Bar (iPhone 14 / iPhone 16 optimized) */}
+      {/* Floating Minimal Bottom Navigation (Mobile & Desktop) */}
       <Box
-        display={{ base: 'block', md: 'none' }}
         position="fixed"
-        bottom={0}
+        bottom={{ base: 0, md: 4 }}
         left={0}
         right={0}
-        bg="rgba(255, 255, 255, 0.96)"
-        backdropFilter="blur(16px)"
-        borderTop="1px solid #f1f5f9"
         zIndex={50}
-        px={3}
-        pt={1.5}
-        pb="calc(env(safe-area-inset-bottom, 8px) + 6px)"
+        pointerEvents="none"
       >
-        <Flex justify="space-around" align="center" maxW="400px" mx="auto">
-          <button
-            onClick={() => onTabChange('calendar')}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2px',
-              border: 'none',
-              background: 'transparent',
-              color: activeTab === 'calendar' ? '#e11d48' : '#94a3b8',
-              cursor: 'pointer',
-              padding: '4px 14px',
-            }}
-          >
-            <CalendarIcon size={20} strokeWidth={activeTab === 'calendar' ? 2.5 : 1.8} />
-            <Text fontSize="10px" fontWeight={activeTab === 'calendar' ? '800' : '600'}>
-              Calendar
-            </Text>
-          </button>
-
-          <button
-            onClick={() => onTabChange('summary')}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2px',
-              border: 'none',
-              background: 'transparent',
-              color: activeTab === 'summary' ? '#e11d48' : '#94a3b8',
-              cursor: 'pointer',
-              padding: '4px 14px',
-            }}
-          >
-            <Wallet size={20} strokeWidth={activeTab === 'summary' ? 2.5 : 1.8} />
-            <Text fontSize="10px" fontWeight={activeTab === 'summary' ? '800' : '600'}>
-              Summary
-            </Text>
-          </button>
-
-          <button
-            onClick={() => onTabChange('config')}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2px',
-              border: 'none',
-              background: 'transparent',
-              color: activeTab === 'config' ? '#e11d48' : '#94a3b8',
-              cursor: 'pointer',
-              padding: '4px 14px',
-            }}
-          >
-            <Users size={20} strokeWidth={activeTab === 'config' ? 2.5 : 1.8} />
-            <Text fontSize="10px" fontWeight={activeTab === 'config' ? '800' : '600'}>
-              Staff
-            </Text>
-          </button>
-        </Flex>
+        <Box
+          maxW="340px"
+          mx="auto"
+          bg="rgba(255, 255, 255, 0.95)"
+          backdropFilter="blur(20px)"
+          borderRadius={{ base: '0', md: 'full' }}
+          borderTop={{ base: '1px solid #f1f5f9', md: 'none' }}
+          border={{ base: 'none', md: '1px solid #e2e8f0' }}
+          boxShadow="0 4px 20px rgba(0, 0, 0, 0.06)"
+          px={3}
+          py={2}
+          pb={{ base: 'calc(env(safe-area-inset-bottom, 8px) + 8px)', md: 2 }}
+          pointerEvents="auto"
+        >
+          <Flex justify="space-around" align="center">
+            {[
+              { tab: 'calendar' as const, label: 'Calendar', icon: Calendar },
+              { tab: 'summary' as const, label: 'Summary', icon: Receipt },
+              { tab: 'config' as const, label: 'Staff', icon: Users },
+            ].map(({ tab, label, icon: Icon }) => {
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => onTabChange(tab)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '3px',
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    color: isActive ? '#f43f5e' : '#94a3b8',
+                    padding: '4px 18px',
+                    transition: 'color 0.15s ease',
+                  }}
+                >
+                  <Icon size={18} strokeWidth={isActive ? 2.3 : 1.8} />
+                  <Text fontSize="10px" fontWeight={isActive ? '700' : '500'}>
+                    {label}
+                  </Text>
+                </button>
+              );
+            })}
+          </Flex>
+        </Box>
       </Box>
     </>
   );

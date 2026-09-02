@@ -16,6 +16,13 @@ import {
   formatCurrency,
 } from '@/utils/dateUtils';
 import { DayDetailModal } from './DayDetailModal';
+import {
+  Check,
+  X as XIcon,
+  Minus,
+  Gift,
+  Coffee,
+} from 'lucide-react';
 
 interface CalendarViewProps {
   helpers: HouseHelp[];
@@ -25,7 +32,6 @@ interface CalendarViewProps {
   attendance: AttendanceRecord[];
   onSetAttendance: (helperId: string, date: string, status: AttendanceStatus, note?: string) => void;
   onRemoveAttendance: (helperId: string, date: string) => void;
-  onClearMonth: (helperId: string, month: string) => void;
   salaryCalculation?: HelperSalaryCalculation;
 }
 
@@ -37,7 +43,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   attendance,
   onSetAttendance,
   onRemoveAttendance,
-  onClearMonth,
   salaryCalculation,
 }) => {
   const selectedHelper = helpers.find((h) => h.id === selectedHelperId) || helpers[0];
@@ -45,9 +50,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   if (!selectedHelper) {
     return (
-      <Box p={6} textAlign="center">
-        <Text fontSize="sm" color="#64748b">
-          No house staff added yet. Head to the Staff tab to add one.
+      <Box p={8} textAlign="center">
+        <Text fontSize="13px" color="#94a3b8">
+          No staff members found. Add one in the Staff tab.
         </Text>
       </Box>
     );
@@ -55,7 +60,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   const calendarDays = buildCalendarDays(currentMonth);
 
-  // Map attendance records
   const recordsByDate = new Map<string, AttendanceRecord>();
   attendance
     .filter((a) => a.helperId === selectedHelper.id && a.date.startsWith(currentMonth))
@@ -66,8 +70,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     setModalDate(dayInfo.dateStr);
   };
 
-  const handleQuickMarkAllPresent = () => {
-    if (confirm(`Fill all working days in ${currentMonth} as Present for ${selectedHelper.name}?`)) {
+  const handleFillPresent = () => {
+    if (confirm(`Fill remaining working days in ${currentMonth} as Present for ${selectedHelper.name}?`)) {
       calendarDays
         .filter((d) => d.isCurrentMonth)
         .forEach((d) => {
@@ -84,19 +88,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const currentRecord = modalDate ? recordsByDate.get(modalDate) : undefined;
 
   return (
-    <VStack gap={4} align="stretch" maxW="580px" mx="auto" w="100%">
-      {/* 1. Minimal Staff Pill Selector */}
-      <Flex gap={2} overflowX="auto" pb={1} className="no-scrollbar">
+    <VStack gap={3.5} align="stretch" maxW="440px" mx="auto" w="100%">
+      {/* 1. Minimal Staff Selector */}
+      <Flex gap={1.5} overflowX="auto" pb={0.5} className="no-scrollbar">
         {helpers.map((h) => {
           const isSelected = h.id === selectedHelper.id;
-          const helperRecords = attendance.filter(
-            (a) => a.helperId === h.id && a.date.startsWith(currentMonth)
-          );
-          const leaves = helperRecords.reduce((acc, curr) => {
-            if (curr.status === 'FULL_LEAVE') return acc + 1;
-            if (curr.status === 'HALF_LEAVE') return acc + 0.5;
-            return acc;
-          }, 0);
+          const leaves = attendance
+            .filter((a) => a.helperId === h.id && a.date.startsWith(currentMonth))
+            .reduce((acc, curr) => {
+              if (curr.status === 'FULL_LEAVE') return acc + 1;
+              if (curr.status === 'HALF_LEAVE') return acc + 0.5;
+              return acc;
+            }, 0);
 
           return (
             <button
@@ -105,18 +108,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
+                gap: '5px',
+                padding: '6px 12px',
                 borderRadius: '9999px',
-                border: '1.5px solid',
-                borderColor: isSelected ? '#f43f5e' : '#e2e8f0',
-                background: isSelected ? '#fff1f2' : '#ffffff',
-                color: isSelected ? '#9f1239' : '#334155',
-                fontSize: '13px',
-                fontWeight: isSelected ? 700 : 500,
+                border: '1px solid',
+                borderColor: isSelected ? '#0f172a' : '#e2e8f0',
+                background: isSelected ? '#0f172a' : '#ffffff',
+                color: isSelected ? '#ffffff' : '#475569',
+                fontSize: '12px',
+                fontWeight: isSelected ? 600 : 500,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-                transition: 'all 0.15s ease',
+                transition: 'all 0.12s ease',
               }}
             >
               <span>{h.avatarEmoji}</span>
@@ -125,14 +128,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <span
                   style={{
                     fontSize: '10px',
-                    padding: '1px 5px',
+                    padding: '0 5px',
                     borderRadius: '9999px',
-                    background: '#fee2e2',
-                    color: '#991b1b',
-                    fontWeight: 700,
+                    background: isSelected ? 'rgba(255,255,255,0.2)' : '#fee2e2',
+                    color: isSelected ? '#ffffff' : '#dc2626',
+                    fontWeight: 600,
                   }}
                 >
-                  {leaves} off
+                  {leaves}
                 </span>
               )}
             </button>
@@ -140,148 +143,114 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         })}
       </Flex>
 
-      {/* 2. Compact Helper Info Bar */}
+      {/* 2. Staff Overview & Quick Action */}
       <Flex
         bg="#ffffff"
-        borderRadius="2xl"
+        borderRadius="xl"
         px={3.5}
-        py={2.5}
+        py={2}
         border="1px solid #f1f5f9"
         justify="space-between"
         align="center"
         fontSize="12px"
-        boxShadow="0 1px 3px rgba(0,0,0,0.03)"
       >
         <Box>
-          <Text fontWeight="800" color="#1e293b">
-            {selectedHelper.name} <span style={{ color: '#64748b', fontWeight: 500 }}>({selectedHelper.role})</span>
+          <Text fontWeight="700" color="#0f172a">
+            {selectedHelper.name} <span style={{ color: '#94a3b8', fontWeight: 400 }}>• {selectedHelper.role}</span>
           </Text>
           <Text fontSize="11px" color="#64748b">
             {selectedHelper.salaryType === 'FIXED_MONTHLY' && `${formatCurrency(selectedHelper.baseSalary)}/mo • ${selectedHelper.paidLeavesAllowance} paid leaves`}
-            {selectedHelper.salaryType === 'DAILY_WAGE' && `${formatCurrency(selectedHelper.baseSalary)}/day worked`}
-            {selectedHelper.salaryType === 'STRICT_FLAT' && `${formatCurrency(selectedHelper.baseSalary)} flat pay`}
+            {selectedHelper.salaryType === 'DAILY_WAGE' && `${formatCurrency(selectedHelper.baseSalary)}/day`}
+            {selectedHelper.salaryType === 'STRICT_FLAT' && `${formatCurrency(selectedHelper.baseSalary)} flat`}
           </Text>
         </Box>
 
         <HStack gap={2}>
           {salaryCalculation && (
-            <Text fontWeight="800" color="#e11d48">
+            <Text fontWeight="800" color="#0f172a">
               {formatCurrency(salaryCalculation.netPayable)}
             </Text>
           )}
 
           <button
-            onClick={handleQuickMarkAllPresent}
-            title="Mark all as present"
-            style={{
-              padding: '4px 9px',
-              borderRadius: '8px',
-              border: '1px solid #bbf7d0',
-              background: '#f0fdf4',
-              color: '#166534',
-              fontSize: '11px',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            Fill Present
-          </button>
-
-          <button
-            onClick={() => {
-              if (confirm(`Clear all attendance for ${selectedHelper.name} in ${currentMonth}?`)) {
-                onClearMonth(selectedHelper.id, currentMonth);
-              }
-            }}
-            title="Clear month"
+            onClick={handleFillPresent}
             style={{
               padding: '4px 8px',
-              borderRadius: '8px',
-              border: '1px solid #fed7aa',
-              background: '#fff7ed',
-              color: '#9a3412',
+              borderRadius: '6px',
+              border: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              color: '#0f172a',
               fontSize: '11px',
               fontWeight: 600,
               cursor: 'pointer',
             }}
           >
-            Clear
+            Fill
           </button>
         </HStack>
       </Flex>
 
-      {/* 3. Mobile-Optimized 7-Column Calendar Card */}
+      {/* 3. Clean Minimal Calendar Grid */}
       <Box
         bg="#ffffff"
         borderRadius="2xl"
-        p={{ base: 2.5, md: 4 }}
-        border="1px solid #fecdd3"
-        boxShadow="0 2px 10px rgba(255, 107, 139, 0.08)"
+        p={3}
+        border="1px solid #e2e8f0"
+        boxShadow="0 1px 3px rgba(0, 0, 0, 0.02)"
       >
-        {/* Day Headers */}
+        {/* Day of Week Headers */}
         <SimpleGrid columns={7} gap={1} mb={2}>
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-            <Box key={i} textAlign="center" py={1}>
-              <Text
-                fontSize="11px"
-                fontWeight="800"
-                color={i === 0 ? '#e11d48' : '#64748b'}
-              >
-                {d}
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+            <Box key={idx} textAlign="center" py={0.5}>
+              <Text fontSize="11px" fontWeight="600" color={idx === 0 ? '#f43f5e' : '#94a3b8'}>
+                {day}
               </Text>
             </Box>
           ))}
         </SimpleGrid>
 
-        {/* Days Grid */}
-        <SimpleGrid columns={7} gap={{ base: 1, sm: 1.5 }}>
+        {/* Days Matrix */}
+        <SimpleGrid columns={7} gap={1}>
           {calendarDays.map((dayInfo, idx) => {
             const isWeeklyOffDay =
               selectedHelper.weeklyOffDay >= 0 && dayInfo.dayOfWeek === selectedHelper.weeklyOffDay;
             const record = recordsByDate.get(dayInfo.dateStr);
 
-            let effectiveStatus: AttendanceStatus = 'PRESENT';
+            let status: AttendanceStatus = 'PRESENT';
             if (record) {
-              effectiveStatus = record.status;
+              status = record.status;
             } else if (isWeeklyOffDay) {
-              effectiveStatus = 'WEEKLY_OFF';
+              status = 'WEEKLY_OFF';
             }
 
-            // Minimal, clean badge styling
+            // Minimal styling
             let cellBg = '#ffffff';
-            let cellBorder = '#f1f5f9';
-            let dotColor = '#10b981'; // green for present
+            let iconElement = null;
 
             if (!dayInfo.isCurrentMonth) {
               cellBg = '#fafafa';
-              cellBorder = '#f8fafc';
             } else {
-              switch (effectiveStatus) {
+              switch (status) {
                 case 'FULL_LEAVE':
-                  cellBg = '#fff1f2';
-                  cellBorder = '#fecdd3';
-                  dotColor = '#e11d48';
+                  cellBg = '#fef2f2';
+                  iconElement = <XIcon size={11} strokeWidth={2.5} color="#ef4444" />;
                   break;
                 case 'HALF_LEAVE':
                   cellBg = '#fffbeb';
-                  cellBorder = '#fde68a';
-                  dotColor = '#f59e0b';
+                  iconElement = <Minus size={11} strokeWidth={2.5} color="#f59e0b" />;
                   break;
                 case 'PAID_LEAVE':
                   cellBg = '#f5f3ff';
-                  cellBorder = '#ddd6fe';
-                  dotColor = '#8b5cf6';
+                  iconElement = <Gift size={11} strokeWidth={2} color="#8b5cf6" />;
                   break;
                 case 'WEEKLY_OFF':
                   cellBg = '#f8fafc';
-                  cellBorder = '#e2e8f0';
-                  dotColor = '#94a3b8';
+                  iconElement = <Coffee size={11} strokeWidth={2} color="#94a3b8" />;
                   break;
                 case 'PRESENT':
                 default:
-                  cellBg = '#f0fdf4';
-                  cellBorder = '#dcfce7';
-                  dotColor = '#10b981';
+                  cellBg = '#f8fafc';
+                  iconElement = <Check size={11} strokeWidth={2.5} color="#10b981" />;
                   break;
               }
             }
@@ -290,84 +259,75 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               <Box
                 key={`${dayInfo.dateStr}-${idx}`}
                 onClick={() => handleCellClick(dayInfo)}
-                minH={{ base: '44px', sm: '52px' }}
+                h="46px"
                 p={1}
-                borderRadius="xl"
-                border="1.5px solid"
-                borderColor={dayInfo.isToday ? '#f43f5e' : cellBorder}
+                borderRadius="lg"
+                border="1px solid"
+                borderColor={dayInfo.isToday ? '#0f172a' : '#f1f5f9'}
                 bg={cellBg}
-                opacity={dayInfo.isCurrentMonth ? 1 : 0.3}
+                opacity={dayInfo.isCurrentMonth ? 1 : 0.25}
                 cursor={dayInfo.isCurrentMonth ? 'pointer' : 'default'}
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="space-between"
-                transition="transform 0.1s"
-                _active={{ transform: 'scale(0.95)' }}
+                transition="all 0.1s ease"
               >
-                {/* Day number */}
                 <Text
                   fontSize="12px"
-                  fontWeight={dayInfo.isToday ? '800' : '600'}
-                  color={dayInfo.isToday ? '#e11d48' : dayInfo.isCurrentMonth ? '#1e293b' : '#cbd5e1'}
+                  fontWeight={dayInfo.isToday ? '800' : '500'}
+                  color={dayInfo.isToday ? '#0f172a' : dayInfo.isCurrentMonth ? '#334155' : '#cbd5e1'}
                   lineHeight="1"
                   mt={0.5}
                 >
                   {dayInfo.dayNumber}
                 </Text>
 
-                {/* Minimal status indicator dot */}
                 {dayInfo.isCurrentMonth && (
-                  <Box
-                    w="7px"
-                    h="7px"
-                    borderRadius="full"
-                    bg={dotColor}
-                    mb={1}
-                    boxShadow={dayInfo.isToday ? '0 0 0 2px #ffe4e6' : 'none'}
-                  />
+                  <Box mb={0.5} display="flex" alignItems="center" justifyContent="center">
+                    {iconElement}
+                  </Box>
                 )}
               </Box>
             );
           })}
         </SimpleGrid>
 
-        {/* 4. Minimal Legend */}
+        {/* Minimal Legend Row */}
         <Flex
           mt={3}
-          pt={2.5}
+          pt={2}
           borderTop="1px solid #f1f5f9"
           justify="center"
           align="center"
           gap={3}
-          wrap="wrap"
           fontSize="11px"
           color="#64748b"
         >
           <HStack gap={1}>
-            <Box w="6px" h="6px" borderRadius="full" bg="#10b981" />
+            <Check size={11} color="#10b981" />
             <Text>Present</Text>
           </HStack>
           <HStack gap={1}>
-            <Box w="6px" h="6px" borderRadius="full" bg="#e11d48" />
+            <XIcon size={11} color="#ef4444" />
             <Text>Leave</Text>
           </HStack>
           <HStack gap={1}>
-            <Box w="6px" h="6px" borderRadius="full" bg="#f59e0b" />
+            <Minus size={11} color="#f59e0b" />
             <Text>Half</Text>
           </HStack>
           <HStack gap={1}>
-            <Box w="6px" h="6px" borderRadius="full" bg="#8b5cf6" />
+            <Gift size={11} color="#8b5cf6" />
             <Text>Paid</Text>
           </HStack>
           <HStack gap={1}>
-            <Box w="6px" h="6px" borderRadius="full" bg="#94a3b8" />
+            <Coffee size={11} color="#94a3b8" />
             <Text>Off</Text>
           </HStack>
         </Flex>
       </Box>
 
-      {/* Day Detail Modal */}
+      {/* Day Detail Sheet / Modal */}
       {modalDate && (
         <DayDetailModal
           key={modalDate}

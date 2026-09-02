@@ -1,21 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fdfbf7;
-  --foreground: #1e293b;
+  --background: #fafafa;
+  --foreground: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background-color: #fdfbf7;
-  color: #1e293b;
+  background-color: #fafafa;
+  color: #0f172a;
   min-height: 100vh;
   min-height: -webkit-fill-available;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Hide scrollbar for clean horizontal swipe lists */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

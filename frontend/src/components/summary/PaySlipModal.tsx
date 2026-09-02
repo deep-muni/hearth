@@ -31,8 +31,8 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
     <Box
       position="fixed"
       inset={0}
-      bg="rgba(15, 23, 42, 0.45)"
-      backdropFilter="blur(3px)"
+      bg="rgba(15, 23, 42, 0.4)"
+      backdropFilter="blur(4px)"
       display="flex"
       alignItems="center"
       justifyContent="center"
@@ -41,23 +41,23 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
     >
       <Box
         bg="#ffffff"
-        borderRadius="2xl"
-        maxW="380px"
+        borderRadius="20px"
+        maxW="340px"
         w="100%"
-        p={5}
-        boxShadow="0 20px 40px rgba(0,0,0,0.15)"
-        border="1px solid #fed7e2"
+        p={4}
+        boxShadow="0 20px 40px rgba(0,0,0,0.12)"
+        border="1px solid #e2e8f0"
       >
         {/* Header */}
         <Flex justify="space-between" align="center" mb={3}>
           <HStack gap={2}>
-            <Text fontSize="20px">{helper.avatarEmoji}</Text>
+            <Text fontSize="18px">{helper.avatarEmoji}</Text>
             <Box>
-              <Text fontSize="sm" fontWeight="800" color="#1e293b">
-                {helper.name} • Pay Slip
+              <Text fontSize="13px" fontWeight="700" color="#0f172a">
+                {helper.name}
               </Text>
-              <Text fontSize="11px" color="#64748b">
-                {monthName} ({helper.role})
+              <Text fontSize="10px" color="#64748b">
+                {monthName} • {helper.role}
               </Text>
             </Box>
           </HStack>
@@ -65,12 +65,11 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
           <button
             onClick={onClose}
             style={{
-              background: '#f8fafc',
+              background: 'transparent',
               border: 'none',
-              borderRadius: '9999px',
-              padding: '6px',
               cursor: 'pointer',
-              color: '#64748b',
+              color: '#94a3b8',
+              padding: '4px',
             }}
           >
             <X size={16} />
@@ -79,77 +78,72 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
 
         {/* Breakdown Box */}
         <VStack
-          gap={2}
+          gap={1.5}
           align="stretch"
-          p={3.5}
-          borderRadius="xl"
+          p={3}
+          borderRadius="lg"
           bg="#f8fafc"
           border="1px solid #f1f5f9"
-          fontSize="12px"
-          mb={4}
+          fontSize="11px"
+          mb={3}
         >
-          <Flex justify="space-between">
-            <Text color="#64748b">Working days present:</Text>
-            <Text fontWeight="700">{calculation.daysPresent} days</Text>
+          <Flex justify="space-between" color="#64748b">
+            <Text>Working Days Present:</Text>
+            <Text fontWeight="600" color="#0f172a">{calculation.daysPresent} days</Text>
           </Flex>
 
-          <Flex justify="space-between">
-            <Text color="#64748b">Leaves taken:</Text>
-            <Text fontWeight="700">
+          <Flex justify="space-between" color="#64748b">
+            <Text>Leaves Taken:</Text>
+            <Text fontWeight="600" color="#0f172a">
               {calculation.totalLeavesCount} ({calculation.deductibleLeavesCount} deducted)
             </Text>
           </Flex>
 
-          <Box borderTop="1px dashed #e2e8f0" my={1} />
+          <Box borderTop="1px dashed #e2e8f0" my={0.5} />
 
           <Flex justify="space-between">
             <Text color="#64748b">Base Salary:</Text>
-            <Text fontWeight="700">{formatCurrency(calculation.baseAmount)}</Text>
+            <Text fontWeight="600" color="#0f172a">{formatCurrency(calculation.baseAmount)}</Text>
           </Flex>
 
           {calculation.deductions > 0 && (
-            <Flex justify="space-between" color="#e11d48">
-              <Text>Leave Deduction:</Text>
-              <Text fontWeight="700">-{formatCurrency(calculation.deductions)}</Text>
+            <Flex justify="space-between" color="#ef4444">
+              <Text>Leaves Deduction:</Text>
+              <Text fontWeight="600">-{formatCurrency(calculation.deductions)}</Text>
             </Flex>
           )}
 
           {calculation.bonus > 0 && (
-            <Flex justify="space-between" color="#059669">
+            <Flex justify="space-between" color="#10b981">
               <Text>Bonus:</Text>
-              <Text fontWeight="700">+{formatCurrency(calculation.bonus)}</Text>
+              <Text fontWeight="600">+{formatCurrency(calculation.bonus)}</Text>
             </Flex>
           )}
 
           {calculation.advanceDeduction > 0 && (
-            <Flex justify="space-between" color="#d97706">
+            <Flex justify="space-between" color="#f59e0b">
               <Text>Advance Deduction:</Text>
-              <Text fontWeight="700">-{formatCurrency(calculation.advanceDeduction)}</Text>
+              <Text fontWeight="600">-{formatCurrency(calculation.advanceDeduction)}</Text>
             </Flex>
           )}
 
-          <Box borderTop="1.5px solid #cbd5e1" my={1} />
+          <Box borderTop="1px solid #cbd5e1" my={0.5} />
 
           <Flex justify="space-between" align="center">
-            <Text fontWeight="800" color="#0f172a">
+            <Text fontWeight="700" color="#0f172a">
               Net Payable:
             </Text>
-            <Text fontSize="md" fontWeight="900" color="#e11d48">
+            <Text fontSize="sm" fontWeight="800" color="#0f172a">
               {formatCurrency(calculation.netPayable)}
             </Text>
           </Flex>
 
-          <Box pt={1} textAlign="center">
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                color: adjustment.isPaid ? '#047857' : '#b45309',
-              }}
-            >
-              {adjustment.isPaid ? `Paid via ${adjustment.paymentMethod || 'Cash'} ✅` : 'Pending Payout ⏳'}
-            </span>
-          </Box>
+          <Flex justify="space-between" align="center" fontSize="11px">
+            <Text color="#64748b">Status:</Text>
+            <Text fontWeight="600" color={adjustment.isPaid ? '#10b981' : '#f59e0b'}>
+              {adjustment.isPaid ? `Paid (${adjustment.paymentMethod || 'Cash'})` : 'Pending'}
+            </Text>
+          </Flex>
         </VStack>
 
         {/* Footer */}
@@ -160,33 +154,34 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              border: '1px solid #cbd5e1',
+              padding: '5px 10px',
+              borderRadius: '6px',
+              border: '1px solid #e2e8f0',
               background: '#ffffff',
               fontSize: '11px',
-              fontWeight: '600',
+              fontWeight: '500',
               cursor: 'pointer',
+              color: '#64748b',
             }}
           >
-            <Printer size={13} />
+            <Printer size={12} />
             <span>Print</span>
           </button>
 
           <button
             onClick={onClose}
             style={{
-              padding: '6px 16px',
-              borderRadius: '8px',
+              padding: '5px 14px',
+              borderRadius: '6px',
               border: 'none',
-              background: '#e11d48',
+              background: '#0f172a',
               color: '#ffffff',
-              fontSize: '12px',
-              fontWeight: '700',
+              fontSize: '11px',
+              fontWeight: '600',
               cursor: 'pointer',
             }}
           >
-            Close
+            Done
           </button>
         </Flex>
       </Box>

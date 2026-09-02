@@ -30,7 +30,7 @@ interface ConfigViewProps {
   onImportBackup: (json: string) => boolean;
 }
 
-const EMOJI_OPTIONS = ['👩‍🍳', '🧹', '🚗', '👶', '🌿', '🧺', '🛡️', '🌸', '🧑‍🍳', '🐕'];
+const EMOJI_OPTIONS = ['👩‍🍳', '🧹', '🚗', '👶', '🌿', '🧺', '🛡️', '🌸', '🐕'];
 
 const PRESET_ROLES = [
   { role: 'Cook', emoji: '👩‍🍳' },
@@ -39,7 +39,7 @@ const PRESET_ROLES = [
   { role: 'Nanny', emoji: '👶' },
 ];
 
-const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export const ConfigView: React.FC<ConfigViewProps> = ({
   helpers,
@@ -99,7 +99,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
     const helperToSave: HouseHelp = {
       id: editingHelper ? editingHelper.id : `helper_${Date.now()}`,
       name: formName.trim(),
-      role: formRole.trim() || 'House Staff',
+      role: formRole.trim() || 'Staff',
       avatarEmoji: formEmoji,
       colorTheme: 'pink',
       salaryType: formSalaryType,
@@ -128,15 +128,12 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
   };
 
   return (
-    <VStack gap={4} align="stretch" maxW="580px" mx="auto" w="100%">
+    <VStack gap={3} align="stretch" maxW="440px" mx="auto" w="100%">
       {/* 1. Header with Add Button */}
-      <Flex justify="space-between" align="center">
+      <Flex justify="space-between" align="center" px={1}>
         <Box>
-          <Text fontSize="md" fontWeight="800" color="#1e293b">
-            House Staff ({helpers.length})
-          </Text>
-          <Text fontSize="11px" color="#64748b">
-            Manage staff members and salary settings
+          <Text fontSize="14px" fontWeight="700" color="#0f172a">
+            Staff Members ({helpers.length})
           </Text>
         </Box>
 
@@ -145,50 +142,38 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
-            padding: '7px 14px',
+            gap: '4px',
+            padding: '5px 12px',
             borderRadius: '9999px',
             border: 'none',
-            background: '#e11d48',
+            background: '#0f172a',
             color: '#ffffff',
-            fontSize: '12px',
-            fontWeight: '700',
+            fontSize: '11px',
+            fontWeight: '600',
             cursor: 'pointer',
           }}
         >
-          <Plus size={14} strokeWidth={2.5} />
+          <Plus size={13} strokeWidth={2.5} />
           <span>Add Staff</span>
         </button>
       </Flex>
 
       {/* 2. Staff Cards */}
-      <VStack gap={2.5} align="stretch">
+      <VStack gap={2} align="stretch">
         {helpers.map((h) => (
           <Box
             key={h.id}
             bg="#ffffff"
-            borderRadius="2xl"
-            p={3.5}
-            border="1px solid #f1f5f9"
-            boxShadow="0 1px 3px rgba(0,0,0,0.03)"
+            borderRadius="xl"
+            p={3}
+            border="1px solid #e2e8f0"
+            boxShadow="0 1px 2px rgba(0, 0, 0, 0.02)"
           >
             <Flex justify="space-between" align="center">
-              <HStack gap={3}>
-                <Box
-                  w="40px"
-                  h="40px"
-                  borderRadius="xl"
-                  bg="#fff1f2"
-                  border="1px solid #fecdd3"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  fontSize="20px"
-                >
-                  {h.avatarEmoji}
-                </Box>
+              <HStack gap={2.5}>
+                <Text fontSize="20px">{h.avatarEmoji}</Text>
                 <Box>
-                  <Text fontSize="sm" fontWeight="800" color="#1e293b">
+                  <Text fontSize="13px" fontWeight="700" color="#0f172a">
                     {h.name}
                   </Text>
                   <Text fontSize="11px" color="#64748b">
@@ -196,7 +181,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                     {h.salaryType === 'DAILY_WAGE' ? '/day' : '/mo'}
                   </Text>
                   <Text fontSize="10px" color="#94a3b8">
-                    {h.paidLeavesAllowance} paid leaves • Off: {h.weeklyOffDay >= 0 ? WEEKDAY_NAMES[h.weeklyOffDay] : 'None'}
+                    {h.paidLeavesAllowance} free leaves • Off: {h.weeklyOffDay >= 0 ? WEEKDAY_NAMES[h.weeklyOffDay] : 'None'}
                   </Text>
                 </Box>
               </HStack>
@@ -206,15 +191,15 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                   onClick={() => openEditModal(h)}
                   title="Edit"
                   style={{
-                    padding: '6px',
-                    borderRadius: '8px',
+                    padding: '5px',
+                    borderRadius: '6px',
                     border: '1px solid #e2e8f0',
                     background: '#f8fafc',
                     cursor: 'pointer',
-                    color: '#475569',
+                    color: '#64748b',
                   }}
                 >
-                  <Edit2 size={13} />
+                  <Edit2 size={12} />
                 </button>
                 <button
                   onClick={() => {
@@ -224,15 +209,15 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                   }}
                   title="Delete"
                   style={{
-                    padding: '6px',
-                    borderRadius: '8px',
-                    border: '1px solid #fecdd3',
-                    background: '#fff1f2',
+                    padding: '5px',
+                    borderRadius: '6px',
+                    border: '1px solid #fee2e2',
+                    background: '#fef2f2',
                     cursor: 'pointer',
-                    color: '#e11d48',
+                    color: '#ef4444',
                   }}
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={12} />
                 </button>
               </HStack>
             </Flex>
@@ -240,27 +225,27 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         ))}
       </VStack>
 
-      {/* 3. Subtle Data Backup Footer */}
-      <Flex justify="center" gap={3} pt={2} pb={6} fontSize="11px" color="#64748b">
+      {/* 3. Minimal Backup / Reset Footer */}
+      <Flex justify="center" gap={3} pt={3} pb={6} fontSize="11px" color="#94a3b8">
         <button
           onClick={onExportBackup}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', gap: '3px' }}
         >
-          <Download size={12} /> Backup
+          <Download size={11} /> Backup
         </button>
         <span>•</span>
         <button
           onClick={() => setIsImportModalOpen(true)}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', gap: '3px' }}
         >
-          <Upload size={12} /> Restore
+          <Upload size={11} /> Restore
         </button>
         <span>•</span>
         <button
           onClick={onResetDemo}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#e11d48', display: 'flex', alignItems: 'center', gap: '4px' }}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', gap: '3px' }}
         >
-          <RotateCcw size={12} /> Reset Demo
+          <RotateCcw size={11} /> Reset Demo
         </button>
       </Flex>
 
@@ -269,41 +254,42 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         <Box
           position="fixed"
           inset={0}
-          bg="rgba(15, 23, 42, 0.5)"
-          backdropFilter="blur(3px)"
+          bg="rgba(15, 23, 42, 0.4)"
+          backdropFilter="blur(4px)"
           display="flex"
-          alignItems="center"
+          alignItems={{ base: 'flex-end', sm: 'center' }}
           justifyContent="center"
           zIndex={100}
-          p={3}
+          p={{ base: 0, sm: 4 }}
         >
           <Box
             bg="#ffffff"
-            borderRadius="2xl"
-            maxW="400px"
+            borderRadius={{ base: '24px 24px 0 0', sm: '20px' }}
+            maxW="360px"
             w="100%"
-            maxH="85vh"
+            maxH="88vh"
             overflowY="auto"
-            p={5}
-            boxShadow="0 20px 40px rgba(0,0,0,0.15)"
+            p={4}
+            boxShadow="0 20px 40px rgba(0,0,0,0.12)"
+            border="1px solid #e2e8f0"
           >
-            <Flex justify="space-between" align="center" mb={4}>
-              <Text fontSize="sm" fontWeight="800" color="#1e293b">
+            <Flex justify="space-between" align="center" mb={3}>
+              <Text fontSize="13px" fontWeight="700" color="#0f172a">
                 {editingHelper ? 'Edit Staff' : 'Add Staff'}
               </Text>
               <button
                 onClick={() => setIsModalOpen(false)}
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8' }}
               >
                 <X size={16} />
               </button>
             </Flex>
 
-            <VStack gap={3} align="stretch">
+            <VStack gap={2.5} align="stretch">
               {/* Name */}
               <Box>
-                <Text fontSize="11px" fontWeight="700" color="#475569" mb={1}>
-                  Name *
+                <Text fontSize="11px" fontWeight="600" color="#64748b" mb={0.5}>
+                  Name
                 </Text>
                 <input
                   type="text"
@@ -312,10 +298,10 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                   placeholder="e.g. Sunita"
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
-                    borderRadius: '10px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '13px',
+                    padding: '7px 9px',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '12px',
                     outline: 'none',
                   }}
                 />
@@ -323,10 +309,10 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 
               {/* Role */}
               <Box>
-                <Text fontSize="11px" fontWeight="700" color="#475569" mb={1}>
+                <Text fontSize="11px" fontWeight="600" color="#64748b" mb={0.5}>
                   Role
                 </Text>
-                <Flex gap={1} wrap="wrap" mb={1.5}>
+                <Flex gap={1} wrap="wrap" mb={1}>
                   {PRESET_ROLES.map((r) => (
                     <button
                       key={r.role}
@@ -336,13 +322,13 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                         setFormEmoji(r.emoji);
                       }}
                       style={{
-                        padding: '3px 8px',
+                        padding: '2px 7px',
                         borderRadius: '9999px',
                         border: '1px solid',
-                        borderColor: formRole === r.role ? '#e11d48' : '#e2e8f0',
-                        background: formRole === r.role ? '#fff1f2' : '#ffffff',
-                        color: formRole === r.role ? '#e11d48' : '#64748b',
-                        fontSize: '11px',
+                        borderColor: formRole === r.role ? '#0f172a' : '#e2e8f0',
+                        background: formRole === r.role ? '#0f172a' : '#ffffff',
+                        color: formRole === r.role ? '#ffffff' : '#64748b',
+                        fontSize: '10px',
                         cursor: 'pointer',
                       }}
                     >
@@ -357,10 +343,10 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                   placeholder="Custom role"
                   style={{
                     width: '100%',
-                    padding: '7px 10px',
-                    borderRadius: '10px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '12px',
+                    padding: '6px 9px',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '11px',
                     outline: 'none',
                   }}
                 />
@@ -368,24 +354,24 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 
               {/* Emoji */}
               <Box>
-                <Text fontSize="11px" fontWeight="700" color="#475569" mb={1}>
+                <Text fontSize="11px" fontWeight="600" color="#64748b" mb={0.5}>
                   Icon
                 </Text>
-                <Flex gap={1.5} wrap="wrap">
+                <Flex gap={1} wrap="wrap">
                   {EMOJI_OPTIONS.map((em) => (
                     <Box
                       key={em}
                       onClick={() => setFormEmoji(em)}
-                      w="32px"
-                      h="32px"
-                      borderRadius="lg"
-                      border="1.5px solid"
-                      borderColor={formEmoji === em ? '#e11d48' : '#e2e8f0'}
-                      bg={formEmoji === em ? '#fff1f2' : '#ffffff'}
+                      w="28px"
+                      h="28px"
+                      borderRadius="md"
+                      border="1px solid"
+                      borderColor={formEmoji === em ? '#0f172a' : '#f1f5f9'}
+                      bg={formEmoji === em ? '#f8fafc' : '#ffffff'}
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
-                      fontSize="16px"
+                      fontSize="15px"
                       cursor="pointer"
                     >
                       {em}
@@ -396,10 +382,10 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 
               {/* Salary Model */}
               <Box>
-                <Text fontSize="11px" fontWeight="700" color="#475569" mb={1}>
+                <Text fontSize="11px" fontWeight="600" color="#64748b" mb={0.5}>
                   Salary Type
                 </Text>
-                <SimpleGrid columns={3} gap={1.5}>
+                <SimpleGrid columns={3} gap={1}>
                   {[
                     { type: 'FIXED_MONTHLY', label: 'Monthly' },
                     { type: 'DAILY_WAGE', label: 'Daily' },
@@ -410,14 +396,14 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                       type="button"
                       onClick={() => setFormSalaryType(s.type as SalaryType)}
                       style={{
-                        padding: '6px',
-                        borderRadius: '8px',
-                        border: '1.5px solid',
-                        borderColor: formSalaryType === s.type ? '#e11d48' : '#e2e8f0',
-                        background: formSalaryType === s.type ? '#fff1f2' : '#ffffff',
-                        color: formSalaryType === s.type ? '#e11d48' : '#475569',
-                        fontSize: '11px',
-                        fontWeight: '700',
+                        padding: '5px',
+                        borderRadius: '6px',
+                        border: '1px solid',
+                        borderColor: formSalaryType === s.type ? '#0f172a' : '#e2e8f0',
+                        background: formSalaryType === s.type ? '#0f172a' : '#ffffff',
+                        color: formSalaryType === s.type ? '#ffffff' : '#64748b',
+                        fontSize: '10px',
+                        fontWeight: '600',
                         cursor: 'pointer',
                       }}
                     >
@@ -427,10 +413,10 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                 </SimpleGrid>
               </Box>
 
-              {/* Amount & Paid Leaves */}
-              <SimpleGrid columns={2} gap={2}>
+              {/* Amount & Free Leaves */}
+              <SimpleGrid columns={2} gap={1.5}>
                 <Box>
-                  <Text fontSize="11px" fontWeight="700" color="#475569" mb={1}>
+                  <Text fontSize="11px" fontWeight="600" color="#64748b" mb={0.5}>
                     Amount (₹)
                   </Text>
                   <input
@@ -441,17 +427,17 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                     onChange={(e) => setFormBaseSalary(Number(e.target.value))}
                     style={{
                       width: '100%',
-                      padding: '7px 10px',
-                      borderRadius: '10px',
-                      border: '1px solid #cbd5e1',
+                      padding: '6px 9px',
+                      borderRadius: '8px',
+                      border: '1px solid #e2e8f0',
                       fontSize: '12px',
-                      fontWeight: '700',
+                      fontWeight: '600',
                       outline: 'none',
                     }}
                   />
                 </Box>
                 <Box>
-                  <Text fontSize="11px" fontWeight="700" color="#475569" mb={1}>
+                  <Text fontSize="11px" fontWeight="600" color="#64748b" mb={0.5}>
                     Free Leaves
                   </Text>
                   <input
@@ -462,9 +448,9 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                     onChange={(e) => setFormPaidLeaves(Number(e.target.value))}
                     style={{
                       width: '100%',
-                      padding: '7px 10px',
-                      borderRadius: '10px',
-                      border: '1px solid #cbd5e1',
+                      padding: '6px 9px',
+                      borderRadius: '8px',
+                      border: '1px solid #e2e8f0',
                       fontSize: '12px',
                       outline: 'none',
                     }}
@@ -474,7 +460,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 
               {/* Weekly off */}
               <Box>
-                <Text fontSize="11px" fontWeight="700" color="#475569" mb={1}>
+                <Text fontSize="11px" fontWeight="600" color="#64748b" mb={0.5}>
                   Weekly Off
                 </Text>
                 <select
@@ -482,11 +468,12 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                   onChange={(e) => setFormWeeklyOff(Number(e.target.value))}
                   style={{
                     width: '100%',
-                    padding: '7px 10px',
-                    borderRadius: '10px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '12px',
+                    padding: '6px 9px',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '11px',
                     outline: 'none',
+                    color: '#0f172a',
                   }}
                 >
                   <option value={-1}>None</option>
@@ -501,15 +488,15 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
               </Box>
             </VStack>
 
-            <Flex justify="flex-end" gap={2} mt={5}>
+            <Flex justify="flex-end" gap={1.5} mt={4}>
               <button
                 onClick={() => setIsModalOpen(false)}
                 style={{
-                  padding: '7px 14px',
-                  borderRadius: '10px',
-                  border: '1px solid #cbd5e1',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #e2e8f0',
                   background: '#ffffff',
-                  fontSize: '12px',
+                  fontSize: '11px',
                   cursor: 'pointer',
                 }}
               >
@@ -518,13 +505,13 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
               <button
                 onClick={handleSave}
                 style={{
-                  padding: '7px 18px',
-                  borderRadius: '10px',
+                  padding: '6px 16px',
+                  borderRadius: '6px',
                   border: 'none',
-                  background: '#e11d48',
+                  background: '#0f172a',
                   color: '#ffffff',
-                  fontSize: '12px',
-                  fontWeight: '700',
+                  fontSize: '11px',
+                  fontWeight: '600',
                   cursor: 'pointer',
                 }}
               >
@@ -540,42 +527,42 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         <Box
           position="fixed"
           inset={0}
-          bg="rgba(15, 23, 42, 0.5)"
+          bg="rgba(15, 23, 42, 0.4)"
           display="flex"
           alignItems="center"
           justifyContent="center"
           zIndex={100}
           p={3}
         >
-          <Box bg="#ffffff" borderRadius="2xl" maxW="380px" w="100%" p={4}>
-            <Text fontSize="sm" fontWeight="800" mb={2}>
+          <Box bg="#ffffff" borderRadius="xl" maxW="340px" w="100%" p={4} border="1px solid #e2e8f0">
+            <Text fontSize="12px" fontWeight="700" mb={2}>
               Restore JSON Backup
             </Text>
             <textarea
-              rows={5}
+              rows={4}
               value={importJsonText}
               onChange={(e) => setImportJsonText(e.target.value)}
-              placeholder="Paste backup JSON..."
+              placeholder="Paste JSON..."
               style={{
                 width: '100%',
-                padding: '8px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
+                padding: '6px',
+                borderRadius: '6px',
+                border: '1px solid #e2e8f0',
                 fontSize: '11px',
                 outline: 'none',
-                marginBottom: '10px',
+                marginBottom: '8px',
               }}
             />
-            <Flex justify="flex-end" gap={2}>
+            <Flex justify="flex-end" gap={1.5}>
               <button
                 onClick={() => setIsImportModalOpen(false)}
-                style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '11px' }}
+                style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '11px' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleImportSubmit}
-                style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', background: '#e11d48', color: '#fff', fontSize: '11px', fontWeight: 700 }}
+                style={{ padding: '5px 12px', borderRadius: '6px', border: 'none', background: '#0f172a', color: '#fff', fontSize: '11px', fontWeight: 600 }}
               >
                 Import
               </button>
