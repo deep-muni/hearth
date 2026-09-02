@@ -3,10 +3,11 @@
 import React from 'react';
 import { Box, Flex, HStack, VStack, Text } from '@chakra-ui/react';
 import { HelperSalaryCalculation } from '@/types';
-import { formatCurrency } from '@/utils/dateUtils';
+import { formatCurrency, formatMonthDisplay } from '@/utils/dateUtils';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { ReceiptIndianRupee } from 'lucide-react';
 
 import { normalizeSalaryType } from '@/utils/salaryCalculator';
 
@@ -21,7 +22,8 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
   onClose,
   calculation,
 }) => {
-  const { helper, monthName, adjustment } = calculation;
+  const { helper, adjustment, month } = calculation;
+  const monthName = formatMonthDisplay(month);
   const normalizedType = normalizeSalaryType(helper.salaryType);
 
   return (
@@ -29,7 +31,8 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <HStack gap={2}>
+        <HStack gap={1.5}>
+          <ReceiptIndianRupee size={16} color="#2563eb" />
           <span>{helper.avatarEmoji}</span>
           <span>{helper.name}</span>
         </HStack>

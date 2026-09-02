@@ -11,7 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar,
-  Receipt,
+  ReceiptIndianRupee,
   Users,
   Sparkles,
 } from 'lucide-react';
@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           {[
             { tab: 'calendar' as const, label: 'Calendar', icon: Calendar },
-            { tab: 'summary' as const, label: 'Summary', icon: Receipt },
+            { tab: 'summary' as const, label: 'Summary', icon: ReceiptIndianRupee },
             { tab: 'config' as const, label: 'Staff', icon: Users },
           ].map(({ tab, label, icon: Icon }) => {
             const isActive = activeTab === tab;

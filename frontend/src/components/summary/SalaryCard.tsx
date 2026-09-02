@@ -6,7 +6,7 @@ import { HelperSalaryCalculation } from '@/types';
 import { formatCurrency } from '@/utils/dateUtils';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Receipt, Check } from 'lucide-react';
+import { ReceiptIndianRupee, Check } from 'lucide-react';
 
 import { normalizeSalaryType } from '@/utils/salaryCalculator';
 
@@ -167,7 +167,7 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
           variant="ghost"
           size="xs"
           onClick={() => onOpenSlip(calculation)}
-          icon={<Receipt size={12} />}
+          icon={<ReceiptIndianRupee size={12} />}
         >
           Pay Slip
         </Button>
