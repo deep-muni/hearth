@@ -8,17 +8,17 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ children, variant = 'default', style, ...props }, ref) => {
-    let bg = '#ffffff';
-    let border = '1px solid #e2e8f0';
-    let boxShadow = '0 1px 3px rgba(0, 0, 0, 0.02)';
+    let bg = 'var(--bg-card)';
+    let border = '1px solid var(--border-color)';
+    let boxShadow = 'var(--shadow-card)';
 
     if (variant === 'subtle') {
-      bg = '#f8fafc';
-      border = '1px solid #f1f5f9';
+      bg = 'var(--bg-card-subtle)';
+      border = '1px solid var(--border-subtle)';
       boxShadow = 'none';
     } else if (variant === 'outline') {
       bg = 'transparent';
-      border = '1px solid #e2e8f0';
+      border = '1px solid var(--border-color)';
       boxShadow = 'none';
     }
 
@@ -31,6 +31,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           borderRadius: '16px',
           boxShadow,
           padding: '14px',
+          transition: 'background-color 0.15s ease, border-color 0.15s ease',
           ...style,
         }}
         {...props}

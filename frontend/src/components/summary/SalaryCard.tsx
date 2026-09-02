@@ -58,10 +58,10 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(
           <HStack gap={2}>
             <Text fontSize="16px">{helper.avatarEmoji}</Text>
             <Box>
-              <Text fontSize="13px" fontWeight="700" color="#0f172a">
+              <Text fontSize="13px" fontWeight="700" color="var(--text-primary)">
                 {helper.name}
               </Text>
-              <Text fontSize="10px" color="#94a3b8">
+              <Text fontSize="10px" color="var(--text-subtle)">
                 {normalizedType === 'DAYS_LEAVES' &&
                   `${helper.role} • ${calculation.daysPresent}d worked • ${calculation.totalLeavesCount} leaves`}
                 {normalizedType === 'FIXED' && `${helper.role} • Fixed Monthly`}
@@ -72,7 +72,7 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(
           </HStack>
 
           <Box textAlign="right">
-            <Text fontSize="14px" fontWeight="800" color="#0f172a">
+            <Text fontSize="14px" fontWeight="800" color="var(--text-primary)">
               {formatCurrency(calculation.netPayable)}
             </Text>
           </Box>
@@ -82,8 +82,8 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(
           justify="space-between"
           align="center"
           fontSize="11px"
-          color="#64748b"
-          bg="#f8fafc"
+          color="var(--text-muted)"
+          bg="var(--bg-card-subtle)"
           px={2}
           py={1}
           borderRadius="md"
@@ -103,13 +103,17 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(
           )}
 
           {calculation.deductions > 0 && (
-            <Text color="#ef4444">-{formatCurrency(calculation.deductions)} leaves</Text>
+            <Text color="var(--color-danger)">
+              -{formatCurrency(calculation.deductions)} leaves
+            </Text>
           )}
           {calculation.bonus > 0 && (
-            <Text color="#10b981">+{formatCurrency(calculation.bonus)} bonus</Text>
+            <Text color="var(--color-success)">+{formatCurrency(calculation.bonus)} bonus</Text>
           )}
           {calculation.advanceDeduction > 0 && (
-            <Text color="#f59e0b">-{formatCurrency(calculation.advanceDeduction)} advance</Text>
+            <Text color="var(--color-warning)">
+              -{formatCurrency(calculation.advanceDeduction)} advance
+            </Text>
           )}
         </Flex>
 
@@ -127,7 +131,9 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(
                 width: '100%',
                 padding: '4px 7px',
                 borderRadius: '6px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-input)',
+                color: 'var(--text-primary)',
                 fontSize: '11px',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -147,7 +153,9 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(
                 width: '100%',
                 padding: '4px 7px',
                 borderRadius: '6px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-input)',
+                color: 'var(--text-primary)',
                 fontSize: '11px',
                 outline: 'none',
                 boxSizing: 'border-box',

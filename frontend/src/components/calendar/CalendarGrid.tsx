@@ -20,16 +20,21 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(
 
     return (
       <Box
-        bg="#ffffff"
+        bg="var(--bg-card)"
         borderRadius="2xl"
         p={3}
-        border="1px solid #e2e8f0"
-        boxShadow="0 1px 3px rgba(0, 0, 0, 0.02)"
+        border="1px solid var(--border-color)"
+        boxShadow="var(--shadow-card)"
+        transition="background-color 0.15s ease, border-color 0.15s ease"
       >
         <SimpleGrid columns={7} gap={1} mb={2}>
           {WEEKDAYS_SHORT.map((day, idx) => (
             <Box key={idx} textAlign="center" py={0.5}>
-              <Text fontSize="11px" fontWeight="600" color={idx === 0 ? '#f43f5e' : '#94a3b8'}>
+              <Text
+                fontSize="11px"
+                fontWeight="600"
+                color={idx === 0 ? 'var(--color-accent)' : 'var(--text-subtle)'}
+              >
                 {day}
               </Text>
             </Box>
@@ -67,12 +72,12 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(
           <Flex
             mt={3}
             pt={2}
-            borderTop="1px solid #f1f5f9"
+            borderTop="1px solid var(--border-subtle)"
             justify="center"
             align="center"
             gap={3}
             fontSize="11px"
-            color="#64748b"
+            color="var(--text-muted)"
           >
             {(['PRESENT', 'FULL_LEAVE', 'HALF_LEAVE', 'PAID_LEAVE', 'WEEKLY_OFF'] as const).map(
               (st) => {

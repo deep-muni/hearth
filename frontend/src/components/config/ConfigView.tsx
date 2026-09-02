@@ -58,7 +58,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
   return (
     <VStack gap={3} align="stretch" w="100%">
       <Flex justify="space-between" align="center" px={1}>
-        <Text fontSize="14px" fontWeight="700" color="#0f172a">
+        <Text fontSize="14px" fontWeight="700" color="var(--text-primary)">
           Active Staff ({activeHelpers.length})
         </Text>
 
@@ -66,7 +66,8 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
           variant="primary"
           size="xs"
           onClick={handleOpenAdd}
-          icon={<Plus size={13} strokeWidth={2.5} />}
+          icon={<Plus size={13} />}
+          aria-label="Add new staff member"
         >
           Add Staff
         </Button>
@@ -77,26 +78,23 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
           <Card key={h.id} style={{ padding: '12px' }}>
             <Flex justify="space-between" align="center">
               <HStack gap={2.5}>
-                <Text fontSize="20px">{h.avatarEmoji}</Text>
+                <Text fontSize="22px">{h.avatarEmoji}</Text>
                 <Box>
-                  <Text fontSize="13px" fontWeight="700" color="#0f172a">
+                  <Text fontSize="13px" fontWeight="700" color="var(--text-primary)">
                     {h.name}
                   </Text>
-                  <Text fontSize="11px" color="#64748b">
-                    {h.role} •{' '}
-                    {h.salaryType === 'COUNT_BASED'
-                      ? `${formatCurrency(h.ratePerItem ?? h.baseSalary)}/${h.itemUnitName || 'item'}`
-                      : `${formatCurrency(h.baseSalary)}/mo`}
+                  <Text fontSize="11px" color="var(--text-muted)">
+                    {h.salaryType === 'DAYS_LEAVES' &&
+                      `${h.role} • ${formatCurrency(h.baseSalary)}/mo`}
+                    {h.salaryType === 'FIXED' && `${h.role} • ${formatCurrency(h.baseSalary)}/mo`}
+                    {h.salaryType === 'COUNT_BASED' &&
+                      `${h.role} • ${formatCurrency(h.ratePerItem ?? h.baseSalary)}/${h.itemUnitName || 'item'}`}
                   </Text>
-                  <Text fontSize="10px" color="#94a3b8">
-                    {h.salaryType === 'COUNT_BASED' && 'Based on count • Date-wise item logging'}
-                    {h.salaryType === 'FIXED' && 'Fixed monthly • No calendar tracking'}
-                    {h.salaryType !== 'COUNT_BASED' && h.salaryType !== 'FIXED' && (
-                      <>
-                        {h.paidLeavesAllowance} free leaves • Off:{' '}
-                        {h.weeklyOffDay >= 0 ? WEEKDAY_NAMES[h.weeklyOffDay] : 'None'}
-                      </>
-                    )}
+                  <Text fontSize="10px" color="var(--text-subtle)">
+                    {h.salaryType === 'DAYS_LEAVES' &&
+                      `${h.paidLeavesAllowance} paid leaves/mo • ${h.weeklyOffDay >= 0 ? `${WEEKDAY_NAMES[h.weeklyOffDay]} off` : 'No weekly off'}`}
+                    {h.salaryType === 'FIXED' && 'Fixed flat monthly payout'}
+                    {h.salaryType === 'COUNT_BASED' && 'Per-item piece rate tracking'}
                   </Text>
                 </Box>
               </HStack>
@@ -127,7 +125,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 
       {formerHelpers.length > 0 && (
         <VStack gap={2} align="stretch" pt={2}>
-          <Text fontSize="12px" fontWeight="600" color="#64748b" px={1}>
+          <Text fontSize="12px" fontWeight="600" color="var(--text-muted)" px={1}>
             Former Staff ({formerHelpers.length}) — History Preserved
           </Text>
           {formerHelpers.map((h) => (
@@ -136,10 +134,10 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                 <HStack gap={2}>
                   <Text fontSize="18px">{h.avatarEmoji}</Text>
                   <Box>
-                    <Text fontSize="12px" fontWeight="600" color="#475569">
+                    <Text fontSize="12px" fontWeight="600" color="var(--text-secondary)">
                       {h.name}
                     </Text>
-                    <Text fontSize="10px" color="#94a3b8">
+                    <Text fontSize="10px" color="var(--text-subtle)">
                       {h.role} • Left {h.leftDate ? formatMonthDisplay(h.leftDate) : 'recently'}
                     </Text>
                   </Box>
@@ -161,7 +159,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                       variant="ghost"
                       size="xs"
                       onClick={() => setHelperToHardDelete(h)}
-                      icon={<Trash2 size={11} color="#94a3b8" />}
+                      icon={<Trash2 size={11} color="var(--text-subtle)" />}
                       aria-label="Permanently delete staff member"
                       style={{ padding: '5px 7px' }}
                     />
@@ -173,14 +171,14 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         </VStack>
       )}
 
-      <Flex justify="center" gap={3} pt={3} pb={4} fontSize="11px" color="#94a3b8">
+      <Flex justify="center" gap={3} pt={3} pb={4} fontSize="11px" color="var(--text-subtle)">
         <button
           onClick={onExportBackup}
           style={{
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            color: '#64748b',
+            color: 'var(--text-muted)',
             display: 'flex',
             alignItems: 'center',
             gap: '3px',
@@ -195,7 +193,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            color: '#64748b',
+            color: 'var(--text-muted)',
             display: 'flex',
             alignItems: 'center',
             gap: '3px',
@@ -210,7 +208,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            color: '#64748b',
+            color: 'var(--text-muted)',
             display: 'flex',
             alignItems: 'center',
             gap: '3px',

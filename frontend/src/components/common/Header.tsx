@@ -9,6 +9,8 @@ import {
   ReceiptIndianRupee,
   Users,
   Sparkles,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import {
   formatMonthDisplay,
@@ -16,6 +18,7 @@ import {
   getPreviousMonth,
   formatCurrency,
 } from '@/utils/dateUtils';
+import { useColorMode } from '@/components/ui/color-mode';
 
 interface HeaderProps {
   currentMonth: string;
@@ -32,32 +35,35 @@ export const Header: React.FC<HeaderProps> = ({
   onTabChange,
   totalMonthlyBudget,
 }) => {
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <Box
       as="header"
-      bg="rgba(255, 255, 255, 0.96)"
+      bg="var(--bg-header)"
       backdropFilter="blur(16px)"
-      borderBottom="1px solid #e2e8f0"
+      borderBottom="1px solid var(--border-color)"
       position="sticky"
       top={0}
       zIndex={40}
+      transition="background-color 0.15s ease, border-color 0.15s ease"
     >
       <Box maxW="440px" mx="auto" px={3} pt={3} pb={2.5}>
         <Flex align="center" justify="space-between" mb={2.5}>
           <HStack gap={1.5}>
-            <Sparkles size={16} color="#f43f5e" />
-            <Text fontSize="sm" fontWeight="800" color="#0f172a" letterSpacing="-0.3px">
+            <Sparkles size={16} color="var(--color-accent)" />
+            <Text fontSize="sm" fontWeight="800" color="var(--text-primary)" letterSpacing="-0.3px">
               HouseHelp
             </Text>
           </HStack>
 
           <HStack
             gap={0.5}
-            bg="#f8fafc"
+            bg="var(--bg-card-subtle)"
             px={1}
             py={0.5}
             borderRadius="full"
-            border="1px solid #e2e8f0"
+            border="1px solid var(--border-color)"
           >
             <button
               onClick={() => onMonthChange(getPreviousMonth(currentMonth))}
@@ -66,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
                 border: 'none',
                 padding: '3px 6px',
                 cursor: 'pointer',
-                color: '#64748b',
+                color: 'var(--text-muted)',
                 display: 'flex',
                 alignItems: 'center',
               }}
@@ -78,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Text
               fontSize="11px"
               fontWeight="600"
-              color="#0f172a"
+              color="var(--text-primary)"
               minW="85px"
               textAlign="center"
               userSelect="none"
@@ -93,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
                 border: 'none',
                 padding: '3px 6px',
                 cursor: 'pointer',
-                color: '#64748b',
+                color: 'var(--text-muted)',
                 display: 'flex',
                 alignItems: 'center',
               }}
@@ -103,12 +109,34 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </HStack>
 
-          <Text fontSize="12px" fontWeight="800" color="#0f172a">
-            {formatCurrency(totalMonthlyBudget)}
-          </Text>
+          <HStack gap={1.5} align="center">
+            <Text fontSize="12px" fontWeight="800" color="var(--text-primary)">
+              {formatCurrency(totalMonthlyBudget)}
+            </Text>
+
+            <button
+              onClick={toggleColorMode}
+              style={{
+                background: 'var(--bg-card-subtle)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                padding: '4px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: colorMode === 'dark' ? '#fbbf24' : '#64748b',
+                transition: 'all 0.15s ease',
+              }}
+              title={colorMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label="Toggle theme"
+            >
+              {colorMode === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
+            </button>
+          </HStack>
         </Flex>
 
-        <Flex bg="#f1f5f9" p={1} borderRadius="xl" justify="space-between" gap={1}>
+        <Flex bg="var(--bg-nav)" p={1} borderRadius="xl" justify="space-between" gap={1}>
           {[
             { tab: 'calendar' as const, label: 'Calendar', icon: Calendar },
             { tab: 'summary' as const, label: 'Summary', icon: ReceiptIndianRupee },
@@ -128,19 +156,19 @@ export const Header: React.FC<HeaderProps> = ({
                   padding: '6px 10px',
                   borderRadius: '10px',
                   border: 'none',
-                  background: isActive ? '#ffffff' : 'transparent',
-                  color: isActive ? '#0f172a' : '#64748b',
+                  background: isActive ? 'var(--bg-nav-active)' : 'transparent',
+                  color: isActive ? 'var(--text-nav-active)' : 'var(--text-muted)',
                   fontSize: '12px',
                   fontWeight: isActive ? 700 : 500,
                   cursor: 'pointer',
-                  boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  boxShadow: isActive ? 'var(--shadow-card)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
                 <Icon
                   size={14}
                   strokeWidth={isActive ? 2.3 : 1.8}
-                  color={isActive ? '#f43f5e' : '#64748b'}
+                  color={isActive ? 'var(--color-accent)' : 'var(--text-muted)'}
                 />
                 <span>{label}</span>
               </button>

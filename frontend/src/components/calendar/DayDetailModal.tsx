@@ -78,9 +78,9 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
               onClick={() => setSelectedStatus(statusKey)}
               p={2.5}
               borderRadius="lg"
-              bg={isSelected ? '#f8fafc' : '#ffffff'}
+              bg={isSelected ? 'var(--bg-card-subtle)' : 'var(--bg-card)'}
               border="1px solid"
-              borderColor={isSelected ? '#0f172a' : '#f1f5f9'}
+              borderColor={isSelected ? 'var(--text-primary)' : 'var(--border-color)'}
               cursor="pointer"
               display="flex"
               alignItems="center"
@@ -89,11 +89,15 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             >
               <HStack gap={2.5}>
                 <Icon size={14} color={cfg.color} strokeWidth={2.5} />
-                <Text fontSize="12px" fontWeight={isSelected ? '600' : '400'} color="#0f172a">
+                <Text
+                  fontSize="12px"
+                  fontWeight={isSelected ? '600' : '400'}
+                  color="var(--text-primary)"
+                >
                   {cfg.label}
                 </Text>
               </HStack>
-              {isSelected && <Box w="5px" h="5px" borderRadius="full" bg="#0f172a" />}
+              {isSelected && <Box w="5px" h="5px" borderRadius="full" bg="var(--text-primary)" />}
             </Box>
           );
         })}
@@ -113,8 +117,8 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
             variant="ghost"
             size="xs"
             onClick={handleClear}
-            icon={<Trash2 size={12} color="#ef4444" />}
-            style={{ color: '#ef4444' }}
+            icon={<Trash2 size={12} color="var(--color-danger)" />}
+            style={{ color: 'var(--color-danger)' }}
           >
             Reset
           </Button>

@@ -34,7 +34,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="360px">
       <VStack gap={4} align="stretch">
-        <Text fontSize="12px" color="#64748b" lineHeight="1.5">
+        <Text fontSize="12px" color="var(--text-muted)" lineHeight="1.5">
           {description}
         </Text>
 

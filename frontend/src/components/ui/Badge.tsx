@@ -9,11 +9,31 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const BADGE_STYLES: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
-  success: { bg: '#ecfdf5', color: '#065f46', border: '#a7f3d0' },
-  danger: { bg: '#fef2f2', color: '#dc2626', border: '#fee2e2' },
-  warning: { bg: '#fffbeb', color: '#b45309', border: '#fde68a' },
-  info: { bg: '#f5f3ff', color: '#6d28d9', border: '#ddd6fe' },
-  neutral: { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' },
+  success: {
+    bg: 'var(--badge-success-bg)',
+    color: 'var(--badge-success-color)',
+    border: 'var(--badge-success-border)',
+  },
+  danger: {
+    bg: 'var(--badge-danger-bg)',
+    color: 'var(--badge-danger-color)',
+    border: 'var(--badge-danger-border)',
+  },
+  warning: {
+    bg: 'var(--badge-warning-bg)',
+    color: 'var(--badge-warning-color)',
+    border: 'var(--badge-warning-border)',
+  },
+  info: {
+    bg: 'var(--badge-info-bg)',
+    color: 'var(--badge-info-color)',
+    border: 'var(--badge-info-border)',
+  },
+  neutral: {
+    bg: 'var(--badge-neutral-bg)',
+    color: 'var(--badge-neutral-color)',
+    border: 'var(--badge-neutral-border)',
+  },
 };
 
 export const Badge: React.FC<BadgeProps> = ({ children, variant = 'neutral', style, ...props }) => {

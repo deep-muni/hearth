@@ -36,7 +36,14 @@ export default function HomePage() {
   } = useHouseHelp();
 
   return (
-    <Box minH="100vh" display="flex" flexDirection="column">
+    <Box
+      minH="100vh"
+      display="flex"
+      flexDirection="column"
+      bg="var(--bg-app)"
+      color="var(--text-primary)"
+      transition="background-color 0.15s ease, color 0.15s ease"
+    >
       <Header
         currentMonth={currentMonth}
         onMonthChange={setCurrentMonth}

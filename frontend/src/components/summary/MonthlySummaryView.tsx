@@ -78,20 +78,24 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
     <VStack gap={3} align="stretch" w="100%">
       <Card style={{ padding: '14px' }}>
         <Flex justify="space-between" align="center" mb={1.5}>
-          <Text fontSize="12px" fontWeight="600" color="#64748b">
+          <Text fontSize="12px" fontWeight="600" color="var(--text-muted)">
             {formatMonthDisplay(currentMonth)} Budget
           </Text>
-          <Text fontSize="md" fontWeight="800" color="#0f172a">
+          <Text fontSize="md" fontWeight="800" color="var(--text-primary)">
             {formatCurrency(totalBudget)}
           </Text>
         </Flex>
 
-        <Flex justify="space-between" fontSize="11px" color="#64748b">
+        <Flex justify="space-between" fontSize="11px" color="var(--text-muted)">
           <Text>
-            Paid: <strong style={{ color: '#10b981' }}>{formatCurrency(totalPaid)}</strong>
+            Paid:{' '}
+            <strong style={{ color: 'var(--color-success)' }}>{formatCurrency(totalPaid)}</strong>
           </Text>
           <Text>
-            Pending: <strong style={{ color: '#f59e0b' }}>{formatCurrency(totalPending)}</strong>
+            Pending:{' '}
+            <strong style={{ color: 'var(--color-warning)' }}>
+              {formatCurrency(totalPending)}
+            </strong>
           </Text>
         </Flex>
       </Card>

@@ -22,13 +22,22 @@ export const DayCell: React.FC<DayCellProps> = memo(
     const statusCfg = STATUS_CONFIGS[status] || STATUS_CONFIGS.PRESENT;
     const Icon = statusCfg.icon;
 
-    let cellBg = '#ffffff';
+    let cellBg = 'var(--bg-card)';
     if (!isCurrentMonth) {
-      cellBg = '#fafafa';
+      cellBg = 'var(--bg-app)';
     } else if (isCountBased) {
-      cellBg = itemCount !== undefined && itemCount > 0 ? '#eff6ff' : '#ffffff';
+      cellBg =
+        itemCount !== undefined && itemCount > 0 ? 'var(--status-count-bg)' : 'var(--bg-card)';
+    } else if (status === 'FULL_LEAVE') {
+      cellBg = 'var(--status-leave-bg)';
+    } else if (status === 'HALF_LEAVE') {
+      cellBg = 'var(--status-half-bg)';
+    } else if (status === 'PAID_LEAVE') {
+      cellBg = 'var(--status-paid-bg)';
+    } else if (status === 'WEEKLY_OFF') {
+      cellBg = 'var(--status-off-bg)';
     } else {
-      cellBg = statusCfg.bg;
+      cellBg = 'var(--status-present-bg)';
     }
 
     const hasItems = isCountBased && itemCount !== undefined && itemCount > 0;
@@ -40,7 +49,13 @@ export const DayCell: React.FC<DayCellProps> = memo(
         p={1}
         borderRadius="lg"
         border="1px solid"
-        borderColor={isToday ? '#0f172a' : hasItems ? '#bfdbfe' : '#f1f5f9'}
+        borderColor={
+          isToday
+            ? 'var(--text-primary)'
+            : hasItems
+              ? 'var(--status-count-border)'
+              : 'var(--border-subtle)'
+        }
         bg={cellBg}
         opacity={isCurrentMonth ? 1 : 0.25}
         cursor={isCurrentMonth ? 'pointer' : 'default'}
@@ -55,7 +70,13 @@ export const DayCell: React.FC<DayCellProps> = memo(
         <Text
           fontSize="12px"
           fontWeight={isToday ? '800' : '500'}
-          color={isToday ? '#0f172a' : isCurrentMonth ? '#334155' : '#cbd5e1'}
+          color={
+            isToday
+              ? 'var(--text-primary)'
+              : isCurrentMonth
+                ? 'var(--text-secondary)'
+                : 'var(--text-subtle)'
+          }
           lineHeight="1"
           mt={0.5}
         >
@@ -83,7 +104,7 @@ export const DayCell: React.FC<DayCellProps> = memo(
                 {hasNote && <Box w="3px" h="3px" borderRadius="full" bg="#fde047" />}
               </Box>
             ) : (
-              <Text fontSize="10px" color="#cbd5e1" mb={0.5}>
+              <Text fontSize="10px" color="var(--text-subtle)" mb={0.5}>
                 -
               </Text>
             )

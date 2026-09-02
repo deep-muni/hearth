@@ -55,7 +55,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   if (!selectedHelper) {
     return (
       <Box p={8} textAlign="center">
-        <Text fontSize="13px" color="#94a3b8">
+        <Text fontSize="13px" color="var(--text-subtle)">
           No staff members found. Add one in the Staff tab.
         </Text>
       </Box>
@@ -115,9 +115,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 padding: '7px 6px',
                 borderRadius: '10px',
                 border: '1px solid',
-                borderColor: isSelected ? '#0f172a' : '#e2e8f0',
-                background: isSelected ? '#0f172a' : '#ffffff',
-                color: isSelected ? '#ffffff' : '#475569',
+                borderColor: isSelected ? 'var(--text-primary)' : 'var(--border-color)',
+                background: isSelected ? 'var(--btn-primary-bg)' : 'var(--bg-card)',
+                color: isSelected ? 'var(--btn-primary-text)' : 'var(--text-secondary)',
                 fontSize: '12px',
                 fontWeight: isSelected ? 600 : 500,
                 cursor: 'pointer',
@@ -133,9 +133,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <Badge
                   variant="danger"
                   style={{
-                    backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#fee2e2',
-                    color: isSelected ? '#ffffff' : '#dc2626',
-                    border: 'none',
+                    backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : undefined,
+                    color: isSelected ? '#ffffff' : undefined,
+                    border: isSelected ? 'none' : undefined,
                   }}
                 >
                   {leaves}
@@ -146,9 +146,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <Badge
                   variant="info"
                   style={{
-                    backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#eff6ff',
-                    color: isSelected ? '#ffffff' : '#2563eb',
-                    border: 'none',
+                    backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : undefined,
+                    color: isSelected ? '#ffffff' : undefined,
+                    border: isSelected ? 'none' : undefined,
                   }}
                 >
                   {itemsTotal}
@@ -159,7 +159,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <span
                   style={{
                     fontSize: '9px',
-                    opacity: isSelected ? 0.8 : 0.5,
+                    opacity: isSelected ? 0.85 : 0.5,
                     fontWeight: 600,
                   }}
                 >
@@ -172,21 +172,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       </SimpleGrid>
 
       <Flex
-        bg="#ffffff"
+        bg="var(--bg-card)"
         borderRadius="xl"
         px={3.5}
         py={2}
-        border="1px solid #f1f5f9"
+        border="1px solid var(--border-color)"
         justify="space-between"
         align="center"
         fontSize="12px"
+        transition="background-color 0.15s ease, border-color 0.15s ease"
       >
         <Box>
-          <Text fontWeight="700" color="#0f172a">
+          <Text fontWeight="700" color="var(--text-primary)">
             {selectedHelper.name}{' '}
-            <span style={{ color: '#94a3b8', fontWeight: 400 }}>• {selectedHelper.role}</span>
+            <span style={{ color: 'var(--text-subtle)', fontWeight: 400 }}>
+              • {selectedHelper.role}
+            </span>
           </Text>
-          <Text fontSize="11px" color="#64748b">
+          <Text fontSize="11px" color="var(--text-muted)">
             {normalizedType === 'DAYS_LEAVES' &&
               `${formatCurrency(selectedHelper.baseSalary)}/mo • ${selectedHelper.paidLeavesAllowance} paid leaves`}
             {normalizedType === 'FIXED' &&
@@ -198,7 +201,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
         <HStack gap={2}>
           {salaryCalculation && (
-            <Text fontWeight="800" color="#0f172a">
+            <Text fontWeight="800" color="var(--text-primary)">
               {formatCurrency(salaryCalculation.netPayable)}
             </Text>
           )}
@@ -212,8 +215,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               w="48px"
               h="48px"
               borderRadius="full"
-              bg="#f1f5f9"
-              color="#64748b"
+              bg="var(--bg-hover)"
+              color="var(--text-muted)"
               display="flex"
               alignItems="center"
               justifyContent="center"
@@ -222,33 +225,41 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </Box>
 
             <Box>
-              <Text fontSize="14px" fontWeight="700" color="#0f172a" mb={1}>
+              <Text fontSize="14px" fontWeight="700" color="var(--text-primary)" mb={1}>
                 Fixed Salary — No Calendar Needed
               </Text>
-              <Text fontSize="12px" color="#64748b" maxW="320px" mx="auto" lineHeight="1.5">
+              <Text
+                fontSize="12px"
+                color="var(--text-muted)"
+                maxW="320px"
+                mx="auto"
+                lineHeight="1.5"
+              >
                 {selectedHelper.name} receives a fixed flat salary of{' '}
-                <strong>{formatCurrency(selectedHelper.baseSalary)}</strong> every month. Daily
-                attendance or leave deductions are not tracked on a calendar.
+                <strong style={{ color: 'var(--text-primary)' }}>
+                  {formatCurrency(selectedHelper.baseSalary)}
+                </strong>{' '}
+                every month. Daily attendance or leave deductions are not tracked on a calendar.
               </Text>
             </Box>
 
             <Box
-              bg="#f8fafc"
+              bg="var(--bg-card-subtle)"
               p={3}
               borderRadius="xl"
-              border="1px solid #e2e8f0"
+              border="1px solid var(--border-color)"
               w="100%"
               maxW="280px"
             >
               <Flex justify="space-between" fontSize="12px" mb={1}>
-                <Text color="#64748b">Monthly Pay:</Text>
-                <Text fontWeight="700" color="#0f172a">
+                <Text color="var(--text-muted)">Monthly Pay:</Text>
+                <Text fontWeight="700" color="var(--text-primary)">
                   {formatCurrency(selectedHelper.baseSalary)}
                 </Text>
               </Flex>
               <Flex justify="space-between" fontSize="12px">
-                <Text color="#64748b">Adjustments:</Text>
-                <Text fontWeight="600" color="#64748b">
+                <Text color="var(--text-muted)">Adjustments:</Text>
+                <Text fontWeight="600" color="var(--text-muted)">
                   Manage in Summary
                 </Text>
               </Flex>
@@ -261,7 +272,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 onClick={onNavigateToSummary}
                 icon={<ArrowRight size={13} />}
               >
-                Go to Summary
+                Go to Monthly Summary
               </Button>
             )}
           </VStack>

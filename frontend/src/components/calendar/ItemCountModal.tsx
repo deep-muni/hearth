@@ -100,15 +100,15 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
         <Flex
           justify="space-between"
           align="center"
-          bg="#f8fafc"
+          bg="var(--bg-card-subtle)"
           px={3}
           py={2}
           borderRadius="lg"
-          border="1px solid #e2e8f0"
+          border="1px solid var(--border-color)"
           fontSize="12px"
         >
-          <Text color="#64748b">Total for {formattedDate}:</Text>
-          <Text fontWeight="800" color="#0f172a" fontSize="13px">
+          <Text color="var(--text-muted)">Total for {formattedDate}:</Text>
+          <Text fontWeight="800" color="var(--text-primary)" fontSize="13px">
             {formatCurrency(totalCost)}
           </Text>
         </Flex>
@@ -128,8 +128,8 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
               variant="ghost"
               size="xs"
               onClick={handleClear}
-              icon={<Trash2 size={12} color="#ef4444" />}
-              style={{ color: '#ef4444' }}
+              icon={<Trash2 size={12} color="var(--color-danger)" />}
+              style={{ color: 'var(--color-danger)' }}
             >
               Clear
             </Button>

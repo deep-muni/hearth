@@ -57,7 +57,9 @@ export const BackupModal: React.FC<BackupModalProps> = ({ isOpen, onClose, onImp
           width: '100%',
           padding: '8px',
           borderRadius: '8px',
-          border: `1px solid ${statusMsg?.type === 'error' ? '#ef4444' : '#e2e8f0'}`,
+          border: `1px solid ${statusMsg?.type === 'error' ? 'var(--color-danger)' : 'var(--border-color)'}`,
+          backgroundColor: 'var(--bg-input)',
+          color: 'var(--text-primary)',
           fontSize: '11px',
           fontFamily: 'monospace',
           outline: 'none',
@@ -71,7 +73,7 @@ export const BackupModal: React.FC<BackupModalProps> = ({ isOpen, onClose, onImp
           <Text
             fontSize="11px"
             fontWeight="600"
-            color={statusMsg.type === 'success' ? '#10b981' : '#ef4444'}
+            color={statusMsg.type === 'success' ? 'var(--color-success)' : 'var(--color-danger)'}
           >
             {statusMsg.text}
           </Text>

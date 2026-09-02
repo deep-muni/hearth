@@ -100,7 +100,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
           />
 
           <Box>
-            <Text fontSize="11px" fontWeight="600" color="#64748b" mb={1}>
+            <Text fontSize="11px" fontWeight="600" color="var(--text-muted)" mb={1}>
               Role
             </Text>
             <Flex gap={1} wrap="wrap" mb={1.5}>
@@ -116,9 +116,9 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                     padding: '2px 7px',
                     borderRadius: '9999px',
                     border: '1px solid',
-                    borderColor: role === r.role ? '#0f172a' : '#e2e8f0',
-                    background: role === r.role ? '#0f172a' : '#ffffff',
-                    color: role === r.role ? '#ffffff' : '#64748b',
+                    borderColor: role === r.role ? 'var(--text-primary)' : 'var(--border-color)',
+                    background: role === r.role ? 'var(--btn-primary-bg)' : 'var(--bg-card)',
+                    color: role === r.role ? 'var(--btn-primary-text)' : 'var(--text-secondary)',
                     fontSize: '10px',
                     cursor: 'pointer',
                   }}
@@ -135,7 +135,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
           </Box>
 
           <Box>
-            <Text fontSize="11px" fontWeight="600" color="#64748b" mb={1}>
+            <Text fontSize="11px" fontWeight="600" color="var(--text-muted)" mb={1}>
               Avatar Icon
             </Text>
             <Flex gap={1} wrap="wrap">
@@ -147,8 +147,8 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                   h="28px"
                   borderRadius="md"
                   border="1px solid"
-                  borderColor={emoji === em ? '#0f172a' : '#f1f5f9'}
-                  bg={emoji === em ? '#f8fafc' : '#ffffff'}
+                  borderColor={emoji === em ? 'var(--text-primary)' : 'var(--border-color)'}
+                  bg={emoji === em ? 'var(--bg-card-subtle)' : 'var(--bg-card)'}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
@@ -162,7 +162,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
           </Box>
 
           <Box>
-            <Text fontSize="11px" fontWeight="600" color="#64748b" mb={1}>
+            <Text fontSize="11px" fontWeight="600" color="var(--text-muted)" mb={1}>
               Salary Model *
             </Text>
             <SimpleGrid columns={3} gap={1}>
@@ -175,9 +175,11 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                     padding: '6px 4px',
                     borderRadius: '8px',
                     border: '1px solid',
-                    borderColor: normalized === s.type ? '#0f172a' : '#e2e8f0',
-                    background: normalized === s.type ? '#0f172a' : '#ffffff',
-                    color: normalized === s.type ? '#ffffff' : '#64748b',
+                    borderColor:
+                      normalized === s.type ? 'var(--text-primary)' : 'var(--border-color)',
+                    background: normalized === s.type ? 'var(--btn-primary-bg)' : 'var(--bg-card)',
+                    color:
+                      normalized === s.type ? 'var(--btn-primary-text)' : 'var(--text-secondary)',
                     fontSize: '10px',
                     fontWeight: '600',
                     cursor: 'pointer',
@@ -190,7 +192,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
               ))}
             </SimpleGrid>
 
-            <Text fontSize="10px" color="#94a3b8" mt={1}>
+            <Text fontSize="10px" color="var(--text-subtle)" mt={1}>
               {SALARY_TYPES.find((s) => s.type === normalized)?.description}
             </Text>
           </Box>
@@ -242,7 +244,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                 onChange={(e) => setBaseSalary(e.target.value)}
                 required
               />
-              <Text fontSize="10px" color="#64748b" mt={1}>
+              <Text fontSize="10px" color="var(--text-muted)" mt={1}>
                 ✓ No calendar attendance or leave deduction needed for this helper.
               </Text>
             </Box>
@@ -267,7 +269,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                   placeholder="e.g. clothes, items"
                 />
               </SimpleGrid>
-              <Text fontSize="10px" color="#64748b">
+              <Text fontSize="10px" color="var(--text-muted)">
                 ✓ Items given will be logged per date on the calendar.
               </Text>
             </>

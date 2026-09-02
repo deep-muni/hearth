@@ -14,34 +14,34 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT_STYLES: Record<ButtonVariant, React.CSSProperties> = {
   primary: {
-    background: '#0f172a',
-    color: '#ffffff',
+    background: 'var(--btn-primary-bg)',
+    color: 'var(--btn-primary-text)',
     border: 'none',
   },
   secondary: {
-    background: '#f1f5f9',
-    color: '#0f172a',
+    background: 'var(--btn-secondary-bg)',
+    color: 'var(--btn-secondary-text)',
     border: 'none',
   },
   outline: {
-    background: '#ffffff',
-    color: '#475569',
-    border: '1px solid #e2e8f0',
+    background: 'var(--btn-outline-bg)',
+    color: 'var(--btn-outline-text)',
+    border: '1px solid var(--btn-outline-border)',
   },
   ghost: {
     background: 'transparent',
-    color: '#64748b',
+    color: 'var(--text-muted)',
     border: 'none',
   },
   danger: {
-    background: '#fef2f2',
-    color: '#ef4444',
-    border: '1px solid #fee2e2',
+    background: 'var(--btn-danger-bg)',
+    color: 'var(--btn-danger-text)',
+    border: '1px solid var(--btn-danger-border)',
   },
   success: {
-    background: '#ecfdf5',
-    color: '#065f46',
-    border: '1px solid #a7f3d0',
+    background: 'var(--btn-success-bg)',
+    color: 'var(--btn-success-text)',
+    border: '1px solid var(--btn-success-border)',
   },
 };
 

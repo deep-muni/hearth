@@ -36,8 +36,8 @@ export const Modal: React.FC<ModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.4)',
-        backdropFilter: 'blur(4px)',
+        backgroundColor: 'var(--modal-backdrop)',
+        backdropFilter: 'blur(6px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -48,15 +48,16 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-modal)',
           borderRadius: '20px',
           maxWidth,
           width: '100%',
           maxHeight: '88vh',
           overflowY: 'auto',
           padding: '18px',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.12)',
-          border: '1px solid #e2e8f0',
+          boxShadow: 'var(--shadow-modal)',
+          border: '1px solid var(--border-color)',
+          transition: 'background-color 0.15s ease, border-color 0.15s ease',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -71,10 +72,24 @@ export const Modal: React.FC<ModalProps> = ({
           >
             <div>
               {title && (
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{title}</div>
+                <div
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  {title}
+                </div>
               )}
               {description && (
-                <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                <div
+                  style={{
+                    fontSize: '11px',
+                    color: 'var(--text-muted)',
+                    marginTop: '2px',
+                  }}
+                >
                   {description}
                 </div>
               )}
@@ -86,7 +101,7 @@ export const Modal: React.FC<ModalProps> = ({
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                color: '#94a3b8',
+                color: 'var(--text-subtle)',
                 padding: '4px',
                 display: 'flex',
                 alignItems: 'center',
