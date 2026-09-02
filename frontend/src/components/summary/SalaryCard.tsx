@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Box, Flex, HStack, Text } from '@chakra-ui/react';
 import { HelperSalaryCalculation } from '@/types';
 import { formatCurrency } from '@/utils/dateUtils';
@@ -27,6 +27,35 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
 }) => {
   const { helper, adjustment } = calculation;
   const normalizedType = normalizeSalaryType(helper.salaryType);
+
+  const [bonusVal, setBonusVal] = useState<string>(
+    calculation.bonus ? String(calculation.bonus) : ''
+  );
+  const [advanceVal, setAdvanceVal] = useState<string>(
+    calculation.advanceDeduction ? String(calculation.advanceDeduction) : ''
+  );
+
+  useEffect(() => {
+    setBonusVal(calculation.bonus ? String(calculation.bonus) : '');
+  }, [calculation.bonus]);
+
+  useEffect(() => {
+    setAdvanceVal(calculation.advanceDeduction ? String(calculation.advanceDeduction) : '');
+  }, [calculation.advanceDeduction]);
+
+  const handleBonusInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    const cleaned = raw.replace(/^0+(?=\d)/, '');
+    setBonusVal(cleaned);
+    onBonusChange(calculation, Number(cleaned) || 0);
+  };
+
+  const handleAdvanceInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    const cleaned = raw.replace(/^0+(?=\d)/, '');
+    setAdvanceVal(cleaned);
+    onAdvanceChange(calculation, Number(cleaned) || 0);
+  };
 
   return (
     <Card style={{ padding: '12px' }}>
@@ -94,13 +123,10 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
           <input
             type="number"
             min="0"
-            step="50"
-            value={calculation.bonus || ''}
+            step="any"
+            value={bonusVal}
             onFocus={(e) => e.target.select()}
-            onChange={(e) => {
-              const cleaned = e.target.value.replace(/^0+(?=\d)/, '');
-              onBonusChange(calculation, Number(cleaned) || 0);
-            }}
+            onChange={handleBonusInputChange}
             placeholder="+ Bonus (₹)"
             style={{
               width: '100%',
@@ -117,13 +143,10 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
           <input
             type="number"
             min="0"
-            step="50"
-            value={calculation.advanceDeduction || ''}
+            step="any"
+            value={advanceVal}
             onFocus={(e) => e.target.select()}
-            onChange={(e) => {
-              const cleaned = e.target.value.replace(/^0+(?=\d)/, '');
-              onAdvanceChange(calculation, Number(cleaned) || 0);
-            }}
+            onChange={handleAdvanceInputChange}
             placeholder="- Advance (₹)"
             style={{
               width: '100%',

@@ -7,7 +7,6 @@ import { formatCurrency } from '@/utils/dateUtils';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Printer } from 'lucide-react';
 
 import { normalizeSalaryType } from '@/utils/salaryCalculator';
 
@@ -141,16 +140,7 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
       </Card>
 
       {/* Footer */}
-      <Flex justify="space-between" align="center">
-        <Button
-          variant="outline"
-          size="xs"
-          onClick={() => window.print()}
-          icon={<Printer size={12} />}
-        >
-          Print
-        </Button>
-
+      <Flex justify="flex-end" align="center">
         <Button variant="primary" size="sm" onClick={onClose}>
           Done
         </Button>

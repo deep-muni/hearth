@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useSyncExternalStore } from 'react';
-import { storageService, EMPTY_HELPERS, EMPTY_ATTENDANCE } from '@/services/storageService';
+import { storageService, EMPTY_HELPERS, EMPTY_ATTENDANCE, EMPTY_ADJUSTMENTS } from '@/services/storageService';
 import { getCurrentMonth } from '@/utils/dateUtils';
 import { calculateMonthlySalary } from '@/utils/salaryCalculator';
 import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
@@ -9,8 +9,10 @@ import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment
 const subscribeStorage = (cb: () => void) => storageService.subscribe(cb);
 const getHelpersSnapshot = () => storageService.getHelpers();
 const getAttendanceSnapshot = () => storageService.getAttendance();
+const getAdjustmentsSnapshot = () => storageService.getAdjustments();
 const getHelpersServerSnapshot = () => EMPTY_HELPERS;
 const getAttendanceServerSnapshot = () => EMPTY_ATTENDANCE;
+const getAdjustmentsServerSnapshot = () => EMPTY_ADJUSTMENTS;
 
 export function useHouseHelp() {
   const [currentMonth, setCurrentMonth] = useState<string>(() => getCurrentMonth());
@@ -29,6 +31,12 @@ export function useHouseHelp() {
     getAttendanceServerSnapshot
   );
 
+  const adjustments = useSyncExternalStore(
+    subscribeStorage,
+    getAdjustmentsSnapshot,
+    getAdjustmentsServerSnapshot
+  );
+
   const activeHelperId = selectedHelperId || (helpers[0]?.id ?? '');
 
   // Memoized calculations
@@ -40,7 +48,7 @@ export function useHouseHelp() {
       const adjustment = storageService.getAdjustment(helper.id, currentMonth);
       return calculateMonthlySalary(helper, currentMonth, helperRecords, adjustment);
     });
-  }, [helpers, attendance, currentMonth]);
+  }, [helpers, attendance, adjustments, currentMonth]);
 
   const selectedHelperCalc = useMemo(() => {
     return calculations.find((c) => c.helper.id === activeHelperId);

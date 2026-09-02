@@ -123,6 +123,7 @@ function generateInitialAttendance(): AttendanceRecord[] {
 
 export const EMPTY_HELPERS: HouseHelp[] = [];
 export const EMPTY_ATTENDANCE: AttendanceRecord[] = [];
+export const EMPTY_ADJUSTMENTS: Record<string, MonthlyAdjustment> = {};
 
 // Check for window/localStorage availability
 const isBrowser = typeof window !== 'undefined';
@@ -343,6 +344,10 @@ class StorageService {
   }
 
   // --- Adjustments (Bonus / Advance / Paid Status) ---
+  public getAdjustments(): Record<string, MonthlyAdjustment> {
+    return this.adjustments;
+  }
+
   public getAdjustment(helperId: string, month: string): MonthlyAdjustment {
     const key = `${helperId}_${month}`;
     return (
