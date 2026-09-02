@@ -1,5 +1,11 @@
-import { AttendanceRecord, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '../types';
+import { AttendanceRecord, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment, SalaryType } from '../types';
 import { formatMonthDisplay, getDaysCountInMonth } from './dateUtils';
+
+export function normalizeSalaryType(type: SalaryType): 'DAYS_LEAVES' | 'FIXED' | 'COUNT_BASED' {
+  if (type === 'COUNT_BASED') return 'COUNT_BASED';
+  if (type === 'FIXED' || type === 'STRICT_FLAT') return 'FIXED';
+  return 'DAYS_LEAVES';
+}
 
 export function calculateMonthlySalary(
   helper: HouseHelp,
@@ -30,8 +36,21 @@ export function calculateMonthlySalary(
   let halfLeavesCount = 0;
   let paidLeavesCount = 0;
   let explicitPresentCount = 0;
+  let totalItemCount = 0;
+  let totalItemEarnings = 0;
+
+  const ratePerItem = helper.ratePerItem ?? helper.baseSalary;
+  const itemUnitName = helper.itemUnitName || 'items';
 
   helperRecords.forEach((r) => {
+    if (typeof r.itemCount === 'number' && !isNaN(r.itemCount)) {
+      totalItemCount += r.itemCount;
+      const effectiveRate = typeof r.customRate === 'number' && r.customRate > 0
+        ? r.customRate
+        : ratePerItem;
+      totalItemEarnings += r.itemCount * effectiveRate;
+    }
+
     switch (r.status) {
       case 'FULL_LEAVE':
         fullLeavesCount++;
@@ -51,10 +70,6 @@ export function calculateMonthlySalary(
   // Effective leave days
   const totalLeavesCount = fullLeavesCount + halfLeavesCount * 0.5;
 
-  // Unmarked days default to PRESENT for working days (or we take explicit count if month has attendance)
-  // To give intuitive feel:
-  // Days present = totalWorkingDays - (fullLeavesCount + halfLeavesCount + paidLeavesCount)
-  // unless explicitPresentCount is tracked
   const calculatedDaysPresent = Math.max(
     0,
     totalWorkingDays - fullLeavesCount - halfLeavesCount * 0.5 - paidLeavesCount
@@ -74,25 +89,35 @@ export function calculateMonthlySalary(
     isPaid: false,
   };
 
-  if (helper.salaryType === 'FIXED_MONTHLY') {
-    // Fixed monthly salary with paid leave allowance
-    perDayRate = Math.round((helper.baseSalary / totalWorkingDays) * 100) / 100;
-    
-    // Deduct only when leaves exceed paid leaves allowance
-    deductibleLeavesCount = Math.max(0, totalLeavesCount - helper.paidLeavesAllowance);
-    deductions = Math.round(deductibleLeavesCount * perDayRate);
-  } else if (helper.salaryType === 'DAILY_WAGE') {
-    // Pay based on days worked
-    perDayRate = helper.baseSalary;
-    const billableDays = daysPresent + (halfLeavesCount * 0.5) + paidLeavesCount;
-    baseAmount = Math.round(billableDays * perDayRate);
-    deductions = 0;
-    deductibleLeavesCount = totalLeavesCount;
-  } else if (helper.salaryType === 'STRICT_FLAT') {
-    // Flat monthly, no leave deductions
-    perDayRate = Math.round((helper.baseSalary / totalDaysInMonth) * 100) / 100;
+  const normalizedType = normalizeSalaryType(helper.salaryType);
+
+  if (normalizedType === 'COUNT_BASED') {
+    // 3rd Type: Salary based on count (items given per date, cost can be default rate or custom per date)
+    baseAmount = Math.round(totalItemEarnings);
     deductions = 0;
     deductibleLeavesCount = 0;
+    perDayRate = 0;
+  } else if (normalizedType === 'FIXED') {
+    // 2nd Type: Fixed monthly salary (no calendar tracking)
+    baseAmount = helper.baseSalary;
+    deductions = 0;
+    deductibleLeavesCount = 0;
+    perDayRate = Math.round((helper.baseSalary / totalDaysInMonth) * 100) / 100;
+  } else {
+    // 1st Type: Salary based on days (leaves) - uses calendar
+    if (helper.salaryType === 'DAILY_WAGE') {
+      perDayRate = helper.baseSalary;
+      const billableDays = daysPresent + (halfLeavesCount * 0.5) + paidLeavesCount;
+      baseAmount = Math.round(billableDays * perDayRate);
+      deductions = 0;
+      deductibleLeavesCount = totalLeavesCount;
+    } else {
+      // Standard DAYS_LEAVES / FIXED_MONTHLY
+      perDayRate = Math.round((helper.baseSalary / totalWorkingDays) * 100) / 100;
+      deductibleLeavesCount = Math.max(0, totalLeavesCount - (helper.paidLeavesAllowance || 0));
+      deductions = Math.round(deductibleLeavesCount * perDayRate);
+      baseAmount = helper.baseSalary;
+    }
   }
 
   const netPayable = Math.max(
@@ -114,6 +139,9 @@ export function calculateMonthlySalary(
     totalLeavesCount,
     deductibleLeavesCount,
     perDayRate,
+    totalItemCount,
+    ratePerItem,
+    itemUnitName,
     baseAmount,
     deductions,
     bonus: adj.bonus || 0,

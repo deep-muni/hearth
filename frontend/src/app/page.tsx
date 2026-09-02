@@ -22,6 +22,7 @@ export default function HomePage() {
     selectedHelperCalc,
     totalMonthlyBudget,
     setAttendance,
+    setItemCount,
     removeAttendance,
     updateAdjustment,
     saveHelper,
@@ -51,8 +52,10 @@ export default function HomePage() {
               currentMonth={currentMonth}
               attendance={attendance}
               onSetAttendance={setAttendance}
+              onSetItemCount={setItemCount}
               onRemoveAttendance={removeAttendance}
               salaryCalculation={selectedHelperCalc}
+              onNavigateToSummary={() => setActiveTab('summary')}
             />
           )}
 

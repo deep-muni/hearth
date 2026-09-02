@@ -1,4 +1,10 @@
-export type SalaryType = 'FIXED_MONTHLY' | 'DAILY_WAGE' | 'STRICT_FLAT';
+export type SalaryType =
+  | 'DAYS_LEAVES'
+  | 'FIXED'
+  | 'COUNT_BASED'
+  | 'FIXED_MONTHLY'
+  | 'DAILY_WAGE'
+  | 'STRICT_FLAT';
 
 export type AttendanceStatus =
   | 'PRESENT'
@@ -23,8 +29,10 @@ export interface HouseHelp {
   avatarEmoji: string;
   colorTheme: HelperColorTheme;
   salaryType: SalaryType;
-  baseSalary: number; // monthly fixed salary or daily wage
-  paidLeavesAllowance: number; // e.g. 2 free leaves allowed per month
+  baseSalary: number; // monthly fixed salary or base rate
+  ratePerItem?: number; // rate per item for COUNT_BASED (defaults to baseSalary)
+  itemUnitName?: string; // unit label e.g. "items", "clothes", "tiffin" (default "items")
+  paidLeavesAllowance: number; // e.g. 2 free leaves allowed per month for DAYS_LEAVES
   weeklyOffDay: number; // 0 = Sunday, 1 = Monday ... 6 = Saturday, -1 = None
   phone?: string;
   notes?: string;
@@ -36,7 +44,9 @@ export interface AttendanceRecord {
   id: string;
   helperId: string;
   date: string; // YYYY-MM-DD
-  status: AttendanceStatus;
+  status?: AttendanceStatus; // For DAYS_LEAVES
+  itemCount?: number; // For COUNT_BASED: number of items given on this date
+  customRate?: number; // Optional custom rate/cost per item for this date
   note?: string;
   updatedAt: string;
 }
@@ -66,6 +76,11 @@ export interface HelperSalaryCalculation {
   totalLeavesCount: number; // fullLeaves + halfLeaves*0.5
   deductibleLeavesCount: number;
   perDayRate: number;
+  // For COUNT_BASED
+  totalItemCount: number;
+  ratePerItem: number;
+  itemUnitName: string;
+  // Financials
   baseAmount: number;
   deductions: number;
   bonus: number;

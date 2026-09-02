@@ -86,12 +86,20 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                     {h.name}
                   </Text>
                   <Text fontSize="11px" color="#64748b">
-                    {h.role} • {formatCurrency(h.baseSalary)}
-                    {h.salaryType === 'DAILY_WAGE' ? '/day' : '/mo'}
+                    {h.role} •{' '}
+                    {h.salaryType === 'COUNT_BASED'
+                      ? `${formatCurrency(h.ratePerItem ?? h.baseSalary)}/${h.itemUnitName || 'item'}`
+                      : `${formatCurrency(h.baseSalary)}/mo`}
                   </Text>
                   <Text fontSize="10px" color="#94a3b8">
-                    {h.paidLeavesAllowance} free leaves • Off:{' '}
-                    {h.weeklyOffDay >= 0 ? WEEKDAY_NAMES[h.weeklyOffDay] : 'None'}
+                    {h.salaryType === 'COUNT_BASED' && 'Based on count • Date-wise item logging'}
+                    {h.salaryType === 'FIXED' && 'Fixed monthly • No calendar tracking'}
+                    {h.salaryType !== 'COUNT_BASED' && h.salaryType !== 'FIXED' && (
+                      <>
+                        {h.paidLeavesAllowance} free leaves • Off:{' '}
+                        {h.weeklyOffDay >= 0 ? WEEKDAY_NAMES[h.weeklyOffDay] : 'None'}
+                      </>
+                    )}
                   </Text>
                 </Box>
               </HStack>

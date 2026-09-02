@@ -10,9 +10,19 @@ interface DayCellProps {
   dayInfo: CalendarDayInfo;
   status: AttendanceStatus;
   onClick: (dayInfo: CalendarDayInfo) => void;
+  isCountBased?: boolean;
+  itemCount?: number;
+  hasNote?: boolean;
 }
 
-export const DayCell: React.FC<DayCellProps> = memo(({ dayInfo, status, onClick }) => {
+export const DayCell: React.FC<DayCellProps> = memo(({
+  dayInfo,
+  status,
+  onClick,
+  isCountBased = false,
+  itemCount,
+  hasNote,
+}) => {
   const isCurrentMonth = dayInfo.isCurrentMonth;
   const isToday = dayInfo.isToday;
   const statusCfg = STATUS_CONFIGS[status] || STATUS_CONFIGS.PRESENT;
@@ -21,9 +31,13 @@ export const DayCell: React.FC<DayCellProps> = memo(({ dayInfo, status, onClick 
   let cellBg = '#ffffff';
   if (!isCurrentMonth) {
     cellBg = '#fafafa';
+  } else if (isCountBased) {
+    cellBg = (itemCount !== undefined && itemCount > 0) ? '#eff6ff' : '#ffffff';
   } else {
     cellBg = statusCfg.bg;
   }
+
+  const hasItems = isCountBased && itemCount !== undefined && itemCount > 0;
 
   return (
     <Box
@@ -32,7 +46,7 @@ export const DayCell: React.FC<DayCellProps> = memo(({ dayInfo, status, onClick 
       p={1}
       borderRadius="lg"
       border="1px solid"
-      borderColor={isToday ? '#0f172a' : '#f1f5f9'}
+      borderColor={isToday ? '#0f172a' : hasItems ? '#bfdbfe' : '#f1f5f9'}
       bg={cellBg}
       opacity={isCurrentMonth ? 1 : 0.25}
       cursor={isCurrentMonth ? 'pointer' : 'default'}
@@ -42,6 +56,7 @@ export const DayCell: React.FC<DayCellProps> = memo(({ dayInfo, status, onClick 
       justifyContent="space-between"
       transition="all 0.1s ease"
       userSelect="none"
+      position="relative"
     >
       <Text
         fontSize="12px"
@@ -54,9 +69,37 @@ export const DayCell: React.FC<DayCellProps> = memo(({ dayInfo, status, onClick 
       </Text>
 
       {isCurrentMonth && (
-        <Box mb={0.5} display="flex" alignItems="center" justifyContent="center">
-          <Icon size={11} strokeWidth={status === 'FULL_LEAVE' || status === 'PRESENT' ? 2.5 : 2} color={statusCfg.color} />
-        </Box>
+        isCountBased ? (
+          hasItems ? (
+            <Box
+              mb={0.5}
+              px={1.5}
+              py={0.2}
+              borderRadius="full"
+              bg="#2563eb"
+              color="#ffffff"
+              fontSize="10px"
+              fontWeight="700"
+              lineHeight="1.2"
+              display="flex"
+              alignItems="center"
+              gap={0.5}
+            >
+              <span>{itemCount}</span>
+              {hasNote && (
+                <Box w="3px" h="3px" borderRadius="full" bg="#fde047" />
+              )}
+            </Box>
+          ) : (
+            <Text fontSize="10px" color="#cbd5e1" mb={0.5}>
+              -
+            </Text>
+          )
+        ) : (
+          <Box mb={0.5} display="flex" alignItems="center" justifyContent="center">
+            <Icon size={11} strokeWidth={status === 'FULL_LEAVE' || status === 'PRESENT' ? 2.5 : 2} color={statusCfg.color} />
+          </Box>
+        )
       )}
     </Box>
   );

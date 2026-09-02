@@ -50,9 +50,12 @@ export function useHouseHelp() {
     return calculations.reduce((sum, c) => sum + c.netPayable, 0);
   }, [calculations]);
 
-  // Actions
   const setAttendance = (helperId: string, date: string, status: AttendanceStatus, note?: string) => {
     storageService.setAttendance({ helperId, date, status, note });
+  };
+
+  const setItemCount = (helperId: string, date: string, count: number, note?: string, customRate?: number) => {
+    storageService.setItemCount(helperId, date, count, note, customRate);
   };
 
   const removeAttendance = (helperId: string, date: string) => {
@@ -109,6 +112,7 @@ export function useHouseHelp() {
     selectedHelperCalc,
     totalMonthlyBudget,
     setAttendance,
+    setItemCount,
     removeAttendance,
     updateAdjustment,
     saveHelper,

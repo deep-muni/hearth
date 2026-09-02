@@ -97,8 +97,8 @@ house-help-budget/
 
 ## 🧮 Salary Calculation Rules
 
-| Salary Model | How It Works |
-|---|---|
-| **Fixed Monthly** | `Net Pay = Base Salary - (Deductible Leaves × Per-Day Rate) + Bonus - Advance`<br>*(Deductible leaves = max(0, total leaves taken - paid leaves allowance))* |
-| **Daily Wage** | `Net Pay = (Days Worked + Half Days × 0.5 + Paid Leaves) × Daily Rate + Bonus - Advance` |
-| **Strict Flat** | `Net Pay = Base Salary + Bonus - Advance` |
+| Salary Model | Calendar Requirement | How It Works |
+|---|---|---|
+| **Days & Leaves** | **Needs Calendar** | `Net Pay = Base Salary - (Deductible Leaves × Per-Day Rate) + Bonus - Advance`<br>*(Deductible leaves = max(0, total leaves taken - paid leaves allowance))* |
+| **Fixed Salary** | **No Calendar Needed** | `Net Pay = Base Salary + Bonus - Advance`<br>*(Fixed monthly stipend with no daily attendance tracking)* |
+| **Based on Count** | **Needs Calendar (Item Logging)** | `Net Pay = (Total Items Given in Month × Rate per Item) + Bonus - Advance`<br>*(Track how many items/units were given on each date)* |

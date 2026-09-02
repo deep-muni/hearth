@@ -8,6 +8,8 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Receipt, Check } from 'lucide-react';
 
+import { normalizeSalaryType } from '@/utils/salaryCalculator';
+
 interface SalaryCardProps {
   calculation: HelperSalaryCalculation;
   onTogglePaid: (calc: HelperSalaryCalculation) => void;
@@ -24,6 +26,7 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
   onAdvanceChange,
 }) => {
   const { helper, adjustment } = calculation;
+  const normalizedType = normalizeSalaryType(helper.salaryType);
 
   return (
     <Card style={{ padding: '12px' }}>
@@ -36,7 +39,9 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
               {helper.name}
             </Text>
             <Text fontSize="10px" color="#94a3b8">
-              {helper.role} • {calculation.daysPresent}d worked
+              {normalizedType === 'DAYS_LEAVES' && `${helper.role} • ${calculation.daysPresent}d worked • ${calculation.totalLeavesCount} leaves`}
+              {normalizedType === 'FIXED' && `${helper.role} • Fixed Monthly`}
+              {normalizedType === 'COUNT_BASED' && `${helper.role} • ${calculation.totalItemCount} ${calculation.itemUnitName} given`}
             </Text>
           </Box>
         </HStack>
@@ -60,7 +65,18 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
         borderRadius="md"
         mb={2}
       >
-        <Text>Base {formatCurrency(calculation.baseAmount)}</Text>
+        {normalizedType === 'COUNT_BASED' && (
+          <Text>
+            {calculation.totalItemCount} {calculation.itemUnitName} × {formatCurrency(calculation.ratePerItem)} = {formatCurrency(calculation.baseAmount)}
+          </Text>
+        )}
+        {normalizedType === 'FIXED' && (
+          <Text>Fixed {formatCurrency(calculation.baseAmount)}</Text>
+        )}
+        {normalizedType === 'DAYS_LEAVES' && (
+          <Text>Base {formatCurrency(calculation.baseAmount)}</Text>
+        )}
+
         {calculation.deductions > 0 && (
           <Text color="#ef4444">-{formatCurrency(calculation.deductions)} leaves</Text>
         )}

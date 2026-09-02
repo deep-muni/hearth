@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Printer } from 'lucide-react';
 
+import { normalizeSalaryType } from '@/utils/salaryCalculator';
+
 interface PaySlipModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,6 +23,7 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
   calculation,
 }) => {
   const { helper, monthName, adjustment } = calculation;
+  const normalizedType = normalizeSalaryType(helper.salaryType);
 
   return (
     <Modal
@@ -38,30 +41,69 @@ export const PaySlipModal: React.FC<PaySlipModalProps> = ({
       {/* Itemized Breakdown Box */}
       <Card variant="subtle" style={{ padding: '12px', marginBottom: '12px' }}>
         <VStack gap={1.5} align="stretch" fontSize="11px">
-          <Flex justify="space-between" color="#64748b">
-            <Text>Working Days Present:</Text>
-            <Text fontWeight="600" color="#0f172a">{calculation.daysPresent} days</Text>
-          </Flex>
+          {normalizedType === 'DAYS_LEAVES' && (
+            <>
+              <Flex justify="space-between" color="#64748b">
+                <Text>Working Days Present:</Text>
+                <Text fontWeight="600" color="#0f172a">{calculation.daysPresent} days</Text>
+              </Flex>
 
-          <Flex justify="space-between" color="#64748b">
-            <Text>Leaves Taken:</Text>
-            <Text fontWeight="600" color="#0f172a">
-              {calculation.totalLeavesCount} ({calculation.deductibleLeavesCount} deducted)
-            </Text>
-          </Flex>
+              <Flex justify="space-between" color="#64748b">
+                <Text>Leaves Taken:</Text>
+                <Text fontWeight="600" color="#0f172a">
+                  {calculation.totalLeavesCount} ({calculation.deductibleLeavesCount} deducted)
+                </Text>
+              </Flex>
 
-          <Box borderTop="1px dashed #e2e8f0" my={0.5} />
+              <Box borderTop="1px dashed #e2e8f0" my={0.5} />
 
-          <Flex justify="space-between">
-            <Text color="#64748b">Base Salary:</Text>
-            <Text fontWeight="600" color="#0f172a">{formatCurrency(calculation.baseAmount)}</Text>
-          </Flex>
+              <Flex justify="space-between">
+                <Text color="#64748b">Base Salary:</Text>
+                <Text fontWeight="600" color="#0f172a">{formatCurrency(calculation.baseAmount)}</Text>
+              </Flex>
 
-          {calculation.deductions > 0 && (
-            <Flex justify="space-between" color="#ef4444">
-              <Text>Leaves Deduction:</Text>
-              <Text fontWeight="600">-{formatCurrency(calculation.deductions)}</Text>
-            </Flex>
+              {calculation.deductions > 0 && (
+                <Flex justify="space-between" color="#ef4444">
+                  <Text>Leaves Deduction:</Text>
+                  <Text fontWeight="600">-{formatCurrency(calculation.deductions)}</Text>
+                </Flex>
+              )}
+            </>
+          )}
+
+          {normalizedType === 'FIXED' && (
+            <>
+              <Flex justify="space-between" color="#64748b">
+                <Text>Salary Model:</Text>
+                <Text fontWeight="600" color="#0f172a">Fixed Monthly Pay</Text>
+              </Flex>
+
+              <Flex justify="space-between">
+                <Text color="#64748b">Base Salary:</Text>
+                <Text fontWeight="600" color="#0f172a">{formatCurrency(calculation.baseAmount)}</Text>
+              </Flex>
+            </>
+          )}
+
+          {normalizedType === 'COUNT_BASED' && (
+            <>
+              <Flex justify="space-between" color="#64748b">
+                <Text>Total {calculation.itemUnitName} given:</Text>
+                <Text fontWeight="700" color="#0f172a">{calculation.totalItemCount} {calculation.itemUnitName}</Text>
+              </Flex>
+
+              <Flex justify="space-between" color="#64748b">
+                <Text>Rate per {calculation.itemUnitName.replace(/s$/, '')}:</Text>
+                <Text fontWeight="600" color="#0f172a">{formatCurrency(calculation.ratePerItem)}</Text>
+              </Flex>
+
+              <Box borderTop="1px dashed #e2e8f0" my={0.5} />
+
+              <Flex justify="space-between">
+                <Text color="#64748b">Total Earned:</Text>
+                <Text fontWeight="700" color="#0f172a">{formatCurrency(calculation.baseAmount)}</Text>
+              </Flex>
+            </>
           )}
 
           {calculation.bonus > 0 && (

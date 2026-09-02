@@ -20,6 +20,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(({
   helper,
   onCellClick,
 }) => {
+  const isCountBased = helper.salaryType === 'COUNT_BASED';
+
   return (
     <Box
       bg="#ffffff"
@@ -47,7 +49,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(({
           const record = recordsByDate.get(dayInfo.dateStr);
 
           let status: AttendanceStatus = 'PRESENT';
-          if (record) {
+          if (record?.status) {
             status = record.status;
           } else if (isWeeklyOffDay) {
             status = 'WEEKLY_OFF';
@@ -59,35 +61,68 @@ export const CalendarGrid: React.FC<CalendarGridProps> = memo(({
               dayInfo={dayInfo}
               status={status}
               onClick={onCellClick}
+              isCountBased={isCountBased}
+              itemCount={record?.itemCount}
+              hasNote={!!record?.note}
             />
           );
         })}
       </SimpleGrid>
 
-      {/* Minimal Legend Row */}
-      <Flex
-        mt={3}
-        pt={2}
-        borderTop="1px solid #f1f5f9"
-        justify="center"
-        align="center"
-        gap={3}
-        fontSize="11px"
-        color="#64748b"
-      >
-        {(['PRESENT', 'FULL_LEAVE', 'HALF_LEAVE', 'PAID_LEAVE', 'WEEKLY_OFF'] as const).map(
-          (st) => {
-            const cfg = STATUS_CONFIGS[st];
-            const Icon = cfg.icon;
-            return (
-              <HStack key={st} gap={1}>
-                <Icon size={11} color={cfg.color} strokeWidth={2.5} />
-                <Text>{cfg.shortLabel}</Text>
-              </HStack>
-            );
-          }
-        )}
-      </Flex>
+      {/* Legend Row */}
+      {isCountBased ? (
+        <Flex
+          mt={3}
+          pt={2}
+          borderTop="1px solid #f1f5f9"
+          justify="center"
+          align="center"
+          gap={3}
+          fontSize="11px"
+          color="#64748b"
+        >
+          <HStack gap={1.5}>
+            <Box
+              px={1.5}
+              py={0.2}
+              borderRadius="full"
+              bg="#2563eb"
+              color="#ffffff"
+              fontSize="9px"
+              fontWeight="700"
+            >
+              12
+            </Box>
+            <Text>Items given on date</Text>
+          </HStack>
+          <Text color="#cbd5e1">•</Text>
+          <Text color="#94a3b8">Click any day to log count</Text>
+        </Flex>
+      ) : (
+        <Flex
+          mt={3}
+          pt={2}
+          borderTop="1px solid #f1f5f9"
+          justify="center"
+          align="center"
+          gap={3}
+          fontSize="11px"
+          color="#64748b"
+        >
+          {(['PRESENT', 'FULL_LEAVE', 'HALF_LEAVE', 'PAID_LEAVE', 'WEEKLY_OFF'] as const).map(
+            (st) => {
+              const cfg = STATUS_CONFIGS[st];
+              const Icon = cfg.icon;
+              return (
+                <HStack key={st} gap={1}>
+                  <Icon size={11} color={cfg.color} strokeWidth={2.5} />
+                  <Text>{cfg.shortLabel}</Text>
+                </HStack>
+              );
+            }
+          )}
+        </Flex>
+      )}
     </Box>
   );
 });

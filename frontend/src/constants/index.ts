@@ -29,10 +29,22 @@ export const WEEKDAY_OPTIONS = [
   { value: 6, label: 'Saturday' },
 ] as const;
 
-export const SALARY_TYPES: { type: SalaryType; label: string }[] = [
-  { type: 'FIXED_MONTHLY', label: 'Monthly' },
-  { type: 'DAILY_WAGE', label: 'Daily' },
-  { type: 'STRICT_FLAT', label: 'Flat' },
+export const SALARY_TYPES: { type: SalaryType; label: string; description: string }[] = [
+  {
+    type: 'DAYS_LEAVES',
+    label: 'Days & Leaves',
+    description: 'Based on working days & leave deductions (uses calendar)',
+  },
+  {
+    type: 'FIXED',
+    label: 'Fixed Salary',
+    description: 'Fixed monthly salary without daily attendance (no calendar needed)',
+  },
+  {
+    type: 'COUNT_BASED',
+    label: 'Based on Count',
+    description: 'Calculated by items given on each date (uses calendar)',
+  },
 ];
 
 export interface StatusConfig {

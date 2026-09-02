@@ -13,6 +13,7 @@ import {
   SALARY_TYPES,
   WEEKDAY_OPTIONS,
 } from '@/constants';
+import { normalizeSalaryType } from '@/utils/salaryCalculator';
 
 interface StaffFormModalProps {
   isOpen: boolean;
@@ -30,10 +31,16 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
   const [name, setName] = useState(helper?.name || '');
   const [role, setRole] = useState(helper?.role || 'Cook');
   const [emoji, setEmoji] = useState(helper?.avatarEmoji || '👩‍🍳');
-  const [salaryType, setSalaryType] = useState<SalaryType>(
-    helper?.salaryType || 'FIXED_MONTHLY'
+  const [salaryType, setSalaryType] = useState<SalaryType>(() =>
+    normalizeSalaryType(helper?.salaryType || 'DAYS_LEAVES')
   );
-  const [baseSalary, setBaseSalary] = useState<number>(helper?.baseSalary ?? 7000);
+  const [baseSalary, setBaseSalary] = useState<number>(helper?.baseSalary ?? 8000);
+  const [ratePerItem, setRatePerItem] = useState<number>(
+    helper?.ratePerItem ?? (helper?.salaryType === 'COUNT_BASED' ? helper.baseSalary : 25)
+  );
+  const [itemUnitName, setItemUnitName] = useState<string>(
+    helper?.itemUnitName || 'items'
+  );
   const [paidLeaves, setPaidLeaves] = useState<number>(
     helper?.paidLeavesAllowance ?? 2
   );
@@ -46,17 +53,23 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
       return;
     }
 
+    const normalized = normalizeSalaryType(salaryType);
+
     const helperToSave: HouseHelp = {
       id: helper ? helper.id : `helper_${Date.now()}`,
       name: name.trim(),
       role: role.trim() || 'Staff',
       avatarEmoji: emoji,
       colorTheme: 'pink',
-      salaryType,
-      baseSalary: Math.max(0, Number(baseSalary) || 0),
-      paidLeavesAllowance: Math.max(0, Number(paidLeaves) || 0),
-      weeklyOffDay: Number(weeklyOff),
-      phone: '',
+      salaryType: normalized,
+      baseSalary: normalized === 'COUNT_BASED'
+        ? Math.max(0, Number(ratePerItem) || 0)
+        : Math.max(0, Number(baseSalary) || 0),
+      ratePerItem: normalized === 'COUNT_BASED' ? Math.max(0, Number(ratePerItem) || 0) : undefined,
+      itemUnitName: normalized === 'COUNT_BASED' ? itemUnitName.trim() || 'items' : undefined,
+      paidLeavesAllowance: normalized === 'DAYS_LEAVES' ? Math.max(0, Number(paidLeaves) || 0) : 0,
+      weeklyOffDay: normalized === 'DAYS_LEAVES' ? Number(weeklyOff) : -1,
+      phone: helper?.phone || '',
       isActive: true,
       joinDate: helper?.joinDate || new Date().toISOString().split('T')[0],
     };
@@ -65,13 +78,15 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
     onClose();
   };
 
+  const normalized = normalizeSalaryType(salaryType);
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title={helper ? 'Edit Staff Member' : 'Add Staff Member'}
-      description="Configure role, pay frequency and weekly off"
-      maxWidth="360px"
+      description="Configure staff role, salary model, and rates"
+      maxWidth="380px"
     >
       <form onSubmit={handleSubmit}>
         <VStack gap={2.5} align="stretch">
@@ -148,10 +163,10 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
             </Flex>
           </Box>
 
-          {/* Salary Model */}
+          {/* Salary Model / 3 Types */}
           <Box>
             <Text fontSize="11px" fontWeight="600" color="#64748b" mb={1}>
-              Salary Frequency
+              Salary Model *
             </Text>
             <SimpleGrid columns={3} gap={1}>
               {SALARY_TYPES.map((s) => (
@@ -160,56 +175,110 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                   type="button"
                   onClick={() => setSalaryType(s.type)}
                   style={{
-                    padding: '5px',
-                    borderRadius: '6px',
+                    padding: '6px 4px',
+                    borderRadius: '8px',
                     border: '1px solid',
-                    borderColor: salaryType === s.type ? '#0f172a' : '#e2e8f0',
-                    background: salaryType === s.type ? '#0f172a' : '#ffffff',
-                    color: salaryType === s.type ? '#ffffff' : '#64748b',
+                    borderColor: normalized === s.type ? '#0f172a' : '#e2e8f0',
+                    background: normalized === s.type ? '#0f172a' : '#ffffff',
+                    color: normalized === s.type ? '#ffffff' : '#64748b',
                     fontSize: '10px',
                     fontWeight: '600',
                     cursor: 'pointer',
+                    textAlign: 'center',
+                    lineHeight: '1.2',
                   }}
                 >
                   {s.label}
                 </button>
               ))}
             </SimpleGrid>
+
+            {/* Model Description Hint */}
+            <Text fontSize="10px" color="#94a3b8" mt={1}>
+              {SALARY_TYPES.find((s) => s.type === normalized)?.description}
+            </Text>
           </Box>
 
-          {/* Amount & Free Leaves */}
-          <SimpleGrid columns={2} gap={1.5}>
-            <Input
-              label="Amount (₹) *"
-              type="number"
-              min="0"
-              step="100"
-              value={baseSalary}
-              onChange={(e) => setBaseSalary(Number(e.target.value))}
-              required
-            />
-            <Input
-              label="Free Leaves"
-              type="number"
-              min="0"
-              max="31"
-              value={paidLeaves}
-              onChange={(e) => setPaidLeaves(Number(e.target.value))}
-            />
-          </SimpleGrid>
+          {/* Dynamic Fields for Type 1: DAYS_LEAVES */}
+          {normalized === 'DAYS_LEAVES' && (
+            <>
+              <SimpleGrid columns={2} gap={1.5}>
+                <Input
+                  label="Monthly Base (₹) *"
+                  type="number"
+                  min="0"
+                  step="100"
+                  value={baseSalary}
+                  onChange={(e) => setBaseSalary(Number(e.target.value))}
+                  required
+                />
+                <Input
+                  label="Free Leaves / Mo"
+                  type="number"
+                  min="0"
+                  max="31"
+                  value={paidLeaves}
+                  onChange={(e) => setPaidLeaves(Number(e.target.value))}
+                />
+              </SimpleGrid>
 
-          {/* Weekly Off Day */}
-          <Select
-            label="Weekly Off"
-            value={weeklyOff}
-            onChange={(e) => setWeeklyOff(Number(e.target.value))}
-          >
-            {WEEKDAY_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </Select>
+              <Select
+                label="Weekly Off Day"
+                value={weeklyOff}
+                onChange={(e) => setWeeklyOff(Number(e.target.value))}
+              >
+                {WEEKDAY_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </Select>
+            </>
+          )}
+
+          {/* Dynamic Fields for Type 2: FIXED */}
+          {normalized === 'FIXED' && (
+            <Box>
+              <Input
+                label="Fixed Monthly Salary (₹) *"
+                type="number"
+                min="0"
+                step="100"
+                value={baseSalary}
+                onChange={(e) => setBaseSalary(Number(e.target.value))}
+                required
+              />
+              <Text fontSize="10px" color="#64748b" mt={1}>
+                ✓ No calendar attendance or leave deduction needed for this helper.
+              </Text>
+            </Box>
+          )}
+
+          {/* Dynamic Fields for Type 3: COUNT_BASED */}
+          {normalized === 'COUNT_BASED' && (
+            <>
+              <SimpleGrid columns={2} gap={1.5}>
+                <Input
+                  label="Rate per Item (₹) *"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={ratePerItem}
+                  onChange={(e) => setRatePerItem(Number(e.target.value))}
+                  required
+                />
+                <Input
+                  label="Unit Label"
+                  value={itemUnitName}
+                  onChange={(e) => setItemUnitName(e.target.value)}
+                  placeholder="e.g. clothes, items"
+                />
+              </SimpleGrid>
+              <Text fontSize="10px" color="#64748b">
+                ✓ Items given will be logged per date on the calendar.
+              </Text>
+            </>
+          )}
         </VStack>
 
         <HStack justify="flex-end" gap={1.5} mt={4}>

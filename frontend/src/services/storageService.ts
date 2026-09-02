@@ -1,5 +1,6 @@
 import { AttendanceRecord, HouseHelp, MonthlyAdjustment } from '../types';
 import { getCurrentMonth } from '../utils/dateUtils';
+import { normalizeSalaryType } from '../utils/salaryCalculator';
 
 const HELPERS_KEY = 'househelp_helpers_v1';
 const ATTENDANCE_KEY = 'househelp_attendance_v1';
@@ -12,7 +13,7 @@ const INITIAL_HELPERS: HouseHelp[] = [
     role: 'Chef & Cook',
     avatarEmoji: '👩‍🍳',
     colorTheme: 'pink',
-    salaryType: 'FIXED_MONTHLY',
+    salaryType: 'DAYS_LEAVES', // 1st Type: based on days (leaves) - needs calendar
     baseSalary: 8000,
     paidLeavesAllowance: 2,
     weeklyOffDay: 0, // Sunday
@@ -24,13 +25,13 @@ const INITIAL_HELPERS: HouseHelp[] = [
   {
     id: 'helper-2',
     name: 'Ramesh Kumar',
-    role: 'Driver',
+    role: 'Personal Driver',
     avatarEmoji: '🚗',
     colorTheme: 'blue',
-    salaryType: 'DAILY_WAGE',
-    baseSalary: 500, // per day
+    salaryType: 'FIXED', // 2nd Type: fixed salary - no calendar needed
+    baseSalary: 12000,
     paidLeavesAllowance: 0,
-    weeklyOffDay: 0, // Sunday
+    weeklyOffDay: -1,
     phone: '+91 98123 45678',
     notes: 'Handles school pickups and grocery runs.',
     joinDate: '2025-03-01',
@@ -39,15 +40,17 @@ const INITIAL_HELPERS: HouseHelp[] = [
   {
     id: 'helper-3',
     name: 'Pinky Devi',
-    role: 'Housekeeper',
-    avatarEmoji: '🧹',
+    role: 'Ironing & Laundry',
+    avatarEmoji: '🧺',
     colorTheme: 'purple',
-    salaryType: 'FIXED_MONTHLY',
-    baseSalary: 6500,
-    paidLeavesAllowance: 2,
-    weeklyOffDay: -1, // No fixed weekly off
+    salaryType: 'COUNT_BASED', // 3rd Type: based on count - needs items given per date
+    baseSalary: 20,
+    ratePerItem: 20,
+    itemUnitName: 'clothes',
+    paidLeavesAllowance: 0,
+    weeklyOffDay: -1,
     phone: '+91 98989 12345',
-    notes: 'Deep cleaning, dusting, and organizing.',
+    notes: 'Pressing clothes and laundry loads.',
     joinDate: '2024-11-15',
     isActive: true,
   },
@@ -56,7 +59,7 @@ const INITIAL_HELPERS: HouseHelp[] = [
 function generateInitialAttendance(): AttendanceRecord[] {
   const currentMonth = getCurrentMonth();
   const records: AttendanceRecord[] = [
-    // Sunita: took leave on 4th, half leave on 12th
+    // Sunita (DAYS_LEAVES): took leave on 4th, half leave on 12th
     {
       id: `rec-1`,
       helperId: 'helper-1',
@@ -73,22 +76,45 @@ function generateInitialAttendance(): AttendanceRecord[] {
       note: 'Doctor appointment morning',
       updatedAt: new Date().toISOString(),
     },
-    // Ramesh: took leave on 8th
+    // Pinky (COUNT_BASED): on what date how many items were given
     {
       id: `rec-3`,
-      helperId: 'helper-2',
-      date: `${currentMonth}-08`,
-      status: 'FULL_LEAVE',
-      note: 'Vehicle repair day',
+      helperId: 'helper-3',
+      date: `${currentMonth}-03`,
+      itemCount: 15,
+      note: 'Shirts & kurtas',
       updatedAt: new Date().toISOString(),
     },
-    // Pinky: took paid leave on 6th
     {
       id: `rec-4`,
       helperId: 'helper-3',
-      date: `${currentMonth}-06`,
-      status: 'PAID_LEAVE',
-      note: 'Festival holiday',
+      date: `${currentMonth}-07`,
+      itemCount: 22,
+      note: 'Bed linens & pants',
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: `rec-5`,
+      helperId: 'helper-3',
+      date: `${currentMonth}-14`,
+      itemCount: 18,
+      note: 'Formals & school dresses',
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: `rec-6`,
+      helperId: 'helper-3',
+      date: `${currentMonth}-21`,
+      itemCount: 25,
+      note: 'Weekly laundry batch',
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: `rec-7`,
+      helperId: 'helper-3',
+      date: `${currentMonth}-28`,
+      itemCount: 16,
+      note: 'Casual clothes',
       updatedAt: new Date().toISOString(),
     },
   ];
@@ -121,7 +147,13 @@ class StorageService {
     try {
       const storedHelpers = localStorage.getItem(HELPERS_KEY);
       if (storedHelpers) {
-        this.helpers = JSON.parse(storedHelpers);
+        const parsed: HouseHelp[] = JSON.parse(storedHelpers);
+        this.helpers = parsed.map((h) => ({
+          ...h,
+          salaryType: normalizeSalaryType(h.salaryType),
+          ratePerItem: h.ratePerItem ?? (h.salaryType === 'COUNT_BASED' ? h.baseSalary : undefined),
+          itemUnitName: h.itemUnitName ?? (h.salaryType === 'COUNT_BASED' ? 'items' : undefined),
+        }));
       } else {
         this.helpers = [...INITIAL_HELPERS];
         this.saveHelpers();
@@ -243,6 +275,45 @@ class StorageService {
     const fullRecord: AttendanceRecord = {
       ...record,
       id: existingIndex >= 0 ? this.attendance[existingIndex].id : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (existingIndex >= 0) {
+      const next = [...this.attendance];
+      next[existingIndex] = fullRecord;
+      this.attendance = next;
+    } else {
+      this.attendance = [...this.attendance, fullRecord];
+    }
+
+    this.saveAttendance();
+  }
+
+  public setItemCount(
+    helperId: string,
+    date: string,
+    count: number,
+    note?: string,
+    customRate?: number
+  ): void {
+    const existingIndex = this.attendance.findIndex(
+      (a) => a.helperId === helperId && a.date === date
+    );
+
+    if (count <= 0 && !note) {
+      if (existingIndex >= 0) {
+        this.removeAttendance(helperId, date);
+      }
+      return;
+    }
+
+    const fullRecord: AttendanceRecord = {
+      id: existingIndex >= 0 ? this.attendance[existingIndex].id : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      helperId,
+      date,
+      itemCount: count,
+      customRate: customRate !== undefined && customRate > 0 ? customRate : undefined,
+      note: note || undefined,
       updatedAt: new Date().toISOString(),
     };
 
