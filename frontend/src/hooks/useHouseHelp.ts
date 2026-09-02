@@ -9,7 +9,13 @@ import {
 } from '@/services/storageService';
 import { getCurrentMonth } from '@/utils/dateUtils';
 import { calculateMonthlySalary } from '@/utils/salaryCalculator';
-import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
+import {
+  AttendanceRecord,
+  AttendanceStatus,
+  HelperSalaryCalculation,
+  HouseHelp,
+  MonthlyAdjustment,
+} from '@/types';
 
 const subscribeStorage = (cb: () => void) => storageService.subscribe(cb);
 const getHelpersSnapshot = () => storageService.getHelpers();
@@ -18,6 +24,38 @@ const getAdjustmentsSnapshot = () => storageService.getAdjustments();
 const getHelpersServerSnapshot = () => EMPTY_HELPERS;
 const getAttendanceServerSnapshot = () => EMPTY_ATTENDANCE;
 const getAdjustmentsServerSnapshot = () => EMPTY_ADJUSTMENTS;
+
+export function isHelperActiveInMonth(
+  helper: HouseHelp,
+  month: string,
+  attendanceRecords: AttendanceRecord[],
+  adjustmentsMap: Record<string, MonthlyAdjustment>
+): boolean {
+  const hasAttendance = attendanceRecords.some(
+    (a) => a.helperId === helper.id && a.date.startsWith(month)
+  );
+  if (hasAttendance) return true;
+
+  const adj = adjustmentsMap[`${helper.id}_${month}`];
+  if (adj && (adj.isPaid || adj.bonus > 0 || adj.advanceDeduction > 0 || adj.note)) {
+    return true;
+  }
+
+  if (helper.joinDate) {
+    const joinMonth = helper.joinDate.substring(0, 7);
+    if (month < joinMonth) return false;
+  }
+
+  if (helper.leftDate) {
+    const leftMonth = helper.leftDate.substring(0, 7);
+    if (month >= leftMonth) return false;
+    return true;
+  }
+
+  if (helper.isActive === false) return false;
+
+  return true;
+}
 
 export function useHouseHelp() {
   const [currentMonth, setCurrentMonth] = useState<string>(() => getCurrentMonth());
@@ -43,32 +81,7 @@ export function useHouseHelp() {
   );
 
   const monthHelpers = useMemo(() => {
-    return helpers.filter((h) => {
-      const hasAttendance = attendance.some(
-        (a) => a.helperId === h.id && a.date.startsWith(currentMonth)
-      );
-      if (hasAttendance) return true;
-
-      const adj = adjustments[`${h.id}_${currentMonth}`];
-      if (adj && (adj.isPaid || adj.bonus > 0 || adj.advanceDeduction > 0 || adj.note)) {
-        return true;
-      }
-
-      if (h.joinDate) {
-        const joinMonth = h.joinDate.substring(0, 7);
-        if (currentMonth < joinMonth) return false;
-      }
-
-      if (h.leftDate) {
-        const leftMonth = h.leftDate.substring(0, 7);
-        if (currentMonth >= leftMonth) return false;
-        return true;
-      }
-
-      if (h.isActive === false) return false;
-
-      return true;
-    });
+    return helpers.filter((h) => isHelperActiveInMonth(h, currentMonth, attendance, adjustments));
   }, [helpers, attendance, adjustments, currentMonth]);
 
   const activeHelperId =
