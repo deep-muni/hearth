@@ -1,69 +1,231 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect, useMemo } from 'react';
+import { Box, Container, VStack, Text, HStack, Badge, Flex } from '@chakra-ui/react';
+import { Header } from '@/components/common/Header';
+import { CalendarView } from '@/components/calendar/CalendarView';
+import { MonthlySummaryView } from '@/components/summary/MonthlySummaryView';
+import { ConfigView } from '@/components/config/ConfigView';
+import { storageService } from '@/services/storageService';
+import { getCurrentMonth } from '@/utils/dateUtils';
+import { calculateMonthlySalary } from '@/utils/salaryCalculator';
+import { AttendanceRecord, AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
+import { Heart, Sparkles, Server } from 'lucide-react';
+
+export default function HomePage() {
+  const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
+  const [activeTab, setActiveTab] = useState<'calendar' | 'summary' | 'config'>('calendar');
+  const [helpers, setHelpers] = useState<HouseHelp[]>([]);
+  const [selectedHelperId, setSelectedHelperId] = useState<string>('');
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  // Load initial data and subscribe to storage changes
+  useEffect(() => {
+    setIsClient(true);
+
+    const refreshData = () => {
+      const allHelpers = storageService.getHelpers();
+      setHelpers(allHelpers);
+      setAttendance(storageService.getAttendance());
+
+      if (allHelpers.length > 0) {
+        setSelectedHelperId((prev) => {
+          if (prev && allHelpers.some((h) => h.id === prev)) return prev;
+          return allHelpers[0].id;
+        });
+      }
+    };
+
+    refreshData();
+    const unsubscribe = storageService.subscribe(refreshData);
+    return () => unsubscribe();
+  }, []);
+
+  // Calculate salaries for all helpers for the selected month
+  const calculations: HelperSalaryCalculation[] = useMemo(() => {
+    return helpers.map((h) => {
+      const adjustment = storageService.getAdjustment(h.id, currentMonth);
+      return calculateMonthlySalary(h, currentMonth, attendance, adjustment);
+    });
+  }, [helpers, currentMonth, attendance]);
+
+  const selectedHelperCalc = useMemo(() => {
+    return calculations.find((c) => c.helper.id === selectedHelperId);
+  }, [calculations, selectedHelperId]);
+
+  const totalMonthlyBudget = useMemo(() => {
+    return calculations.reduce((sum, c) => sum + c.netPayable, 0);
+  }, [calculations]);
+
+  // Handlers
+  const handleSetAttendance = (
+    helperId: string,
+    date: string,
+    status: AttendanceStatus,
+    note?: string
+  ) => {
+    storageService.setAttendance({ helperId, date, status, note });
+  };
+
+  const handleRemoveAttendance = (helperId: string, date: string) => {
+    storageService.removeAttendance(helperId, date);
+  };
+
+  const handleClearMonth = (helperId: string, month: string) => {
+    storageService.clearMonthAttendance(helperId, month);
+  };
+
+  const handleUpdateAdjustment = (adj: MonthlyAdjustment) => {
+    storageService.saveAdjustment(adj);
+  };
+
+  const handleSaveHelper = (helper: HouseHelp) => {
+    storageService.saveHelper(helper);
+    setSelectedHelperId(helper.id);
+  };
+
+  const handleDeleteHelper = (id: string) => {
+    storageService.deleteHelper(id);
+  };
+
+  const handleResetDemo = () => {
+    if (confirm('Reset to demo helpers and attendance? This will restore the sample staff.')) {
+      storageService.resetToDemoData();
+    }
+  };
+
+  const handleExportBackup = () => {
+    const jsonStr = storageService.exportBackup();
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `house-help-budget-backup-${currentMonth}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportBackup = (jsonStr: string): boolean => {
+    return storageService.importBackup(jsonStr);
+  };
+
+  if (!isClient) {
+    return (
+      <Box p={10} textAlign="center">
+        <Text fontSize="lg" color="pink.500" fontWeight="bold">
+          🌸 Loading HouseHelp Budget...
+        </Text>
+      </Box>
+    );
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+    <Box minH="100vh" display="flex" flexDirection="column">
+      {/* App Header */}
+      <Header
+        currentMonth={currentMonth}
+        onMonthChange={setCurrentMonth}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        totalMonthlyBudget={totalMonthlyBudget}
+        totalHelpersCount={helpers.length}
+        onResetDemo={handleResetDemo}
+      />
+
+      {/* Main Content View */}
+      <Box as="main" flex="1" py={8} px={{ base: 4, md: 8 }}>
+        <Container maxW="1400px" p={0}>
+          {activeTab === 'calendar' && (
+            <CalendarView
+              helpers={helpers}
+              selectedHelperId={selectedHelperId}
+              onSelectHelper={setSelectedHelperId}
+              currentMonth={currentMonth}
+              attendance={attendance}
+              onSetAttendance={handleSetAttendance}
+              onRemoveAttendance={handleRemoveAttendance}
+              onClearMonth={handleClearMonth}
+              salaryCalculation={selectedHelperCalc}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          )}
+
+          {activeTab === 'summary' && (
+            <MonthlySummaryView
+              calculations={calculations}
+              currentMonth={currentMonth}
+              onUpdateAdjustment={handleUpdateAdjustment}
+            />
+          )}
+
+          {activeTab === 'config' && (
+            <ConfigView
+              helpers={helpers}
+              onSaveHelper={handleSaveHelper}
+              onDeleteHelper={handleDeleteHelper}
+              onResetDemo={handleResetDemo}
+              onExportBackup={handleExportBackup}
+              onImportBackup={handleImportBackup}
+            />
+          )}
+        </Container>
+      </Box>
+
+      {/* Cute Footer */}
+      <Box
+        as="footer"
+        py={6}
+        px={4}
+        mt="auto"
+        borderTop="1px solid"
+        borderColor="pink.100"
+        bg="rgba(255, 255, 255, 0.7)"
+        backdropFilter="blur(6px)"
+      >
+        <Flex
+          maxW="1400px"
+          mx="auto"
+          direction={{ base: 'column', md: 'row' }}
+          align="center"
+          justify="space-between"
+          gap={3}
+          fontSize="xs"
+          color="gray.500"
+        >
+          <HStack gap={2}>
+            <Text fontWeight="700" color="pink.600">
+              🌸 HouseHelp Budget
+            </Text>
+            <Text>•</Text>
+            <Text>Built with TypeScript, Next.js, Chakra UI & Go</Text>
+          </HStack>
+
+          <HStack gap={3}>
+            <Badge
+              bg="emerald.50"
+              color="emerald.700"
+              border="1px solid"
+              borderColor="emerald.200"
+              borderRadius="full"
+              px={2.5}
+              py={0.5}
+              fontSize="10px"
+              display="flex"
+              alignItems="center"
+              gap={1}
+            >
+              <Server size={10} />
+              <span>In-Memory / LocalStorage Active • Go API Ready</span>
+            </Badge>
+
+            <HStack gap={1} color="pink.600" fontWeight="600">
+              <span>Crafted with</span>
+              <Heart size={13} fill="#ec4899" stroke="#ec4899" />
+              <span>for happy households</span>
+            </HStack>
+          </HStack>
+        </Flex>
+      </Box>
+    </Box>
   );
 }
