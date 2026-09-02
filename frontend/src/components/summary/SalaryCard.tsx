@@ -96,7 +96,11 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
             min="0"
             step="50"
             value={calculation.bonus || ''}
-            onChange={(e) => onBonusChange(calculation, Number(e.target.value))}
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => {
+              const cleaned = e.target.value.replace(/^0+(?=\d)/, '');
+              onBonusChange(calculation, Number(cleaned) || 0);
+            }}
             placeholder="+ Bonus (₹)"
             style={{
               width: '100%',
@@ -115,7 +119,11 @@ export const SalaryCard: React.FC<SalaryCardProps> = memo(({
             min="0"
             step="50"
             value={calculation.advanceDeduction || ''}
-            onChange={(e) => onAdvanceChange(calculation, Number(e.target.value))}
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => {
+              const cleaned = e.target.value.replace(/^0+(?=\d)/, '');
+              onAdvanceChange(calculation, Number(cleaned) || 0);
+            }}
             placeholder="- Advance (₹)"
             style={{
               width: '100%',

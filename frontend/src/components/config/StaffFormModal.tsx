@@ -34,14 +34,14 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
   const [salaryType, setSalaryType] = useState<SalaryType>(() =>
     normalizeSalaryType(helper?.salaryType || 'DAYS_LEAVES')
   );
-  const [baseSalary, setBaseSalary] = useState<number>(helper?.baseSalary ?? 8000);
-  const [ratePerItem, setRatePerItem] = useState<number>(
+  const [baseSalary, setBaseSalary] = useState<string | number>(helper?.baseSalary ?? 8000);
+  const [ratePerItem, setRatePerItem] = useState<string | number>(
     helper?.ratePerItem ?? (helper?.salaryType === 'COUNT_BASED' ? helper.baseSalary : 25)
   );
   const [itemUnitName, setItemUnitName] = useState<string>(
     helper?.itemUnitName || 'items'
   );
-  const [paidLeaves, setPaidLeaves] = useState<number>(
+  const [paidLeaves, setPaidLeaves] = useState<string | number>(
     helper?.paidLeavesAllowance ?? 2
   );
   const [weeklyOff, setWeeklyOff] = useState<number>(helper?.weeklyOffDay ?? 0);
@@ -209,7 +209,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                   min="0"
                   step="100"
                   value={baseSalary}
-                  onChange={(e) => setBaseSalary(Number(e.target.value))}
+                  onChange={(e) => setBaseSalary(e.target.value)}
                   required
                 />
                 <Input
@@ -218,7 +218,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                   min="0"
                   max="31"
                   value={paidLeaves}
-                  onChange={(e) => setPaidLeaves(Number(e.target.value))}
+                  onChange={(e) => setPaidLeaves(e.target.value)}
                 />
               </SimpleGrid>
 
@@ -245,7 +245,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                 min="0"
                 step="100"
                 value={baseSalary}
-                onChange={(e) => setBaseSalary(Number(e.target.value))}
+                onChange={(e) => setBaseSalary(e.target.value)}
                 required
               />
               <Text fontSize="10px" color="#64748b" mt={1}>
@@ -264,7 +264,7 @@ const StaffFormDialog: React.FC<StaffFormModalProps> = ({
                   min="0"
                   step="any"
                   value={ratePerItem}
-                  onChange={(e) => setRatePerItem(Number(e.target.value))}
+                  onChange={(e) => setRatePerItem(e.target.value)}
                   required
                 />
                 <Input

@@ -8,7 +8,22 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, style, id, ...props }, ref) => {
+  ({ label, error, style, id, type, onChange, onFocus, ...props }, ref) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (type === 'number' && e.target.value) {
+        // Strip leading zeros if followed by a digit (e.g., '0500' -> '500', '00' -> '0'), keeping '0' and '0.X'
+        e.target.value = e.target.value.replace(/^0+(?=\d)/, '');
+      }
+      onChange?.(e);
+    };
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      if (type === 'number') {
+        e.target.select();
+      }
+      onFocus?.(e);
+    };
+
     return (
       <div style={{ width: '100%' }}>
         {label && (
@@ -28,6 +43,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={id}
+          type={type}
+          onChange={handleChange}
+          onFocus={handleFocus}
           style={{
             width: '100%',
             padding: '7px 10px',
