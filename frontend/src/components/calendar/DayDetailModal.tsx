@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Flex,
   HStack,
   VStack,
   Text,
-  Badge,
 } from '@chakra-ui/react';
 import { AttendanceRecord, AttendanceStatus, HouseHelp } from '@/types';
-import { Check, X, Trash2, Calendar as CalIcon, MessageSquare } from 'lucide-react';
+import { Check, X, Trash2, MessageSquare } from 'lucide-react';
 
 interface DayDetailModalProps {
   isOpen: boolean;
@@ -87,15 +86,8 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
   onSave,
   onRemove,
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState<AttendanceStatus>('PRESENT');
-  const [note, setNote] = useState<string>('');
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedStatus(currentRecord?.status || 'PRESENT');
-      setNote(currentRecord?.note || '');
-    }
-  }, [isOpen, currentRecord]);
+  const [selectedStatus, setSelectedStatus] = useState<AttendanceStatus>(currentRecord?.status || 'PRESENT');
+  const [note, setNote] = useState<string>(currentRecord?.note || '');
 
   if (!isOpen) return null;
 

@@ -30,7 +30,6 @@ export function calculateMonthlySalary(
   let halfLeavesCount = 0;
   let paidLeavesCount = 0;
   let explicitPresentCount = 0;
-  let weeklyOffsMarked = 0;
 
   helperRecords.forEach((r) => {
     switch (r.status) {
@@ -45,9 +44,6 @@ export function calculateMonthlySalary(
         break;
       case 'PRESENT':
         explicitPresentCount++;
-        break;
-      case 'WEEKLY_OFF':
-        weeklyOffsMarked++;
         break;
     }
   });

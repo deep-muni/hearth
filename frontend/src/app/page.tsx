@@ -1,7 +1,6 @@
 "use client";
-
-import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Container, VStack, Text, HStack, Badge, Flex } from '@chakra-ui/react';
+import React, { useState, useMemo, useSyncExternalStore } from 'react';
+import { Box, Container, Text, HStack, Badge, Flex } from '@chakra-ui/react';
 import { Header } from '@/components/common/Header';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { MonthlySummaryView } from '@/components/summary/MonthlySummaryView';
@@ -9,38 +8,33 @@ import { ConfigView } from '@/components/config/ConfigView';
 import { storageService } from '@/services/storageService';
 import { getCurrentMonth } from '@/utils/dateUtils';
 import { calculateMonthlySalary } from '@/utils/salaryCalculator';
-import { AttendanceRecord, AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
-import { Heart, Sparkles, Server } from 'lucide-react';
+import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
+import { Heart, Server } from 'lucide-react';
 
 export default function HomePage() {
   const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
   const [activeTab, setActiveTab] = useState<'calendar' | 'summary' | 'config'>('calendar');
-  const [helpers, setHelpers] = useState<HouseHelp[]>([]);
   const [selectedHelperId, setSelectedHelperId] = useState<string>('');
-  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
-  const [isClient, setIsClient] = useState(false);
 
-  // Load initial data and subscribe to storage changes
-  useEffect(() => {
-    setIsClient(true);
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
-    const refreshData = () => {
-      const allHelpers = storageService.getHelpers();
-      setHelpers(allHelpers);
-      setAttendance(storageService.getAttendance());
+  const helpers = useSyncExternalStore(
+    (cb) => storageService.subscribe(cb),
+    () => storageService.getHelpers(),
+    () => []
+  );
 
-      if (allHelpers.length > 0) {
-        setSelectedHelperId((prev) => {
-          if (prev && allHelpers.some((h) => h.id === prev)) return prev;
-          return allHelpers[0].id;
-        });
-      }
-    };
+  const attendance = useSyncExternalStore(
+    (cb) => storageService.subscribe(cb),
+    () => storageService.getAttendance(),
+    () => []
+  );
 
-    refreshData();
-    const unsubscribe = storageService.subscribe(refreshData);
-    return () => unsubscribe();
-  }, []);
+  const activeHelperId = selectedHelperId || (helpers[0]?.id ?? '');
 
   // Calculate salaries for all helpers for the selected month
   const calculations: HelperSalaryCalculation[] = useMemo(() => {
@@ -51,8 +45,8 @@ export default function HomePage() {
   }, [helpers, currentMonth, attendance]);
 
   const selectedHelperCalc = useMemo(() => {
-    return calculations.find((c) => c.helper.id === selectedHelperId);
-  }, [calculations, selectedHelperId]);
+    return calculations.find((c) => c.helper.id === activeHelperId);
+  }, [calculations, activeHelperId]);
 
   const totalMonthlyBudget = useMemo(() => {
     return calculations.reduce((sum, c) => sum + c.netPayable, 0);
@@ -139,7 +133,7 @@ export default function HomePage() {
           {activeTab === 'calendar' && (
             <CalendarView
               helpers={helpers}
-              selectedHelperId={selectedHelperId}
+              selectedHelperId={activeHelperId}
               onSelectHelper={setSelectedHelperId}
               currentMonth={currentMonth}
               attendance={attendance}

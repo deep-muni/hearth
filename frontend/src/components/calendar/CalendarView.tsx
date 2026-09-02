@@ -17,17 +17,7 @@ import {
   formatCurrency,
 } from '@/utils/dateUtils';
 import { DayDetailModal } from './DayDetailModal';
-import {
-  Calendar as CalIcon,
-  CheckCircle2,
-  Clock,
-  HelpCircle,
-  Sparkles,
-  UserCheck,
-  AlertCircle,
-  Coffee,
-  Flame,
-} from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 interface CalendarViewProps {
   helpers: HouseHelp[];
@@ -597,6 +587,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       {/* Day Detail Modal */}
       {modalDate && (
         <DayDetailModal
+          key={modalDate}
           isOpen={!!modalDate}
           onClose={() => setModalDate(null)}
           helper={selectedHelper}

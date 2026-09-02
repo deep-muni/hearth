@@ -17,13 +17,10 @@ import {
   Edit2,
   Trash2,
   X,
-  Check,
   Download,
   Upload,
   RotateCcw,
-  Sparkles,
   Phone,
-  Calendar,
   FileText,
 } from 'lucide-react';
 
@@ -251,6 +248,27 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
             >
               <Upload size={14} />
               <span>Restore</span>
+            </button>
+
+            <button
+              onClick={onResetDemo}
+              title="Reset to Sample Staff"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '10px 14px',
+                borderRadius: '16px',
+                border: '1.5px solid #fed7e2',
+                background: '#fff0f4',
+                color: '#be185d',
+                fontSize: '12px',
+                fontWeight: '700',
+                cursor: 'pointer',
+              }}
+            >
+              <RotateCcw size={14} />
+              <span>Reset Demo</span>
             </button>
           </HStack>
         </Flex>
@@ -581,6 +599,34 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                       {em}
                     </Box>
                   ))}
+                </Flex>
+              </Box>
+
+              {/* Theme Color Picker */}
+              <Box>
+                <Text fontSize="xs" fontWeight="700" color="#334155" mb={1}>
+                  Theme Color Badge
+                </Text>
+                <Flex gap={2} wrap="wrap">
+                  {COLOR_OPTIONS.map((c) => {
+                    const isSelected = formColor === c.theme;
+                    return (
+                      <Box
+                        key={c.theme}
+                        onClick={() => setFormColor(c.theme)}
+                        w="32px"
+                        h="32px"
+                        borderRadius="xl"
+                        bg={c.hex}
+                        cursor="pointer"
+                        border="2px solid"
+                        borderColor={isSelected ? '#0f172a' : 'transparent'}
+                        boxShadow={isSelected ? '0 0 0 2px #f43f5e' : 'none'}
+                        title={c.name}
+                        transition="all 0.15s"
+                      />
+                    );
+                  })}
                 </Flex>
               </Box>
 

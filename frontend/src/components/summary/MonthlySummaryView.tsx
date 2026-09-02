@@ -17,14 +17,10 @@ import confetti from 'canvas-confetti';
 import {
   Wallet,
   CheckCircle2,
-  AlertCircle,
   FileText,
   Gift,
   HandCoins,
   Sparkles,
-  ArrowDownCircle,
-  DollarSign,
-  TrendingDown,
   Clock,
 } from 'lucide-react';
 

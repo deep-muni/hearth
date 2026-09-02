@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { HelperSalaryCalculation } from '@/types';
 import { formatCurrency } from '@/utils/dateUtils';
-import { X, Printer, CheckCircle2 } from 'lucide-react';
+import { X, Printer } from 'lucide-react';
 
 interface PaySlipModalProps {
   isOpen: boolean;

@@ -7,7 +7,6 @@ import {
   HStack,
   Text,
   Badge,
-  IconButton,
 } from '@chakra-ui/react';
 import {
   ChevronLeft,
@@ -16,13 +15,13 @@ import {
   DollarSign,
   Users,
   RotateCcw,
-  Sparkles,
 } from 'lucide-react';
 import {
   formatMonthDisplay,
   getNextMonth,
   getPreviousMonth,
   getCurrentMonth,
+  formatCurrency,
 } from '@/utils/dateUtils';
 
 interface HeaderProps {
@@ -111,6 +110,20 @@ export const Header: React.FC<HeaderProps> = ({
                 fontWeight="bold"
               >
                 Cute Edition ✨
+              </Badge>
+              <Badge
+                bg="pink.50"
+                color="pink.700"
+                border="1px solid"
+                borderColor="pink.200"
+                borderRadius="full"
+                px={2.5}
+                py={0.5}
+                fontSize="xs"
+                fontWeight="700"
+                display={{ base: 'none', lg: 'inline-flex' }}
+              >
+                Total: {formatCurrency(totalMonthlyBudget)} ({totalHelpersCount} staff)
               </Badge>
             </HStack>
             <Text fontSize="xs" color="gray.500" fontWeight="500">
