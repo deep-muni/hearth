@@ -10,19 +10,11 @@ import {
   SimpleGrid,
 } from '@chakra-ui/react';
 import { AttendanceRecord, AttendanceStatus, HelperSalaryCalculation, HouseHelp } from '@/types';
-import {
-  buildCalendarDays,
-  CalendarDayInfo,
-  formatCurrency,
-} from '@/utils/dateUtils';
+import { buildCalendarDays, CalendarDayInfo, formatCurrency } from '@/utils/dateUtils';
+import { CalendarGrid } from './CalendarGrid';
 import { DayDetailModal } from './DayDetailModal';
-import {
-  Check,
-  X as XIcon,
-  Minus,
-  Gift,
-  Coffee,
-} from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 interface CalendarViewProps {
   helpers: HouseHelp[];
@@ -88,8 +80,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const currentRecord = modalDate ? recordsByDate.get(modalDate) : undefined;
 
   return (
-    <VStack gap={3.5} align="stretch" maxW="440px" mx="auto" w="100%">
-      {/* 1. Staff Selector (No horizontal scroll, all names visible) */}
+    <VStack gap={3} align="stretch" w="100%">
+      {/* 1. Staff Selector (Responsive Grid, No Scroll) */}
       <SimpleGrid
         columns={helpers.length <= 3 ? helpers.length : helpers.length === 4 ? 2 : 3}
         gap={1.5}
@@ -130,25 +122,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 {h.name.split(' ')[0]}
               </span>
               {leaves > 0 && (
-                <span
+                <Badge
+                  variant="danger"
                   style={{
-                    fontSize: '10px',
-                    padding: '0 4px',
-                    borderRadius: '9999px',
-                    background: isSelected ? 'rgba(255,255,255,0.2)' : '#fee2e2',
+                    backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#fee2e2',
                     color: isSelected ? '#ffffff' : '#dc2626',
-                    fontWeight: 600,
+                    border: 'none',
                   }}
                 >
                   {leaves}
-                </span>
+                </Badge>
               )}
             </button>
           );
         })}
       </SimpleGrid>
 
-      {/* 2. Staff Overview & Quick Action */}
+      {/* 2. Staff Overview & Fill Action */}
       <Flex
         bg="#ffffff"
         borderRadius="xl"
@@ -177,162 +167,21 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </Text>
           )}
 
-          <button
-            onClick={handleFillPresent}
-            style={{
-              padding: '4px 8px',
-              borderRadius: '6px',
-              border: '1px solid #e2e8f0',
-              background: '#f8fafc',
-              color: '#0f172a',
-              fontSize: '11px',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
+          <Button variant="secondary" size="xs" onClick={handleFillPresent}>
             Fill
-          </button>
+          </Button>
         </HStack>
       </Flex>
 
-      {/* 3. Clean Minimal Calendar Grid */}
-      <Box
-        bg="#ffffff"
-        borderRadius="2xl"
-        p={3}
-        border="1px solid #e2e8f0"
-        boxShadow="0 1px 3px rgba(0, 0, 0, 0.02)"
-      >
-        {/* Day of Week Headers */}
-        <SimpleGrid columns={7} gap={1} mb={2}>
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
-            <Box key={idx} textAlign="center" py={0.5}>
-              <Text fontSize="11px" fontWeight="600" color={idx === 0 ? '#f43f5e' : '#94a3b8'}>
-                {day}
-              </Text>
-            </Box>
-          ))}
-        </SimpleGrid>
+      {/* 3. Calendar Grid */}
+      <CalendarGrid
+        calendarDays={calendarDays}
+        recordsByDate={recordsByDate}
+        helper={selectedHelper}
+        onCellClick={handleCellClick}
+      />
 
-        {/* Days Matrix */}
-        <SimpleGrid columns={7} gap={1}>
-          {calendarDays.map((dayInfo, idx) => {
-            const isWeeklyOffDay =
-              selectedHelper.weeklyOffDay >= 0 && dayInfo.dayOfWeek === selectedHelper.weeklyOffDay;
-            const record = recordsByDate.get(dayInfo.dateStr);
-
-            let status: AttendanceStatus = 'PRESENT';
-            if (record) {
-              status = record.status;
-            } else if (isWeeklyOffDay) {
-              status = 'WEEKLY_OFF';
-            }
-
-            // Minimal styling
-            let cellBg = '#ffffff';
-            let iconElement = null;
-
-            if (!dayInfo.isCurrentMonth) {
-              cellBg = '#fafafa';
-            } else {
-              switch (status) {
-                case 'FULL_LEAVE':
-                  cellBg = '#fef2f2';
-                  iconElement = <XIcon size={11} strokeWidth={2.5} color="#ef4444" />;
-                  break;
-                case 'HALF_LEAVE':
-                  cellBg = '#fffbeb';
-                  iconElement = <Minus size={11} strokeWidth={2.5} color="#f59e0b" />;
-                  break;
-                case 'PAID_LEAVE':
-                  cellBg = '#f5f3ff';
-                  iconElement = <Gift size={11} strokeWidth={2} color="#8b5cf6" />;
-                  break;
-                case 'WEEKLY_OFF':
-                  cellBg = '#f8fafc';
-                  iconElement = <Coffee size={11} strokeWidth={2} color="#94a3b8" />;
-                  break;
-                case 'PRESENT':
-                default:
-                  cellBg = '#f8fafc';
-                  iconElement = <Check size={11} strokeWidth={2.5} color="#10b981" />;
-                  break;
-              }
-            }
-
-            return (
-              <Box
-                key={`${dayInfo.dateStr}-${idx}`}
-                onClick={() => handleCellClick(dayInfo)}
-                h="46px"
-                p={1}
-                borderRadius="lg"
-                border="1px solid"
-                borderColor={dayInfo.isToday ? '#0f172a' : '#f1f5f9'}
-                bg={cellBg}
-                opacity={dayInfo.isCurrentMonth ? 1 : 0.25}
-                cursor={dayInfo.isCurrentMonth ? 'pointer' : 'default'}
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="space-between"
-                transition="all 0.1s ease"
-              >
-                <Text
-                  fontSize="12px"
-                  fontWeight={dayInfo.isToday ? '800' : '500'}
-                  color={dayInfo.isToday ? '#0f172a' : dayInfo.isCurrentMonth ? '#334155' : '#cbd5e1'}
-                  lineHeight="1"
-                  mt={0.5}
-                >
-                  {dayInfo.dayNumber}
-                </Text>
-
-                {dayInfo.isCurrentMonth && (
-                  <Box mb={0.5} display="flex" alignItems="center" justifyContent="center">
-                    {iconElement}
-                  </Box>
-                )}
-              </Box>
-            );
-          })}
-        </SimpleGrid>
-
-        {/* Minimal Legend Row */}
-        <Flex
-          mt={3}
-          pt={2}
-          borderTop="1px solid #f1f5f9"
-          justify="center"
-          align="center"
-          gap={3}
-          fontSize="11px"
-          color="#64748b"
-        >
-          <HStack gap={1}>
-            <Check size={11} color="#10b981" />
-            <Text>Present</Text>
-          </HStack>
-          <HStack gap={1}>
-            <XIcon size={11} color="#ef4444" />
-            <Text>Leave</Text>
-          </HStack>
-          <HStack gap={1}>
-            <Minus size={11} color="#f59e0b" />
-            <Text>Half</Text>
-          </HStack>
-          <HStack gap={1}>
-            <Gift size={11} color="#8b5cf6" />
-            <Text>Paid</Text>
-          </HStack>
-          <HStack gap={1}>
-            <Coffee size={11} color="#94a3b8" />
-            <Text>Off</Text>
-          </HStack>
-        </Flex>
-      </Box>
-
-      {/* Day Detail Sheet / Modal */}
+      {/* 4. Day Detail Modal */}
       {modalDate && (
         <DayDetailModal
           key={modalDate}

@@ -1,0 +1,120 @@
+"use client";
+
+import { useState, useMemo, useSyncExternalStore } from 'react';
+import { storageService, EMPTY_HELPERS, EMPTY_ATTENDANCE } from '@/services/storageService';
+import { getCurrentMonth } from '@/utils/dateUtils';
+import { calculateMonthlySalary } from '@/utils/salaryCalculator';
+import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
+
+const subscribeStorage = (cb: () => void) => storageService.subscribe(cb);
+const getHelpersSnapshot = () => storageService.getHelpers();
+const getAttendanceSnapshot = () => storageService.getAttendance();
+const getHelpersServerSnapshot = () => EMPTY_HELPERS;
+const getAttendanceServerSnapshot = () => EMPTY_ATTENDANCE;
+
+export function useHouseHelp() {
+  const [currentMonth, setCurrentMonth] = useState<string>(() => getCurrentMonth());
+  const [activeTab, setActiveTab] = useState<'calendar' | 'summary' | 'config'>('calendar');
+  const [selectedHelperId, setSelectedHelperId] = useState<string>('');
+
+  const helpers = useSyncExternalStore(
+    subscribeStorage,
+    getHelpersSnapshot,
+    getHelpersServerSnapshot
+  );
+
+  const attendance = useSyncExternalStore(
+    subscribeStorage,
+    getAttendanceSnapshot,
+    getAttendanceServerSnapshot
+  );
+
+  const activeHelperId = selectedHelperId || (helpers[0]?.id ?? '');
+
+  // Memoized calculations
+  const calculations: HelperSalaryCalculation[] = useMemo(() => {
+    return helpers.map((helper) => {
+      const helperRecords = attendance.filter(
+        (a) => a.helperId === helper.id && a.date.startsWith(currentMonth)
+      );
+      const adjustment = storageService.getAdjustment(helper.id, currentMonth);
+      return calculateMonthlySalary(helper, currentMonth, helperRecords, adjustment);
+    });
+  }, [helpers, attendance, currentMonth]);
+
+  const selectedHelperCalc = useMemo(() => {
+    return calculations.find((c) => c.helper.id === activeHelperId);
+  }, [calculations, activeHelperId]);
+
+  const totalMonthlyBudget = useMemo(() => {
+    return calculations.reduce((sum, c) => sum + c.netPayable, 0);
+  }, [calculations]);
+
+  // Actions
+  const setAttendance = (helperId: string, date: string, status: AttendanceStatus, note?: string) => {
+    storageService.setAttendance({ helperId, date, status, note });
+  };
+
+  const removeAttendance = (helperId: string, date: string) => {
+    storageService.removeAttendance(helperId, date);
+  };
+
+  const updateAdjustment = (adj: MonthlyAdjustment) => {
+    storageService.saveAdjustment(adj);
+  };
+
+  const saveHelper = (helper: HouseHelp) => {
+    storageService.saveHelper(helper);
+    if (!selectedHelperId) {
+      setSelectedHelperId(helper.id);
+    }
+  };
+
+  const deleteHelper = (id: string) => {
+    storageService.deleteHelper(id);
+    if (selectedHelperId === id) {
+      setSelectedHelperId('');
+    }
+  };
+
+  const resetDemo = () => {
+    storageService.resetToDemoData();
+  };
+
+  const exportBackup = () => {
+    const json = storageService.exportBackup();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `house-help-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importBackup = (json: string) => {
+    return storageService.importBackup(json);
+  };
+
+  return {
+    currentMonth,
+    setCurrentMonth,
+    activeTab,
+    setActiveTab,
+    helpers,
+    attendance,
+    activeHelperId,
+    setSelectedHelperId,
+    calculations,
+    selectedHelperCalc,
+    totalMonthlyBudget,
+    setAttendance,
+    removeAttendance,
+    updateAdjustment,
+    saveHelper,
+    deleteHelper,
+    resetDemo,
+    exportBackup,
+    importBackup,
+  };
+}

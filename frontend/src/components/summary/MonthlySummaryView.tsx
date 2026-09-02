@@ -1,21 +1,17 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
-  Box,
   Flex,
-  HStack,
   VStack,
   Text,
 } from '@chakra-ui/react';
 import { HelperSalaryCalculation, MonthlyAdjustment } from '@/types';
 import { formatCurrency, formatMonthDisplay } from '@/utils/dateUtils';
+import { SalaryCard } from './SalaryCard';
 import { PaySlipModal } from './PaySlipModal';
+import { Card } from '@/components/ui/Card';
 import confetti from 'canvas-confetti';
-import {
-  Receipt,
-  Check,
-} from 'lucide-react';
 
 interface MonthlySummaryViewProps {
   calculations: HelperSalaryCalculation[];
@@ -36,7 +32,7 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
     .reduce((acc, c) => acc + c.netPayable, 0);
   const totalPending = totalBudget - totalPaid;
 
-  const handleTogglePaid = (calc: HelperSalaryCalculation) => {
+  const handleTogglePaid = useCallback((calc: HelperSalaryCalculation) => {
     const isCurrentlyPaid = calc.adjustment.isPaid;
 
     if (!isCurrentlyPaid) {
@@ -54,35 +50,31 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
     onUpdateAdjustment({
       ...calc.adjustment,
       isPaid: !isCurrentlyPaid,
-      paidOn: !isCurrentlyPaid ? new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : undefined,
+      paidOn: !isCurrentlyPaid
+        ? new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        : undefined,
       paymentMethod: !isCurrentlyPaid ? 'UPI' : undefined,
     });
-  };
+  }, [onUpdateAdjustment]);
 
-  const handleBonusChange = (calc: HelperSalaryCalculation, val: number) => {
+  const handleBonusChange = useCallback((calc: HelperSalaryCalculation, val: number) => {
     onUpdateAdjustment({
       ...calc.adjustment,
       bonus: Math.max(0, val),
     });
-  };
+  }, [onUpdateAdjustment]);
 
-  const handleAdvanceChange = (calc: HelperSalaryCalculation, val: number) => {
+  const handleAdvanceChange = useCallback((calc: HelperSalaryCalculation, val: number) => {
     onUpdateAdjustment({
       ...calc.adjustment,
       advanceDeduction: Math.max(0, val),
     });
-  };
+  }, [onUpdateAdjustment]);
 
   return (
-    <VStack gap={3} align="stretch" maxW="440px" mx="auto" w="100%">
+    <VStack gap={3} align="stretch" w="100%">
       {/* 1. Minimal Overview Stats */}
-      <Box
-        bg="#ffffff"
-        borderRadius="xl"
-        p={3.5}
-        border="1px solid #e2e8f0"
-        boxShadow="0 1px 3px rgba(0, 0, 0, 0.02)"
-      >
+      <Card style={{ padding: '14px' }}>
         <Flex justify="space-between" align="center" mb={1.5}>
           <Text fontSize="12px" fontWeight="600" color="#64748b">
             {formatMonthDisplay(currentMonth)} Budget
@@ -100,160 +92,20 @@ export const MonthlySummaryView: React.FC<MonthlySummaryViewProps> = ({
             Pending: <strong style={{ color: '#f59e0b' }}>{formatCurrency(totalPending)}</strong>
           </Text>
         </Flex>
-      </Box>
+      </Card>
 
       {/* 2. Staff Compensation Cards */}
       <VStack gap={2} align="stretch">
-        {calculations.map((calc) => {
-          const { helper, adjustment } = calc;
-
-          return (
-            <Box
-              key={helper.id}
-              bg="#ffffff"
-              borderRadius="xl"
-              p={3}
-              border="1px solid"
-              borderColor={adjustment.isPaid ? '#e2e8f0' : '#e2e8f0'}
-              boxShadow="0 1px 2px rgba(0,0,0,0.02)"
-            >
-              {/* Top Row */}
-              <Flex justify="space-between" align="center" mb={1.5}>
-                <HStack gap={2}>
-                  <Text fontSize="16px">{helper.avatarEmoji}</Text>
-                  <Box>
-                    <Text fontSize="13px" fontWeight="700" color="#0f172a">
-                      {helper.name}
-                    </Text>
-                    <Text fontSize="10px" color="#94a3b8">
-                      {helper.role} • {calc.daysPresent}d worked
-                    </Text>
-                  </Box>
-                </HStack>
-
-                <Box textAlign="right">
-                  <Text fontSize="14px" fontWeight="800" color="#0f172a">
-                    {formatCurrency(calc.netPayable)}
-                  </Text>
-                </Box>
-              </Flex>
-
-              {/* Math breakdown line */}
-              <Flex
-                justify="space-between"
-                align="center"
-                fontSize="11px"
-                color="#64748b"
-                bg="#f8fafc"
-                px={2}
-                py={1}
-                borderRadius="md"
-                mb={2}
-              >
-                <Text>Base {formatCurrency(calc.baseAmount)}</Text>
-                {calc.deductions > 0 && (
-                  <Text color="#ef4444">-{formatCurrency(calc.deductions)} leaves</Text>
-                )}
-                {calc.bonus > 0 && (
-                  <Text color="#10b981">+{formatCurrency(calc.bonus)} bonus</Text>
-                )}
-                {calc.advanceDeduction > 0 && (
-                  <Text color="#f59e0b">-{formatCurrency(calc.advanceDeduction)} advance</Text>
-                )}
-              </Flex>
-
-              {/* Quick Bonus & Advance Inputs */}
-              <HStack gap={1.5} mb={2}>
-                <Box flex={1}>
-                  <input
-                    type="number"
-                    min="0"
-                    step="50"
-                    value={calc.bonus || ''}
-                    onChange={(e) => handleBonusChange(calc, Number(e.target.value))}
-                    placeholder="+ Bonus"
-                    style={{
-                      width: '100%',
-                      padding: '4px 7px',
-                      borderRadius: '6px',
-                      border: '1px solid #e2e8f0',
-                      fontSize: '11px',
-                      outline: 'none',
-                    }}
-                  />
-                </Box>
-                <Box flex={1}>
-                  <input
-                    type="number"
-                    min="0"
-                    step="50"
-                    value={calc.advanceDeduction || ''}
-                    onChange={(e) => handleAdvanceChange(calc, Number(e.target.value))}
-                    placeholder="- Advance"
-                    style={{
-                      width: '100%',
-                      padding: '4px 7px',
-                      borderRadius: '6px',
-                      border: '1px solid #e2e8f0',
-                      fontSize: '11px',
-                      outline: 'none',
-                    }}
-                  />
-                </Box>
-              </HStack>
-
-              {/* Actions Row */}
-              <Flex justify="space-between" align="center" pt={1}>
-                <button
-                  onClick={() => setActiveSlipCalc(calc)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#64748b',
-                    fontSize: '11px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    padding: '3px 6px',
-                  }}
-                >
-                  <Receipt size={12} />
-                  <span>Pay Slip</span>
-                </button>
-
-                <button
-                  onClick={() => handleTogglePaid(calc)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '5px 12px',
-                    borderRadius: '6px',
-                    border: '1px solid',
-                    borderColor: adjustment.isPaid ? '#10b981' : '#0f172a',
-                    background: adjustment.isPaid ? '#ecfdf5' : '#0f172a',
-                    color: adjustment.isPaid ? '#065f46' : '#ffffff',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.12s ease',
-                  }}
-                >
-                  {adjustment.isPaid ? (
-                    <>
-                      <Check size={12} strokeWidth={2.5} />
-                      <span>Paid</span>
-                    </>
-                  ) : (
-                    <span>Mark Paid</span>
-                  )}
-                </button>
-              </Flex>
-            </Box>
-          );
-        })}
+        {calculations.map((calc) => (
+          <SalaryCard
+            key={calc.helper.id}
+            calculation={calc}
+            onTogglePaid={handleTogglePaid}
+            onOpenSlip={setActiveSlipCalc}
+            onBonusChange={handleBonusChange}
+            onAdvanceChange={handleAdvanceChange}
+          />
+        ))}
       </VStack>
 
       {/* Pay Slip Modal */}
