@@ -27,6 +27,7 @@ interface ConfigViewProps {
   helpers: HouseHelp[];
   onSaveHelper: (helper: HouseHelp) => void;
   onDeleteHelper: (id: string) => void;
+  onRestoreHelper?: (id: string) => void;
   onResetDemo: () => void;
   onExportBackup: () => void;
   onImportBackup: (json: string) => boolean;
@@ -38,6 +39,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
   helpers,
   onSaveHelper,
   onDeleteHelper,
+  onRestoreHelper,
   onResetDemo,
   onExportBackup,
   onImportBackup,
@@ -45,6 +47,9 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
   const [editingHelper, setEditingHelper] = useState<HouseHelp | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+
+  const activeHelpers = helpers.filter((h) => h.isActive !== false);
+  const formerHelpers = helpers.filter((h) => h.isActive === false);
 
   const handleOpenAdd = () => {
     setEditingHelper(null);
@@ -61,7 +66,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
       {/* 1. Header with Add Button */}
       <Flex justify="space-between" align="center" px={1}>
         <Text fontSize="14px" fontWeight="700" color="#0f172a">
-          Staff Members ({helpers.length})
+          Active Staff ({activeHelpers.length})
         </Text>
 
         <Button
@@ -76,7 +81,7 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
 
       {/* 2. Staff Cards */}
       <VStack gap={2} align="stretch">
-        {helpers.map((h) => (
+        {activeHelpers.map((h) => (
           <Card key={h.id} style={{ padding: '12px' }}>
             <Flex justify="space-between" align="center">
               <HStack gap={2.5}>
@@ -118,7 +123,11 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
                   variant="danger"
                   size="xs"
                   onClick={() => {
-                    if (confirm(`Remove ${h.name}?`)) {
+                    if (
+                      confirm(
+                        `Remove ${h.name}?\n\nTheir past attendance, payments, and salary history will remain completely preserved in previous months.`
+                      )
+                    ) {
                       onDeleteHelper(h.id);
                     }
                   }}
@@ -131,6 +140,43 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
           </Card>
         ))}
       </VStack>
+
+      {/* Former Staff (History Preserved) */}
+      {formerHelpers.length > 0 && (
+        <VStack gap={2} align="stretch" pt={2}>
+          <Text fontSize="12px" fontWeight="600" color="#64748b" px={1}>
+            Former Staff ({formerHelpers.length}) — History Preserved
+          </Text>
+          {formerHelpers.map((h) => (
+            <Card key={h.id} variant="subtle" style={{ padding: '10px 12px', opacity: 0.85 }}>
+              <Flex justify="space-between" align="center">
+                <HStack gap={2}>
+                  <Text fontSize="18px">{h.avatarEmoji}</Text>
+                  <Box>
+                    <Text fontSize="12px" fontWeight="600" color="#475569">
+                      {h.name}
+                    </Text>
+                    <Text fontSize="10px" color="#94a3b8">
+                      {h.role} • Left {h.leftDate || 'recently'}
+                    </Text>
+                  </Box>
+                </HStack>
+
+                {onRestoreHelper && (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    onClick={() => onRestoreHelper(h.id)}
+                    icon={<RotateCcw size={11} />}
+                  >
+                    Restore
+                  </Button>
+                )}
+              </Flex>
+            </Card>
+          ))}
+        </VStack>
+      )}
 
       {/* 3. Minimal Backup / Reset Footer */}
       <Flex justify="center" gap={3} pt={3} pb={4} fontSize="11px" color="#94a3b8">

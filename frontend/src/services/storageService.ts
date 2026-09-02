@@ -246,11 +246,49 @@ class StorageService {
     this.saveHelpers();
   }
 
-  public deleteHelper(id: string): void {
+  public deleteHelper(id: string, effectiveMonth?: string): void {
+    const targetMonth = effectiveMonth || getCurrentMonth();
+    this.helpers = this.helpers.map((h) => {
+      if (h.id === id) {
+        return {
+          ...h,
+          isActive: false,
+          leftDate: targetMonth,
+        };
+      }
+      return h;
+    });
+    this.saveHelpers();
+    // Historical attendance and adjustments are preserved for past months!
+  }
+
+  public restoreHelper(id: string): void {
+    this.helpers = this.helpers.map((h) => {
+      if (h.id === id) {
+        return {
+          ...h,
+          isActive: true,
+          leftDate: undefined,
+        };
+      }
+      return h;
+    });
+    this.saveHelpers();
+  }
+
+  public hardDeleteHelper(id: string): void {
     this.helpers = this.helpers.filter((h) => h.id !== id);
     this.attendance = this.attendance.filter((a) => a.helperId !== id);
+    const nextAdj: Record<string, MonthlyAdjustment> = {};
+    for (const [key, adj] of Object.entries(this.adjustments)) {
+      if (adj.helperId !== id) {
+        nextAdj[key] = adj;
+      }
+    }
+    this.adjustments = nextAdj;
     this.saveHelpers();
     this.saveAttendance();
+    this.saveAdjustments();
   }
 
   // --- Attendance CRUD ---

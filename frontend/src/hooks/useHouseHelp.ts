@@ -37,18 +37,48 @@ export function useHouseHelp() {
     getAdjustmentsServerSnapshot
   );
 
-  const activeHelperId = selectedHelperId || (helpers[0]?.id ?? '');
+  // Active helpers for the viewed month
+  const monthHelpers = useMemo(() => {
+    return helpers.filter((h) => {
+      // If helper has attendance in this month, always include
+      const hasAttendance = attendance.some(
+        (a) => a.helperId === h.id && a.date.startsWith(currentMonth)
+      );
+      if (hasAttendance) return true;
 
-  // Memoized calculations
+      // Check joinDate: if joined in a later month, don't show in earlier months
+      if (h.joinDate) {
+        const joinMonth = h.joinDate.substring(0, 7);
+        if (currentMonth < joinMonth) return false;
+      }
+
+      // Check leftDate: if left in an earlier month, don't show in later months
+      if (h.leftDate) {
+        const leftMonth = h.leftDate.substring(0, 7);
+        if (currentMonth > leftMonth) return false;
+      }
+
+      // If marked inactive without a leftDate, only show if they had records
+      if (h.isActive === false) return false;
+
+      return true;
+    });
+  }, [helpers, attendance, currentMonth]);
+
+  const activeHelperId =
+    (monthHelpers.some((h) => h.id === selectedHelperId) ? selectedHelperId : '') ||
+    (monthHelpers[0]?.id ?? '');
+
+  // Memoized calculations for helpers active in currentMonth
   const calculations: HelperSalaryCalculation[] = useMemo(() => {
-    return helpers.map((helper) => {
+    return monthHelpers.map((helper) => {
       const helperRecords = attendance.filter(
         (a) => a.helperId === helper.id && a.date.startsWith(currentMonth)
       );
       const adjustment = storageService.getAdjustment(helper.id, currentMonth);
       return calculateMonthlySalary(helper, currentMonth, helperRecords, adjustment);
     });
-  }, [helpers, attendance, adjustments, currentMonth]);
+  }, [monthHelpers, attendance, adjustments, currentMonth]);
 
   const selectedHelperCalc = useMemo(() => {
     return calculations.find((c) => c.helper.id === activeHelperId);
@@ -82,7 +112,18 @@ export function useHouseHelp() {
   };
 
   const deleteHelper = (id: string) => {
-    storageService.deleteHelper(id);
+    storageService.deleteHelper(id, currentMonth);
+    if (selectedHelperId === id) {
+      setSelectedHelperId('');
+    }
+  };
+
+  const restoreHelper = (id: string) => {
+    storageService.restoreHelper(id);
+  };
+
+  const hardDeleteHelper = (id: string) => {
+    storageService.hardDeleteHelper(id);
     if (selectedHelperId === id) {
       setSelectedHelperId('');
     }
@@ -113,6 +154,7 @@ export function useHouseHelp() {
     activeTab,
     setActiveTab,
     helpers,
+    monthHelpers,
     attendance,
     activeHelperId,
     setSelectedHelperId,
@@ -125,6 +167,8 @@ export function useHouseHelp() {
     updateAdjustment,
     saveHelper,
     deleteHelper,
+    restoreHelper,
+    hardDeleteHelper,
     resetDemo,
     exportBackup,
     importBackup,

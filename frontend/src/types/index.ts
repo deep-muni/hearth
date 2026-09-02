@@ -37,6 +37,7 @@ export interface HouseHelp {
   phone?: string;
   notes?: string;
   joinDate?: string;
+  leftDate?: string;
   isActive: boolean;
 }
 

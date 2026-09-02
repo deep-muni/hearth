@@ -34,6 +34,9 @@ type HouseHelp struct {
 	WeeklyOffDay        int        `json:"weeklyOffDay"` // 0 = Sunday, 1 = Monday... -1 = None
 	Phone               string     `json:"phone,omitempty"`
 	Notes               string     `json:"notes,omitempty"`
+	JoinDate            *time.Time `json:"joinDate,omitempty"`
+	LeftDate            *time.Time `json:"leftDate,omitempty"`
+	IsActive            bool       `json:"isActive"`
 	CreatedAt           time.Time  `json:"createdAt"`
 }
 

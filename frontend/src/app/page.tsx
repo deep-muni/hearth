@@ -15,6 +15,7 @@ export default function HomePage() {
     activeTab,
     setActiveTab,
     helpers,
+    monthHelpers,
     attendance,
     activeHelperId,
     setSelectedHelperId,
@@ -27,6 +28,7 @@ export default function HomePage() {
     updateAdjustment,
     saveHelper,
     deleteHelper,
+    restoreHelper,
     resetDemo,
     exportBackup,
     importBackup,
@@ -46,7 +48,7 @@ export default function HomePage() {
         <Container maxW="440px" p={0}>
           {activeTab === 'calendar' && (
             <CalendarView
-              helpers={helpers}
+              helpers={monthHelpers}
               selectedHelperId={activeHelperId}
               onSelectHelper={setSelectedHelperId}
               currentMonth={currentMonth}
@@ -72,6 +74,7 @@ export default function HomePage() {
               helpers={helpers}
               onSaveHelper={saveHelper}
               onDeleteHelper={deleteHelper}
+              onRestoreHelper={restoreHelper}
               onResetDemo={resetDemo}
               onExportBackup={exportBackup}
               onImportBackup={importBackup}
