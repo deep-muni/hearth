@@ -11,7 +11,6 @@ import { ItemCountModal } from './ItemCountModal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { CalendarOff, ArrowRight } from 'lucide-react';
 
 interface CalendarViewProps {
@@ -52,7 +51,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 }) => {
   const selectedHelper = helpers.find((h) => h.id === selectedHelperId) || helpers[0];
   const [modalDate, setModalDate] = useState<string | null>(null);
-  const [isFillConfirmOpen, setIsFillConfirmOpen] = useState(false);
 
   if (!selectedHelper) {
     return (
@@ -75,24 +73,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const handleCellClick = (dayInfo: CalendarDayInfo) => {
     if (!dayInfo.isCurrentMonth) return;
     setModalDate(dayInfo.dateStr);
-  };
-
-  const handleFillPresent = () => {
-    setIsFillConfirmOpen(true);
-  };
-
-  const performFillPresent = () => {
-    calendarDays
-      .filter((d) => d.isCurrentMonth)
-      .forEach((d) => {
-        const isWeeklyOff =
-          selectedHelper.weeklyOffDay >= 0 && d.dayOfWeek === selectedHelper.weeklyOffDay;
-        if (isWeeklyOff) {
-          onSetAttendance(selectedHelper.id, d.dateStr, 'WEEKLY_OFF');
-        } else {
-          onSetAttendance(selectedHelper.id, d.dateStr, 'PRESENT');
-        }
-      });
   };
 
   const currentRecord = modalDate ? recordsByDate.get(modalDate) : undefined;
@@ -222,12 +202,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               {formatCurrency(salaryCalculation.netPayable)}
             </Text>
           )}
-
-          {normalizedType === 'DAYS_LEAVES' && (
-            <Button variant="secondary" size="xs" onClick={handleFillPresent}>
-              Fill
-            </Button>
-          )}
         </HStack>
       </Flex>
 
@@ -338,15 +312,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           }}
         />
       )}
-
-      <ConfirmDialog
-        isOpen={isFillConfirmOpen}
-        onClose={() => setIsFillConfirmOpen(false)}
-        onConfirm={performFillPresent}
-        title="Fill Present Days"
-        description={`Fill all working days in ${currentMonth} as Present for ${selectedHelper.name}?`}
-        confirmLabel="Fill Present"
-      />
     </VStack>
   );
 };
