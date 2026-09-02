@@ -5,11 +5,20 @@ import { Header } from '@/components/common/Header';
 import { CalendarView } from '@/components/calendar/CalendarView';
 import { MonthlySummaryView } from '@/components/summary/MonthlySummaryView';
 import { ConfigView } from '@/components/config/ConfigView';
-import { storageService } from '@/services/storageService';
+import { storageService, EMPTY_HELPERS, EMPTY_ATTENDANCE } from '@/services/storageService';
 import { getCurrentMonth } from '@/utils/dateUtils';
 import { calculateMonthlySalary } from '@/utils/salaryCalculator';
 import { AttendanceStatus, HelperSalaryCalculation, HouseHelp, MonthlyAdjustment } from '@/types';
 import { Heart, Server } from 'lucide-react';
+
+const subscribeStorage = (cb: () => void) => storageService.subscribe(cb);
+const getHelpersSnapshot = () => storageService.getHelpers();
+const getHelpersServerSnapshot = () => EMPTY_HELPERS;
+const getAttendanceSnapshot = () => storageService.getAttendance();
+const getAttendanceServerSnapshot = () => EMPTY_ATTENDANCE;
+const subscribeClient = () => () => {};
+const getClientSnapshot = () => true;
+const getClientServerSnapshot = () => false;
 
 export default function HomePage() {
   const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
@@ -17,21 +26,21 @@ export default function HomePage() {
   const [selectedHelperId, setSelectedHelperId] = useState<string>('');
 
   const isClient = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
+    subscribeClient,
+    getClientSnapshot,
+    getClientServerSnapshot
   );
 
   const helpers = useSyncExternalStore(
-    (cb) => storageService.subscribe(cb),
-    () => storageService.getHelpers(),
-    () => []
+    subscribeStorage,
+    getHelpersSnapshot,
+    getHelpersServerSnapshot
   );
 
   const attendance = useSyncExternalStore(
-    (cb) => storageService.subscribe(cb),
-    () => storageService.getAttendance(),
-    () => []
+    subscribeStorage,
+    getAttendanceSnapshot,
+    getAttendanceServerSnapshot
   );
 
   const activeHelperId = selectedHelperId || (helpers[0]?.id ?? '');

@@ -95,6 +95,9 @@ function generateInitialAttendance(): AttendanceRecord[] {
   return records;
 }
 
+export const EMPTY_HELPERS: HouseHelp[] = [];
+export const EMPTY_ATTENDANCE: AttendanceRecord[] = [];
+
 // Check for window/localStorage availability
 const isBrowser = typeof window !== 'undefined';
 
@@ -191,7 +194,7 @@ class StorageService {
 
   // --- Helpers CRUD ---
   public getHelpers(): HouseHelp[] {
-    return [...this.helpers];
+    return this.helpers;
   }
 
   public getHelperById(id: string): HouseHelp | undefined {
@@ -201,9 +204,11 @@ class StorageService {
   public saveHelper(helper: HouseHelp): void {
     const index = this.helpers.findIndex((h) => h.id === helper.id);
     if (index >= 0) {
-      this.helpers[index] = helper;
+      const next = [...this.helpers];
+      next[index] = helper;
+      this.helpers = next;
     } else {
-      this.helpers.push(helper);
+      this.helpers = [...this.helpers, helper];
     }
     this.saveHelpers();
   }
@@ -217,6 +222,9 @@ class StorageService {
 
   // --- Attendance CRUD ---
   public getAttendance(month?: string, helperId?: string): AttendanceRecord[] {
+    if (!month && !helperId) {
+      return this.attendance;
+    }
     let list = this.attendance;
     if (month) {
       list = list.filter((a) => a.date.startsWith(month));
@@ -239,9 +247,11 @@ class StorageService {
     };
 
     if (existingIndex >= 0) {
-      this.attendance[existingIndex] = fullRecord;
+      const next = [...this.attendance];
+      next[existingIndex] = fullRecord;
+      this.attendance = next;
     } else {
-      this.attendance.push(fullRecord);
+      this.attendance = [...this.attendance, fullRecord];
     }
 
     this.saveAttendance();
@@ -277,7 +287,7 @@ class StorageService {
 
   public saveAdjustment(adj: MonthlyAdjustment): void {
     const key = `${adj.helperId}_${adj.month}`;
-    this.adjustments[key] = adj;
+    this.adjustments = { ...this.adjustments, [key]: adj };
     this.saveAdjustments();
   }
 
