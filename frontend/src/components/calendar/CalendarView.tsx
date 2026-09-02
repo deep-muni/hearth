@@ -89,8 +89,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     <VStack gap={3.5} align="stretch" maxW="440px" mx="auto" w="100%">
-      {/* 1. Minimal Staff Selector */}
-      <Flex gap={1.5} overflowX="auto" pb={0.5} className="no-scrollbar">
+      {/* 1. Staff Selector (No horizontal scroll, all names visible) */}
+      <SimpleGrid
+        columns={helpers.length <= 3 ? helpers.length : helpers.length === 4 ? 2 : 3}
+        gap={1.5}
+      >
         {helpers.map((h) => {
           const isSelected = h.id === selectedHelper.id;
           const leaves = attendance
@@ -108,9 +111,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '5px',
-                padding: '6px 12px',
-                borderRadius: '9999px',
+                padding: '7px 6px',
+                borderRadius: '10px',
                 border: '1px solid',
                 borderColor: isSelected ? '#0f172a' : '#e2e8f0',
                 background: isSelected ? '#0f172a' : '#ffffff',
@@ -118,17 +122,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 fontSize: '12px',
                 fontWeight: isSelected ? 600 : 500,
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
                 transition: 'all 0.12s ease',
               }}
             >
               <span>{h.avatarEmoji}</span>
-              <span>{h.name.split(' ')[0]}</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {h.name.split(' ')[0]}
+              </span>
               {leaves > 0 && (
                 <span
                   style={{
                     fontSize: '10px',
-                    padding: '0 5px',
+                    padding: '0 4px',
                     borderRadius: '9999px',
                     background: isSelected ? 'rgba(255,255,255,0.2)' : '#fee2e2',
                     color: isSelected ? '#ffffff' : '#dc2626',
@@ -141,7 +146,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </button>
           );
         })}
-      </Flex>
+      </SimpleGrid>
 
       {/* 2. Staff Overview & Quick Action */}
       <Flex
