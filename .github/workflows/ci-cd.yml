@@ -38,8 +38,12 @@ jobs:
           go-version: '1.25'
           cache-dependency-path: backend/go.sum
 
-      - name: Run Backend Unit Tests (Test Database Environment)
-        run: cd backend && APP_ENV=test go test -v ./...
+      - name: Run Backend Quality Checks (gofmt, go vet, unit & e2e tests)
+        run: |
+          cd backend
+          test -z "$(gofmt -l .)"
+          go vet ./...
+          APP_ENV=test go test -v ./...
 
   build-and-package:
     name: Build & Docker Package

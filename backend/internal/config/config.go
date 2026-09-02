@@ -5,10 +5,10 @@ import (
 )
 
 type Config struct {
-	Port        string
-	AppEnv      string
-	MongoURI    string
-	Database    string
+	Port     string
+	AppEnv   string
+	MongoURI string
+	Database string
 }
 
 func Load() Config {

@@ -5,11 +5,17 @@
   "scripts": {
     "dev": "concurrently -n \"backend,frontend\" -c \"blue,magenta\" \"pnpm dev:backend\" \"pnpm dev:frontend\"",
     "dev:frontend": "dotenvx run -- pnpm --filter frontend dev",
-    "build:frontend": "pnpm --filter frontend build",
     "dev:backend": "dotenvx run -- bash -c \"cd backend && go run cmd/server/main.go\"",
+    "build:frontend": "pnpm --filter frontend build",
     "build:backend": "cd backend && go build -o bin/server cmd/server/main.go",
     "build": "make build",
+    "format": "make format",
+    "lint": "make lint",
     "test": "make test",
+    "test:frontend": "make test-frontend",
+    "test:backend": "make test-backend",
+    "test:unit:backend": "make test-unit-backend",
+    "test:e2e:backend": "make test-e2e-backend",
     "check-all": "make check-all"
   },
   "devDependencies": {
