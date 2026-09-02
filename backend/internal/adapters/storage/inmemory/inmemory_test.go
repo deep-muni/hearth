@@ -125,32 +125,3 @@ func TestInMemoryAttendanceAndAdjustments(t *testing.T) {
 		t.Fatalf("expected 0 attendance records after deletion, got %d", len(afterDel))
 	}
 }
-
-func TestInMemoryBackupExportImport(t *testing.T) {
-	ctx := context.Background()
-	store := inmemory.New()
-
-	_, _ = store.Helpers().Save(ctx, domain.HouseHelp{
-		ID:         "h_1",
-		Name:       "Geeta",
-		Role:       "Maid",
-		BaseSalary: 3000,
-		IsActive:   true,
-	})
-
-	backup, err := store.Backup().ExportAll(ctx)
-	if err != nil || len(backup.Helpers) != 1 {
-		t.Fatalf("expected 1 helper in backup export, got %v", err)
-	}
-
-	store2 := inmemory.New()
-	err = store2.Backup().ImportAll(ctx, *backup)
-	if err != nil {
-		t.Fatalf("failed to import backup: %v", err)
-	}
-
-	imported, err := store2.Helpers().GetAll(ctx, true)
-	if err != nil || len(imported) != 1 || imported[0].Name != "Geeta" {
-		t.Fatalf("expected 1 imported helper named Geeta, got %v", imported)
-	}
-}

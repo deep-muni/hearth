@@ -39,13 +39,11 @@ func main() {
 	helperRepo := mongodb.NewHelperRepository(database.DB)
 	attendanceRepo := mongodb.NewAttendanceRepository(database.DB)
 	adjRepo := mongodb.NewAdjustmentRepository(database.DB)
-	backupRepo := mongodb.NewBackupRepository(database.DB)
 
 	router := http.NewRouter(
 		helperRepo,
 		attendanceRepo,
 		adjRepo,
-		backupRepo,
 		cfg.AppEnv,
 		cfg.Database,
 	)

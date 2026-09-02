@@ -25,8 +25,3 @@ type AdjustmentRepository interface {
 	GetByMonth(ctx context.Context, month string, helperID string) ([]domain.MonthlyAdjustment, error)
 	Upsert(ctx context.Context, adj domain.MonthlyAdjustment) (*domain.MonthlyAdjustment, error)
 }
-
-type BackupRepository interface {
-	ExportAll(ctx context.Context) (*domain.BackupData, error)
-	ImportAll(ctx context.Context, data domain.BackupData) error
-}

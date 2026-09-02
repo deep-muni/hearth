@@ -30,9 +30,6 @@ export default function HomePage() {
     deleteHelper,
     restoreHelper,
     hardDeleteHelper,
-    resetDemo,
-    exportBackup,
-    importBackup,
   } = useHouseHelp();
 
   return (
@@ -85,9 +82,6 @@ export default function HomePage() {
               onDeleteHelper={deleteHelper}
               onRestoreHelper={restoreHelper}
               onHardDeleteHelper={hardDeleteHelper}
-              onResetDemo={resetDemo}
-              onExportBackup={exportBackup}
-              onImportBackup={importBackup}
             />
           )}
         </Container>

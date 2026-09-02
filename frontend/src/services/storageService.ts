@@ -6,119 +6,6 @@ const HELPERS_KEY = 'househelp_helpers_v1';
 const ATTENDANCE_KEY = 'househelp_attendance_v1';
 const ADJUSTMENTS_KEY = 'househelp_adjustments_v1';
 
-const INITIAL_HELPERS: HouseHelp[] = [
-  {
-    id: 'helper-1',
-    name: 'Sunita Sharma',
-    role: 'Chef & Cook',
-    avatarEmoji: '👩‍🍳',
-    colorTheme: 'pink',
-    salaryType: 'DAYS_LEAVES',
-    baseSalary: 8000,
-    paidLeavesAllowance: 2,
-    weeklyOffDay: 0,
-    phone: '+91 98765 43210',
-    notes: 'Prepares lunch and dinner; specialist in North Indian dishes.',
-    joinDate: '2025-01-10',
-    isActive: true,
-  },
-  {
-    id: 'helper-2',
-    name: 'Ramesh Kumar',
-    role: 'Personal Driver',
-    avatarEmoji: '🚗',
-    colorTheme: 'blue',
-    salaryType: 'FIXED',
-    baseSalary: 12000,
-    paidLeavesAllowance: 0,
-    weeklyOffDay: -1,
-    phone: '+91 98123 45678',
-    notes: 'Handles school pickups and grocery runs.',
-    joinDate: '2025-03-01',
-    isActive: true,
-  },
-  {
-    id: 'helper-3',
-    name: 'Pinky Devi',
-    role: 'Ironing & Laundry',
-    avatarEmoji: '🧺',
-    colorTheme: 'purple',
-    salaryType: 'COUNT_BASED',
-    baseSalary: 20,
-    ratePerItem: 20,
-    itemUnitName: 'clothes',
-    paidLeavesAllowance: 0,
-    weeklyOffDay: -1,
-    phone: '+91 98989 12345',
-    notes: 'Pressing clothes and laundry loads.',
-    joinDate: '2024-11-15',
-    isActive: true,
-  },
-];
-
-function generateInitialAttendance(): AttendanceRecord[] {
-  const currentMonth = getCurrentMonth();
-  const records: AttendanceRecord[] = [
-    {
-      id: `rec-1`,
-      helperId: 'helper-1',
-      date: `${currentMonth}-04`,
-      status: 'FULL_LEAVE',
-      note: 'Family function in hometown',
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: `rec-2`,
-      helperId: 'helper-1',
-      date: `${currentMonth}-12`,
-      status: 'HALF_LEAVE',
-      note: 'Doctor appointment morning',
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: `rec-3`,
-      helperId: 'helper-3',
-      date: `${currentMonth}-03`,
-      itemCount: 15,
-      note: 'Shirts & kurtas',
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: `rec-4`,
-      helperId: 'helper-3',
-      date: `${currentMonth}-07`,
-      itemCount: 22,
-      note: 'Bed linens & pants',
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: `rec-5`,
-      helperId: 'helper-3',
-      date: `${currentMonth}-14`,
-      itemCount: 18,
-      note: 'Formals & school dresses',
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: `rec-6`,
-      helperId: 'helper-3',
-      date: `${currentMonth}-21`,
-      itemCount: 25,
-      note: 'Weekly laundry batch',
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: `rec-7`,
-      helperId: 'helper-3',
-      date: `${currentMonth}-28`,
-      itemCount: 16,
-      note: 'Casual clothes',
-      updatedAt: new Date().toISOString(),
-    },
-  ];
-  return records;
-}
-
 export const EMPTY_HELPERS: HouseHelp[] = [];
 export const EMPTY_ATTENDANCE: AttendanceRecord[] = [];
 export const EMPTY_ADJUSTMENTS: Record<string, MonthlyAdjustment> = {};
@@ -132,13 +19,14 @@ class StorageService {
   private listeners: Set<() => void> = new Set();
 
   constructor() {
-    this.loadFromStorage();
+    this.init();
   }
 
-  private loadFromStorage(): void {
+  private init(): void {
     if (!isBrowser) {
-      this.helpers = [...INITIAL_HELPERS];
-      this.attendance = generateInitialAttendance();
+      this.helpers = [];
+      this.attendance = [];
+      this.adjustments = {};
       return;
     }
 
@@ -153,16 +41,14 @@ class StorageService {
           itemUnitName: h.itemUnitName ?? (h.salaryType === 'COUNT_BASED' ? 'items' : undefined),
         }));
       } else {
-        this.helpers = [...INITIAL_HELPERS];
-        this.saveHelpers();
+        this.helpers = [];
       }
 
       const storedAttendance = localStorage.getItem(ATTENDANCE_KEY);
       if (storedAttendance) {
         this.attendance = JSON.parse(storedAttendance);
       } else {
-        this.attendance = generateInitialAttendance();
-        this.saveAttendance();
+        this.attendance = [];
       }
 
       const storedAdjustments = localStorage.getItem(ADJUSTMENTS_KEY);
@@ -172,8 +58,8 @@ class StorageService {
         this.adjustments = {};
       }
     } catch {
-      this.helpers = [...INITIAL_HELPERS];
-      this.attendance = generateInitialAttendance();
+      this.helpers = [];
+      this.attendance = [];
       this.adjustments = {};
     }
   }
@@ -248,28 +134,15 @@ class StorageService {
       }
       return h;
     });
-    this.attendance = this.attendance.filter(
-      (a) => !(a.helperId === id && a.date.substring(0, 7) >= targetMonth)
-    );
-    for (const key of Object.keys(this.adjustments)) {
-      const [adjHelperId, adjMonth] = key.split('_');
-      if (adjHelperId === id && adjMonth >= targetMonth) {
-        delete this.adjustments[key];
-      }
-    }
     this.saveHelpers();
-    this.saveAttendance();
-    this.saveAdjustments();
   }
 
   public restoreHelper(id: string): void {
     this.helpers = this.helpers.map((h) => {
       if (h.id === id) {
-        return {
-          ...h,
-          isActive: true,
-          leftDate: undefined,
-        };
+        const copy = { ...h, isActive: true };
+        delete copy.leftDate;
+        return copy;
       }
       return h;
     });
@@ -279,52 +152,56 @@ class StorageService {
   public hardDeleteHelper(id: string): void {
     this.helpers = this.helpers.filter((h) => h.id !== id);
     this.attendance = this.attendance.filter((a) => a.helperId !== id);
-    const nextAdj: Record<string, MonthlyAdjustment> = {};
-    for (const [key, adj] of Object.entries(this.adjustments)) {
-      if (adj.helperId !== id) {
-        nextAdj[key] = adj;
+    const updatedAdjustments: Record<string, MonthlyAdjustment> = {};
+    for (const [k, v] of Object.entries(this.adjustments)) {
+      if (v.helperId !== id) {
+        updatedAdjustments[k] = v;
       }
     }
-    this.adjustments = nextAdj;
+    this.adjustments = updatedAdjustments;
+
     this.saveHelpers();
     this.saveAttendance();
     this.saveAdjustments();
   }
 
-  public getAttendance(month?: string, helperId?: string): AttendanceRecord[] {
-    if (!month && !helperId) {
-      return this.attendance;
-    }
-    let list = this.attendance;
-    if (month) {
-      list = list.filter((a) => a.date.startsWith(month));
-    }
-    if (helperId) {
-      list = list.filter((a) => a.helperId === helperId);
-    }
-    return list;
+  public getAttendance(): AttendanceRecord[] {
+    return this.attendance;
   }
 
-  public setAttendance(record: Omit<AttendanceRecord, 'id' | 'updatedAt'>): void {
+  public setAttendance(params: {
+    helperId: string;
+    date: string;
+    status: AttendanceRecord['status'];
+    note?: string;
+  }): void {
     const existingIndex = this.attendance.findIndex(
-      (a) => a.helperId === record.helperId && a.date === record.date
+      (a) => a.helperId === params.helperId && a.date === params.date
     );
 
-    const fullRecord: AttendanceRecord = {
-      ...record,
+    const record: AttendanceRecord = {
       id:
         existingIndex >= 0
           ? this.attendance[existingIndex].id
-          : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          : `att-${Date.now()}-${Math.random()}`,
+      helperId: params.helperId,
+      date: params.date,
+      status: params.status,
+      note: params.note,
       updatedAt: new Date().toISOString(),
     };
 
     if (existingIndex >= 0) {
       const next = [...this.attendance];
-      next[existingIndex] = fullRecord;
+      next[existingIndex] = {
+        ...next[existingIndex],
+        ...record,
+        itemCount: undefined,
+        customRate: undefined,
+      };
       this.attendance = next;
     } else {
-      this.attendance = [...this.attendance, fullRecord];
+      this.attendance = [...this.attendance, record];
     }
 
     this.saveAttendance();
@@ -333,7 +210,7 @@ class StorageService {
   public setItemCount(
     helperId: string,
     date: string,
-    count: number,
+    itemCount: number,
     note?: string,
     customRate?: number
   ): void {
@@ -341,32 +218,29 @@ class StorageService {
       (a) => a.helperId === helperId && a.date === date
     );
 
-    if (count <= 0 && !note) {
-      if (existingIndex >= 0) {
-        this.removeAttendance(helperId, date);
-      }
-      return;
-    }
-
-    const fullRecord: AttendanceRecord = {
+    const record: AttendanceRecord = {
       id:
         existingIndex >= 0
           ? this.attendance[existingIndex].id
-          : `rec_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          : `att-${Date.now()}-${Math.random()}`,
       helperId,
       date,
-      itemCount: count,
-      customRate: customRate !== undefined && customRate > 0 ? customRate : undefined,
-      note: note || undefined,
+      status: 'PRESENT',
+      itemCount,
+      customRate,
+      note,
       updatedAt: new Date().toISOString(),
     };
 
     if (existingIndex >= 0) {
       const next = [...this.attendance];
-      next[existingIndex] = fullRecord;
+      next[existingIndex] = {
+        ...next[existingIndex],
+        ...record,
+      };
       this.attendance = next;
     } else {
-      this.attendance = [...this.attendance, fullRecord];
+      this.attendance = [...this.attendance, record];
     }
 
     this.saveAttendance();
@@ -374,13 +248,6 @@ class StorageService {
 
   public removeAttendance(helperId: string, date: string): void {
     this.attendance = this.attendance.filter((a) => !(a.helperId === helperId && a.date === date));
-    this.saveAttendance();
-  }
-
-  public clearMonthAttendance(helperId: string, month: string): void {
-    this.attendance = this.attendance.filter(
-      (a) => !(a.helperId === helperId && a.date.startsWith(month))
-    );
     this.saveAttendance();
   }
 
@@ -405,47 +272,6 @@ class StorageService {
     const key = `${adj.helperId}_${adj.month}`;
     this.adjustments = { ...this.adjustments, [key]: adj };
     this.saveAdjustments();
-  }
-
-  public resetToDemoData(): void {
-    this.helpers = [...INITIAL_HELPERS];
-    this.attendance = generateInitialAttendance();
-    this.adjustments = {};
-    this.saveHelpers();
-    this.saveAttendance();
-    this.saveAdjustments();
-  }
-
-  public exportBackup(): string {
-    return JSON.stringify(
-      {
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        helpers: this.helpers,
-        attendance: this.attendance,
-        adjustments: this.adjustments,
-      },
-      null,
-      2
-    );
-  }
-
-  public importBackup(jsonStr: string): boolean {
-    try {
-      const data = JSON.parse(jsonStr);
-      if (Array.isArray(data.helpers) && Array.isArray(data.attendance)) {
-        this.helpers = data.helpers;
-        this.attendance = data.attendance;
-        this.adjustments = data.adjustments || {};
-        this.saveHelpers();
-        this.saveAttendance();
-        this.saveAdjustments();
-        return true;
-      }
-      return false;
-    } catch {
-      return false;
-    }
   }
 }
 

@@ -22,8 +22,6 @@ import {
   useRemoveAttendanceMutation,
 } from '@/queries/useAttendance';
 import { useAdjustmentsQuery, useUpdateAdjustmentMutation } from '@/queries/useAdjustments';
-import { apiClient } from '@/api/client';
-import { storageService } from '@/services/storageService';
 
 export function isHelperActiveInMonth(
   helper: HouseHelp,
@@ -159,36 +157,6 @@ export function useHouseHelp() {
     }
   };
 
-  const resetDemo = () => {
-    storageService.resetToDemoData();
-    window.location.reload();
-  };
-
-  const exportBackup = async () => {
-    const data = await apiClient.exportBackup();
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `house-help-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const importBackup = (json: string): boolean => {
-    try {
-      const data = JSON.parse(json);
-      if (!data || !Array.isArray(data.helpers)) return false;
-      apiClient.importBackup(data).then(() => {
-        window.location.reload();
-      });
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
   return {
     currentMonth,
     setCurrentMonth,
@@ -210,8 +178,5 @@ export function useHouseHelp() {
     deleteHelper,
     restoreHelper,
     hardDeleteHelper,
-    resetDemo,
-    exportBackup,
-    importBackup,
   };
 }

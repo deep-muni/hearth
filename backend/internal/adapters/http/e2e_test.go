@@ -18,7 +18,6 @@ func setupTestServer() http.Handler {
 		store.Helpers(),
 		store.Attendance(),
 		store.Adjustments(),
-		store.Backup(),
 		"test",
 		"househelp_test",
 	)
@@ -187,19 +186,5 @@ func TestAttendanceAndAdjustmentsE2E(t *testing.T) {
 	_ = json.NewDecoder(getAdjRec.Body).Decode(&adjs)
 	if len(adjs) != 1 || adjs[0].Bonus != 300 {
 		t.Fatalf("expected 1 adjustment with bonus 300, got %+v", adjs)
-	}
-
-	backupReq := httptest.NewRequest(http.MethodGet, "/api/backup", nil)
-	backupRec := httptest.NewRecorder()
-	router.ServeHTTP(backupRec, backupReq)
-
-	if backupRec.Code != http.StatusOK {
-		t.Fatalf("expected 200 on backup export, got %d", backupRec.Code)
-	}
-
-	var backup domain.BackupData
-	_ = json.NewDecoder(backupRec.Body).Decode(&backup)
-	if len(backup.Attendance) != 1 || len(backup.Adjustments) != 1 {
-		t.Fatalf("expected exported backup with 1 attendance and 1 adjustment record, got %+v", backup)
 	}
 }

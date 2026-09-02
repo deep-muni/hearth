@@ -169,32 +169,4 @@ export const apiClient = {
       return adjustment;
     }
   },
-
-  exportBackup: async (): Promise<{
-    helpers: HouseHelp[];
-    attendance: AttendanceRecord[];
-    adjustments: MonthlyAdjustment[];
-  }> => {
-    try {
-      return await request('/backup');
-    } catch {
-      return JSON.parse(storageService.exportBackup());
-    }
-  },
-
-  importBackup: async (data: {
-    helpers: HouseHelp[];
-    attendance: AttendanceRecord[];
-    adjustments: MonthlyAdjustment[];
-  }): Promise<{ status: string }> => {
-    try {
-      return await request('/backup', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-    } catch {
-      storageService.importBackup(JSON.stringify(data));
-      return { status: 'imported' };
-    }
-  },
 };

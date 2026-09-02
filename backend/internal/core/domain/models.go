@@ -62,9 +62,3 @@ type MonthlyAdjustment struct {
 	PaidOn           string  `json:"paidOn,omitempty" bson:"paidOn,omitempty"`
 	PaymentMethod    string  `json:"paymentMethod,omitempty" bson:"paymentMethod,omitempty"`
 }
-
-type BackupData struct {
-	Helpers     []HouseHelp         `json:"helpers"`
-	Attendance  []AttendanceRecord  `json:"attendance"`
-	Adjustments []MonthlyAdjustment `json:"adjustments"`
-}

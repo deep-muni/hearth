@@ -5,11 +5,10 @@ import { Box, Flex, HStack, VStack, Text } from '@chakra-ui/react';
 import { HouseHelp } from '@/types';
 import { formatCurrency, formatMonthDisplay } from '@/utils/dateUtils';
 import { StaffFormModal } from './StaffFormModal';
-import { BackupModal } from './BackupModal';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Plus, Edit2, Trash2, Download, Upload, RotateCcw } from 'lucide-react';
+import { Plus, Edit2, Trash2, RotateCcw } from 'lucide-react';
 
 interface ConfigViewProps {
   helpers: HouseHelp[];
@@ -18,9 +17,6 @@ interface ConfigViewProps {
   onDeleteHelper: (id: string) => void;
   onRestoreHelper?: (id: string) => void;
   onHardDeleteHelper?: (id: string) => void;
-  onResetDemo: () => void;
-  onExportBackup: () => void;
-  onImportBackup: (json: string) => boolean;
 }
 
 const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -32,13 +28,9 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
   onDeleteHelper,
   onRestoreHelper,
   onHardDeleteHelper,
-  onResetDemo,
-  onExportBackup,
-  onImportBackup,
 }) => {
   const [editingHelper, setEditingHelper] = useState<HouseHelp | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [helperToRemove, setHelperToRemove] = useState<HouseHelp | null>(null);
   const [helperToHardDelete, setHelperToHardDelete] = useState<HouseHelp | null>(null);
 
@@ -74,53 +66,72 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
       </Flex>
 
       <VStack gap={2} align="stretch">
-        {activeHelpers.map((h) => (
-          <Card key={h.id} style={{ padding: '12px' }}>
-            <Flex justify="space-between" align="center">
-              <HStack gap={2.5}>
-                <Text fontSize="22px">{h.avatarEmoji}</Text>
-                <Box>
-                  <Text fontSize="13px" fontWeight="700" color="var(--text-primary)">
-                    {h.name}
-                  </Text>
-                  <Text fontSize="11px" color="var(--text-muted)">
-                    {h.salaryType === 'DAYS_LEAVES' &&
-                      `${h.role} • ${formatCurrency(h.baseSalary)}/mo`}
-                    {h.salaryType === 'FIXED' && `${h.role} • ${formatCurrency(h.baseSalary)}/mo`}
-                    {h.salaryType === 'COUNT_BASED' &&
-                      `${h.role} • ${formatCurrency(h.ratePerItem ?? h.baseSalary)}/${h.itemUnitName || 'item'}`}
-                  </Text>
-                  <Text fontSize="10px" color="var(--text-subtle)">
-                    {h.salaryType === 'DAYS_LEAVES' &&
-                      `${h.paidLeavesAllowance} paid leaves/mo • ${h.weeklyOffDay >= 0 ? `${WEEKDAY_NAMES[h.weeklyOffDay]} off` : 'No weekly off'}`}
-                    {h.salaryType === 'FIXED' && 'Fixed flat monthly payout'}
-                    {h.salaryType === 'COUNT_BASED' && 'Per-item piece rate tracking'}
-                  </Text>
-                </Box>
-              </HStack>
-
-              <HStack gap={1}>
-                <Button
-                  variant="outline"
-                  size="xs"
-                  onClick={() => handleOpenEdit(h)}
-                  icon={<Edit2 size={12} />}
-                  aria-label="Edit staff member"
-                  style={{ padding: '5px 7px' }}
-                />
-
-                <Button
-                  variant="danger"
-                  size="xs"
-                  onClick={() => setHelperToRemove(h)}
-                  icon={<Trash2 size={12} />}
-                  aria-label="Delete staff member"
-                  style={{ padding: '5px 7px' }}
-                />
-              </HStack>
-            </Flex>
+        {activeHelpers.length === 0 ? (
+          <Card style={{ padding: '24px 16px', textAlign: 'center' }}>
+            <Text fontSize="13px" fontWeight="600" color="var(--text-primary)" mb={1}>
+              No staff members yet
+            </Text>
+            <Text fontSize="11px" color="var(--text-muted)" mb={3}>
+              Click Add Staff above to add your first maid, cook, driver, or helper.
+            </Text>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleOpenAdd}
+              icon={<Plus size={13} />}
+              style={{ margin: '0 auto' }}
+            >
+              Add First Staff
+            </Button>
           </Card>
-        ))}
+        ) : (
+          activeHelpers.map((h) => (
+            <Card key={h.id} style={{ padding: '12px' }}>
+              <Flex justify="space-between" align="center">
+                <HStack gap={2.5}>
+                  <Text fontSize="22px">{h.avatarEmoji}</Text>
+                  <Box>
+                    <Text fontSize="13px" fontWeight="700" color="var(--text-primary)">
+                      {h.name}
+                    </Text>
+                    <Text fontSize="11px" color="var(--text-muted)">
+                      {h.salaryType === 'DAYS_LEAVES' &&
+                        `${h.role} • ${formatCurrency(h.baseSalary)}/mo`}
+                      {h.salaryType === 'FIXED' && `${h.role} • ${formatCurrency(h.baseSalary)}/mo`}
+                      {h.salaryType === 'COUNT_BASED' &&
+                        `${h.role} • ${formatCurrency(h.ratePerItem ?? h.baseSalary)}/${h.itemUnitName || 'item'}`}
+                    </Text>
+                    <Text fontSize="10px" color="var(--text-subtle)">
+                      {h.salaryType === 'DAYS_LEAVES' &&
+                        `${h.paidLeavesAllowance} paid leaves/mo • ${h.weeklyOffDay >= 0 ? `${WEEKDAY_NAMES[h.weeklyOffDay]} off` : 'No weekly off'}`}
+                      {h.salaryType === 'FIXED' && 'Fixed flat monthly payout'}
+                      {h.salaryType === 'COUNT_BASED' && 'Per-item piece rate tracking'}
+                    </Text>
+                  </Box>
+                </HStack>
+
+                <HStack gap={1}>
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => handleOpenEdit(h)}
+                    icon={<Edit2 size={12} />}
+                    aria-label="Edit staff member"
+                    style={{ padding: '5px 7px' }}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setHelperToRemove(h)}
+                    icon={<Trash2 size={12} />}
+                    aria-label="Remove staff member"
+                    style={{ padding: '5px 7px' }}
+                  />
+                </HStack>
+              </Flex>
+            </Card>
+          ))
+        )}
       </VStack>
 
       {formerHelpers.length > 0 && (
@@ -171,65 +182,12 @@ export const ConfigView: React.FC<ConfigViewProps> = ({
         </VStack>
       )}
 
-      <Flex justify="center" gap={3} pt={3} pb={4} fontSize="11px" color="var(--text-subtle)">
-        <button
-          onClick={onExportBackup}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '3px',
-          }}
-        >
-          <Download size={11} /> Backup
-        </button>
-        <span>•</span>
-        <button
-          onClick={() => setIsBackupModalOpen(true)}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '3px',
-          }}
-        >
-          <Upload size={11} /> Restore
-        </button>
-        <span>•</span>
-        <button
-          onClick={onResetDemo}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '3px',
-          }}
-        >
-          <RotateCcw size={11} /> Reset Demo
-        </button>
-      </Flex>
-
       <StaffFormModal
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
         helper={editingHelper}
         onSave={onSaveHelper}
         currentMonth={currentMonth}
-      />
-
-      <BackupModal
-        isOpen={isBackupModalOpen}
-        onClose={() => setIsBackupModalOpen(false)}
-        onImport={onImportBackup}
       />
 
       <ConfirmDialog

@@ -17,7 +17,6 @@ func NewRouter(
 	helpers ports.HelperRepository,
 	attendance ports.AttendanceRepository,
 	adjustments ports.AdjustmentRepository,
-	backup ports.BackupRepository,
 	env string,
 	dbName string,
 ) http.Handler {
@@ -41,7 +40,6 @@ func NewRouter(
 	helperHandler := NewHelperHandler(helpers)
 	attendanceHandler := NewAttendanceHandler(attendance)
 	adjHandler := NewAdjustmentHandler(adjustments)
-	backupHandler := NewBackupHandler(backup)
 
 	r.Route("/api", func(api chi.Router) {
 		api.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -66,9 +64,6 @@ func NewRouter(
 
 		api.Get("/adjustments", adjHandler.Get)
 		api.Post("/adjustments", adjHandler.Save)
-
-		api.Get("/backup", backupHandler.Export)
-		api.Post("/backup", backupHandler.Import)
 	})
 
 	r.NotFound(static.Handler().ServeHTTP)
