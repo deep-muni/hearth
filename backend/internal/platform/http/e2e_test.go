@@ -59,4 +59,3 @@ func TestStaffBudgetEndpoints(t *testing.T) {
 		t.Fatalf("expected status 200, got %d", rr.Code)
 	}
 }
-
