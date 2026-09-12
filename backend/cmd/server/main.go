@@ -10,13 +10,13 @@ import (
 	"syscall"
 	"time"
 
-	"house-help-budget/backend/internal/config"
-	mealplannerHttp "house-help-budget/backend/internal/modules/mealplanner/http"
-	mealplannerMongo "house-help-budget/backend/internal/modules/mealplanner/storage/mongodb"
-	staffbudgetHttp "house-help-budget/backend/internal/modules/staffbudget/http"
-	staffbudgetMongo "house-help-budget/backend/internal/modules/staffbudget/storage/mongodb"
-	platformMongo "house-help-budget/backend/internal/platform/db/mongodb"
-	platformHttp "house-help-budget/backend/internal/platform/http"
+	"hearth/backend/internal/config"
+	mealplannerHttp "hearth/backend/internal/modules/mealplanner/http"
+	mealplannerMongo "hearth/backend/internal/modules/mealplanner/storage/mongodb"
+	staffbudgetHttp "hearth/backend/internal/modules/staffbudget/http"
+	staffbudgetMongo "hearth/backend/internal/modules/staffbudget/storage/mongodb"
+	platformMongo "hearth/backend/internal/platform/db/mongodb"
+	platformHttp "hearth/backend/internal/platform/http"
 )
 
 func main() {

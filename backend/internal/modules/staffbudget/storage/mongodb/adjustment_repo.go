@@ -7,8 +7,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 
-	"house-help-budget/backend/internal/modules/staffbudget/domain"
-	"house-help-budget/backend/internal/modules/staffbudget/ports"
+	"hearth/backend/internal/modules/staffbudget/domain"
+	"hearth/backend/internal/modules/staffbudget/ports"
 )
 
 type AdjustmentRepository struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"house-help-budget/backend/internal/modules/mealplanner/domain"
+	"hearth/backend/internal/modules/mealplanner/domain"
 )
 
 func TestMealCRUD(t *testing.T) {

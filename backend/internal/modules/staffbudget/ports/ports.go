@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	"house-help-budget/backend/internal/modules/staffbudget/domain"
+	"hearth/backend/internal/modules/staffbudget/domain"
 )
 
 type StaffRepository interface {

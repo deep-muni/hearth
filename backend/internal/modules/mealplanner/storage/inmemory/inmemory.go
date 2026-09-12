@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"house-help-budget/backend/internal/modules/mealplanner/domain"
-	"house-help-budget/backend/internal/modules/mealplanner/ports"
+	"hearth/backend/internal/modules/mealplanner/domain"
+	"hearth/backend/internal/modules/mealplanner/ports"
 )
 
 type Storage struct {
