@@ -25,4 +25,3 @@ type AdjustmentRepository interface {
 	GetByMonth(ctx context.Context, month string, staffID string) ([]domain.SalaryAdjustment, error)
 	Upsert(ctx context.Context, adj domain.SalaryAdjustment) (*domain.SalaryAdjustment, error)
 }
-

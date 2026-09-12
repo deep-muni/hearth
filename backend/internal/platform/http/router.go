@@ -61,7 +61,6 @@ func NewRouter(
 		registerHandlers(api)
 	})
 
-
 	r.NotFound(static.Handler().ServeHTTP)
 
 	return r
