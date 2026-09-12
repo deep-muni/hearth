@@ -1,111 +1,43 @@
-# 🏡 Hearth: Household Workspace & Management Platform
+# 🏡 Hearth
 
-A unified, modular household workspace application featuring **Staff & Budget Management** and **Weekly Meal Planning**. Built with Next.js 16, React 19, Go 1.25, and MongoDB persistence.
+> *Our home, organised — in one calm, shared place.*
 
----
-
-## 📦 Modular Workspaces
-
-1. **👥 Staff & Budget Workspace** (`/staff-budget`):
-   - Multi-staff monthly calendar with status tracking (**Present**, **Leave**, **Paid Leave**, **Weekly Off**).
-   - Real-time salary calculations across multiple models (Daily rate with paid leave allowance, Fixed salary, Item count logging).
-   - Adjustments (Bonus/Tips, Advance deductions), payment receipt generation, and MongoDB cloud persistence.
-
-2. **🍲 Meal Planner Workspace** (`/meal-planner`):
-   - Accordion week planner with automatic baseline routine fallback.
-   - Intelligent dish library with frequency rankings and autocomplete comboboxes.
-   - WhatsApp-formatted export previews for household cooks.
-   - Custom meal time slots manager and baseline weekly routine setup.
-
-3. **🏢 Workspaces Hub** (`/`):
-   - Fast module switcher and quick-access dashboard.
+**Hearth** is a private, thoughtful home operations workspace designed to help households coordinate everyday life smoothly. Rather than juggling scattered spreadsheets, physical calendars, note apps, and messaging threads, Hearth brings the rhythms of your home together under one calm, unified roof.
 
 ---
 
-## 🗄️ Database & Environment Configuration
+## 🌟 Workspaces
 
-Hearth cleanly separates databases across **3 environments** (**local**, **development**, and **production**) using the `hearth-` database naming convention:
+Hearth is organized into dedicated, focused **workspaces**, each tailored to a natural household routine:
 
-| `APP_ENV` Value | Default `MONGODB_DATABASE` | Use Case |
-|---|---|---|
-| `local` (default) | `hearth-local` | Local machine running with local MongoDB |
-| `development` / `dev` | `hearth-dev` | Deployed development / preview cloud environment |
-| `production` / `prod` | `hearth-prod` | Live production cloud environment |
+### 👥 Staff & Budget Workspace
+A respectful, transparent way to manage household help, attendance, and fair compensation without manual math or forgotten records:
+- **Interactive Daily Calendar**: Mark attendance at a glance — Present, Leave, Paid Leave, or Weekly Off.
+- **Tailored Compensation Models**:
+  - *Daily Rate with Paid Leave Allowance* (automatic deductions only after allowed leaves are used)
+  - *Fixed Monthly Salary* (flat monthly retainers)
+  - *Per-Item Logging* (track ironing, laundry, or piece-work with custom unit pricing)
+- **Adjustments & Advances**: Record mid-month salary advances, festival bonuses, and tips with clear accounting.
+- **Instant Payment Receipts**: Generate clean, breakdown-ready payment summaries to share when settling monthly wages.
 
-### Environment Variables & Credentials
-Set your cluster credentials and API URL in your `.env` (see [`.env.example`](.env.example)):
-```bash
-# Frontend API endpoint (for local dev with separate frontend/backend ports)
-NEXT_PUBLIC_API_URL=http://localhost:8080/api
-
-# MongoDB Configuration
-MONGODB_USER=your_mongo_user
-MONGODB_PASSWORD=your_mongo_password
-MONGODB_HOST=cluster0.abcde.mongodb.net
-MONGODB_DATABASE=hearth-local
-```
+### 🍲 Weekly Meal Planner
+A flexible menu planning system built for the way real homes eat:
+- **Accordion Weekly View**: Plan daily meals across customizable time slots (Breakfast, Lunch, Evening Snacks, Dinner).
+- **Baseline Household Routine**: Set a recurring baseline menu that automatically fills in unless you choose to override a specific day.
+- **Intelligent Dish Library**: Keep track of household favorites, discover frequently cooked meals, and quickly autocomplete dishes.
+- **Cook-Ready Sharing**: Generate formatted meal schedules ready to send directly to your cook via WhatsApp or print for the kitchen.
 
 ---
 
-## 🐳 Docker Versioning & CI/CD Deployments
+## 🌿 The Hearth Philosophy
 
-### Versioned Docker Images
-To ensure zero accidental downtime on existing deployments, production images are published with immutable version tags:
-
-- **Semantic Version Releases**: Pushing a git tag (e.g. `git tag v1.0.0 && git push origin v1.0.0`) publishes:
-  - `ghcr.io/<owner>/hearth:1.0.0`
-  - `ghcr.io/<owner>/hearth:1.0`
-  - `ghcr.io/<owner>/hearth:1`
-  - `ghcr.io/<owner>/hearth:v1.0.0`
-- **Immutable Commit Pinning**: Every build is tagged with its short commit SHA:
-  - `ghcr.io/<owner>/hearth:sha-<commit_sha>`
-- **Manual Release Dispatch**: Build custom version tags via GitHub Actions `workflow_dispatch` with custom version parameters.
-
-### Recommended Deployment Practice
-Pin your container deployment to a specific semantic tag or commit SHA rather than relying on `latest`:
-```bash
-# Example production deployment
-docker pull ghcr.io/deep-muni/hearth:v1.0.0
-docker run -d -p 8080:8080 \
-  -e APP_ENV=production \
-  -e MONGODB_USER="your_user" \
-  -e MONGODB_PASSWORD="your_password" \
-  -e MONGODB_HOST="cluster0.abcde.mongodb.net" \
-  -e MONGODB_DATABASE="hearth-prod" \
-  ghcr.io/deep-muni/hearth:v1.0.0
-```
+- **Private & Shared**: Built for households to run together with complete trust and clarity.
+- **Zero Calculation Headaches**: Automatic math for salaries, allowances, and daily tracking so you never have to second-guess numbers.
+- **Calm, Human Design**: Warm typography, serene color schemes, and seamless dark mode support designed to feel like a cozy home, not a sterile enterprise dashboard.
+- **Extensible Workspaces**: Designed from the ground up as a growing household hub, allowing additional everyday home management tools to integrate naturally over time.
 
 ---
 
-## 🚀 Quick Start
+## 📜 License
 
-### Prerequisites
-- Node.js (v22+)
-- pnpm (`npm install -g pnpm`)
-- Go (v1.25+)
-- Docker & Docker Buildx (for container builds)
-
-### Development
-```bash
-# Install dependencies
-pnpm install
-
-# Run frontend & backend concurrently
-pnpm dev
-
-# Or run separately
-pnpm dev:frontend   # Next.js on http://localhost:3000
-pnpm dev:backend    # Go API on http://localhost:8080
-```
-
-### Quality Checks & Tests
-```bash
-# Run all unit tests across frontend & backend
-pnpm test
-
-# Run frontend quality checks (TSC, ESLint, Vitest, Prettier)
-pnpm --filter frontend check-all
-
-# Run backend tests
-cd backend && go test -v ./...
-```
+Hearth is open source software licensed under the [MIT License](LICENSE).
