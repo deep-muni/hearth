@@ -34,7 +34,6 @@ func Handler() http.Handler {
 			return
 		}
 
-		// Fallback to index.html for SPA routes
 		r.URL.Path = "/"
 		fileServer.ServeHTTP(w, r)
 	})
