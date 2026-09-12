@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Flex, HStack, VStack, Text, SimpleGrid, Button, Input } from '@chakra-ui/react';
 import { AttendanceRecord, StaffMember } from '../types';
 import { HearthModalShell } from './modals/HearthModalShell';
@@ -29,20 +29,13 @@ export const ItemCountModal: React.FC<ItemCountModalProps> = ({
   const defaultRate = staff.ratePerItem ?? staff.baseSalary ?? 0;
   const unitLabel = staff.itemUnitName || 'clothes';
 
-  const [count, setCount] = useState<string>(
+  const [count, setCount] = useState<string>(() =>
     currentRecord?.itemCount !== undefined ? String(currentRecord.itemCount) : ''
   );
-  const [rate, setRate] = useState<string>(
+  const [rate, setRate] = useState<string>(() =>
     currentRecord?.customRate !== undefined ? String(currentRecord.customRate) : String(defaultRate)
   );
-  const [note, setNote] = useState<string>(currentRecord?.note || '');
-
-  useEffect(() => {
-    const r = staff.ratePerItem ?? staff.baseSalary ?? 0;
-    setCount(currentRecord?.itemCount !== undefined ? String(currentRecord.itemCount) : '');
-    setRate(currentRecord?.customRate !== undefined ? String(currentRecord.customRate) : String(r));
-    setNote(currentRecord?.note || '');
-  }, [currentRecord, isOpen, dateStr, staff]);
+  const [note, setNote] = useState<string>(() => currentRecord?.note || '');
 
   const numCount = Math.max(0, Number(count) || 0);
   const numRate = Math.max(0, Number(rate) || 0);

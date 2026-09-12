@@ -92,13 +92,8 @@ export function useSaveAttendance() {
 export function useDeleteAttendance() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      staffId,
-      date,
-    }: {
-      staffId: string;
-      date: string;
-    }) => staffBudgetApi.deleteAttendance(staffId, date),
+    mutationFn: ({ staffId, date }: { staffId: string; date: string }) =>
+      staffBudgetApi.deleteAttendance(staffId, date),
     onSuccess: (_data, variables) => {
       const month = variables.date.substring(0, 7);
       queryClient.invalidateQueries({

@@ -2,12 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { Box, Flex, VStack, Text, Button, SimpleGrid } from '@chakra-ui/react';
-import {
-  AttendanceRecord,
-  AttendanceStatus,
-  StaffSalaryCalculation,
-  StaffMember,
-} from '../types';
+import { AttendanceRecord, AttendanceStatus, StaffSalaryCalculation, StaffMember } from '../types';
 import { buildCalendarDays, CalendarDayInfo, formatCurrency } from '@/utils/dateUtils';
 import { CalendarGrid } from './CalendarGrid';
 import { DayDetailModal } from './DayDetailModal';
@@ -85,9 +80,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const normalizedType = selectedStaff
     ? normalizeSalaryType(selectedStaff.salaryType)
     : 'DAYS_LEAVES';
-  const ratePerItem = selectedStaff
-    ? (selectedStaff.ratePerItem ?? selectedStaff.baseSalary)
-    : 0;
+  const ratePerItem = selectedStaff ? (selectedStaff.ratePerItem ?? selectedStaff.baseSalary) : 0;
   const unitLabel = selectedStaff?.itemUnitName || 'clothes';
 
   const rateLine = useMemo(() => {
