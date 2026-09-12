@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Flex, VStack, Text, SimpleGrid, Button, Input, IconButton } from '@chakra-ui/react';
 import { StaffMember, SalaryType } from '../types';
 import { ROLE_ICON_LIST, RoleIcon, RoleIconId, resolveRoleIcon } from '@/components/icons';
@@ -27,67 +27,34 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
   const currentStaff = staff;
   const isEditing = !!currentStaff;
 
-  const [name, setName] = useState(currentStaff?.name || '');
-  const [roleText, setRoleText] = useState(currentStaff?.role || 'Cook');
-  const [iconId, setIconId] = useState<RoleIconId>(
+  const [name, setName] = useState(() => currentStaff?.name || '');
+  const [roleText, setRoleText] = useState(() => currentStaff?.role || 'Cook');
+  const [iconId, setIconId] = useState<RoleIconId>(() =>
     resolveRoleIcon(currentStaff?.role || 'Cook', currentStaff?.icon)
   );
-  const [model, setModel] = useState<SalaryType>(
+  const [model, setModel] = useState<SalaryType>(() =>
     normalizeSalaryType(currentStaff?.salaryType || 'DAYS_LEAVES')
   );
 
-  const [baseSalary, setBaseSalary] = useState<string>(
+  const [baseSalary, setBaseSalary] = useState<string>(() =>
     currentStaff?.baseSalary !== undefined ? String(currentStaff.baseSalary) : '5000'
   );
-  const [ratePerItem, setRatePerItem] = useState<string>(
+  const [ratePerItem, setRatePerItem] = useState<string>(() =>
     currentStaff?.ratePerItem !== undefined
       ? String(currentStaff.ratePerItem)
       : currentStaff?.baseSalary !== undefined
         ? String(currentStaff.baseSalary)
         : '8'
   );
-  const [unitLabel, setUnitLabel] = useState(currentStaff?.itemUnitName || 'Clothes');
-  const [paidLeaves, setPaidLeaves] = useState(
+  const [unitLabel, setUnitLabel] = useState(() => currentStaff?.itemUnitName || 'Clothes');
+  const [paidLeaves, setPaidLeaves] = useState(() =>
     String(currentStaff?.paidLeavesAllowance !== undefined ? currentStaff.paidLeavesAllowance : 2)
   );
-  const [weeklyOff, setWeeklyOff] = useState<number>(
+  const [weeklyOff, setWeeklyOff] = useState<number>(() =>
     currentStaff?.weeklyOffDay !== undefined ? currentStaff.weeklyOffDay : -1
   );
 
   const [nameError, setNameError] = useState('');
-
-  useEffect(() => {
-    if (currentStaff) {
-      setName(currentStaff.name || '');
-      setRoleText(currentStaff.role || 'Cook');
-      setIconId(resolveRoleIcon(currentStaff.role || 'Cook', currentStaff.icon));
-      setModel(normalizeSalaryType(currentStaff.salaryType || 'DAYS_LEAVES'));
-      setBaseSalary(currentStaff.baseSalary !== undefined ? String(currentStaff.baseSalary) : '5000');
-      setRatePerItem(
-        currentStaff.ratePerItem !== undefined
-          ? String(currentStaff.ratePerItem)
-          : currentStaff.baseSalary !== undefined
-            ? String(currentStaff.baseSalary)
-            : '8'
-      );
-      setUnitLabel(currentStaff.itemUnitName || 'Clothes');
-      setPaidLeaves(
-        String(currentStaff.paidLeavesAllowance !== undefined ? currentStaff.paidLeavesAllowance : 2)
-      );
-      setWeeklyOff(currentStaff.weeklyOffDay !== undefined ? currentStaff.weeklyOffDay : -1);
-    } else {
-      setName('');
-      setRoleText('Cook');
-      setIconId(resolveRoleIcon('Cook'));
-      setModel('DAYS_LEAVES');
-      setBaseSalary('5000');
-      setRatePerItem('8');
-      setUnitLabel('Clothes');
-      setPaidLeaves('2');
-      setWeeklyOff(-1);
-    }
-    setNameError('');
-  }, [currentStaff, isOpen]);
 
   const handleRoleSelect = (roleName: string) => {
     setRoleText(roleName);

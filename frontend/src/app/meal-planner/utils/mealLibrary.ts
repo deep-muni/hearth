@@ -53,9 +53,7 @@ export function slotToConfigSlot(
 }
 
 export function getOrderedSlots(slots: MealSlotConfig[]): MealSlotConfig[] {
-  return slots
-    .filter((slot) => slot.isEnabled !== false)
-    .sort((a, b) => a.order - b.order);
+  return slots.filter((slot) => slot.isEnabled !== false).sort((a, b) => a.order - b.order);
 }
 
 export function buildLibrary(

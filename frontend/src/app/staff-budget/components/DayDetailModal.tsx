@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Flex, HStack, VStack, Text, Button, Input } from '@chakra-ui/react';
 import { AttendanceRecord, AttendanceStatus, StaffMember } from '../types';
 import { STATUS_CONFIGS } from '../constants';
@@ -35,14 +35,9 @@ export const DayDetailModal: React.FC<DayDetailModalProps> = ({
   onRemove,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<AttendanceStatus>(
-    currentRecord?.status || 'PRESENT'
+    () => currentRecord?.status || 'PRESENT'
   );
-  const [note, setNote] = useState<string>(currentRecord?.note || '');
-
-  useEffect(() => {
-    setSelectedStatus(currentRecord?.status || 'PRESENT');
-    setNote(currentRecord?.note || '');
-  }, [currentRecord, isOpen, dateStr]);
+  const [note, setNote] = useState<string>(() => currentRecord?.note || '');
 
   const dateObj = new Date(dateStr + 'T00:00:00');
   const formattedDate = dateObj.toLocaleDateString('en-US', {

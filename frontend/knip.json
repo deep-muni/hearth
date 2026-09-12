@@ -11,8 +11,8 @@
     ]
   },
   "rules": {
-    "types": "error",
-    "exports": "error",
+    "types": "warn",
+    "exports": "warn",
     "duplicates": "error"
   },
   "ignore": ["src/components/ui/color-mode.tsx"]

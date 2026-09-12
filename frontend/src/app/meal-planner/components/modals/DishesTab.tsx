@@ -14,11 +14,7 @@ interface DishesTabProps {
   onDeleteDish: (dish: LibraryDish) => Promise<void>;
 }
 
-export const DishesTab: React.FC<DishesTabProps> = ({
-  library,
-  onSaveDish,
-  onDeleteDish,
-}) => {
+export const DishesTab: React.FC<DishesTabProps> = ({ library, onSaveDish, onDeleteDish }) => {
   const [query, setQuery] = useState('');
   const normalized = normalizeDishName(query);
   const exactMatch = library.some((dish) => dish.name.toLowerCase() === normalized.toLowerCase());

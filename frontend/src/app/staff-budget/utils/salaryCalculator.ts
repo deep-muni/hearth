@@ -33,9 +33,7 @@ export function calculateMonthlySalary(
   const totalWorkingDays =
     staff.weeklyOffDay >= 0 ? Math.max(1, totalDaysInMonth - weeklyOffsCount) : totalDaysInMonth;
 
-  const staffRecords = records.filter(
-    (r) => r.staffId === staff.id && r.date.startsWith(month)
-  );
+  const staffRecords = records.filter((r) => r.staffId === staff.id && r.date.startsWith(month));
 
   let fullLeavesCount = 0;
   let halfLeavesCount = 0;
