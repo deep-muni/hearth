@@ -3,8 +3,21 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [main]
+    tags:
+      - 'v*'
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Custom version tag for Docker image (e.g. v1.0.0, v0.2.0-rc1)'
+        required: false
+        type: string
+      publish_latest:
+        description: 'Also tag this build as latest'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   test:
@@ -43,12 +56,12 @@ jobs:
           cd backend
           test -z "$(gofmt -l .)"
           go vet ./...
-          APP_ENV=test go test -v ./...
+          go test -v ./...
 
   build-and-package:
     name: Build & Docker Package
     needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,6 +70,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            # Semantic version tags when pushing git tags (v1.2.3 -> 1.2.3, 1.2, 1, v1.2.3)
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=ref,event=tag
+            # Short commit SHA tag for immutable production pinning (e.g. sha-a1b2c3d)
+            type=sha,format=short,prefix=sha-
+            # Edge tag on main branch push
+            type=raw,value=edge,enable=${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+            # Custom version tag from workflow_dispatch
+            type=raw,value=${{ inputs.version_tag }},enable=${{ inputs.version_tag != '' }}
+            # Latest tag: enabled on git tags or if explicit workflow input requested
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') || inputs.publish_latest == true || (github.ref == 'refs/heads/main' && github.event_name == 'push') }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -73,8 +106,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

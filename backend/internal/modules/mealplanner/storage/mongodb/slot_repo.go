@@ -8,8 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 
-	"house-help-budget/backend/internal/modules/mealplanner/domain"
-	"house-help-budget/backend/internal/modules/mealplanner/ports"
+	"hearth/backend/internal/modules/mealplanner/domain"
+	"hearth/backend/internal/modules/mealplanner/ports"
 )
 
 type SlotConfigRepository struct {

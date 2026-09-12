@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mealplannerHttp "house-help-budget/backend/internal/modules/mealplanner/http"
-	mealplannerInmem "house-help-budget/backend/internal/modules/mealplanner/storage/inmemory"
-	staffbudgetHttp "house-help-budget/backend/internal/modules/staffbudget/http"
-	staffbudgetInmem "house-help-budget/backend/internal/modules/staffbudget/storage/inmemory"
+	mealplannerHttp "hearth/backend/internal/modules/mealplanner/http"
+	mealplannerInmem "hearth/backend/internal/modules/mealplanner/storage/inmemory"
+	staffbudgetHttp "hearth/backend/internal/modules/staffbudget/http"
+	staffbudgetInmem "hearth/backend/internal/modules/staffbudget/storage/inmemory"
 )
 
 func TestHealthEndpoint(t *testing.T) {

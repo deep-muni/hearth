@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"house-help-budget/backend/internal/modules/staffbudget/domain"
-	"house-help-budget/backend/internal/modules/staffbudget/ports"
+	"hearth/backend/internal/modules/staffbudget/domain"
+	"hearth/backend/internal/modules/staffbudget/ports"
 )
 
 type StaffBudgetHandler struct {

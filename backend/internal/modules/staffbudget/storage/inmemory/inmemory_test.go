@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"house-help-budget/backend/internal/modules/staffbudget/domain"
+	"hearth/backend/internal/modules/staffbudget/domain"
 )
 
 func TestStaffCRUD(t *testing.T) {

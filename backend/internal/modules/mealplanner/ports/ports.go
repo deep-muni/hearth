@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	"house-help-budget/backend/internal/modules/mealplanner/domain"
+	"hearth/backend/internal/modules/mealplanner/domain"
 )
 
 type MealRepository interface {

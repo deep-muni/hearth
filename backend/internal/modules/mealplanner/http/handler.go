@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"house-help-budget/backend/internal/modules/mealplanner/domain"
-	"house-help-budget/backend/internal/modules/mealplanner/ports"
+	"hearth/backend/internal/modules/mealplanner/domain"
+	"hearth/backend/internal/modules/mealplanner/ports"
 )
 
 type MealPlannerHandler struct {

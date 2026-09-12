@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 )
 
 type Config struct {
@@ -19,33 +20,39 @@ func Load() Config {
 		port = "8080"
 	}
 
-	appEnv := os.Getenv("APP_ENV")
+	appEnv := strings.ToLower(strings.TrimSpace(os.Getenv("APP_ENV")))
 	if appEnv == "" {
-		appEnv = "development"
+		appEnv = "local"
 	}
 
-	mongoURI := os.Getenv("MONGODB_URI")
-	if mongoURI == "" {
-		user := os.Getenv("MONGODB_USER")
-		pass := os.Getenv("MONGODB_PASSWORD")
-		host := os.Getenv("MONGODB_HOST")
+	user := strings.TrimSpace(os.Getenv("MONGODB_USER"))
+	pass := strings.TrimSpace(os.Getenv("MONGODB_PASSWORD"))
+	host := strings.TrimSpace(os.Getenv("MONGODB_HOST"))
 
-		if user != "" && pass != "" && host != "" {
-			mongoURI = fmt.Sprintf("mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority", url.QueryEscape(user), url.QueryEscape(pass), host)
+	var mongoURI string
+	if rawURI := strings.TrimSpace(os.Getenv("MONGODB_URI")); rawURI != "" {
+		mongoURI = rawURI
+	} else if user != "" && pass != "" && host != "" {
+		if strings.Contains(host, ":") || strings.HasPrefix(host, "127.0.0.1") || strings.HasPrefix(host, "localhost") {
+			// Local/standalone instance with host:port
+			mongoURI = fmt.Sprintf("mongodb://%s:%s@%s/?directConnection=true&authSource=admin", url.QueryEscape(user), url.QueryEscape(pass), host)
 		} else {
-			mongoURI = "mongodb://localhost:27017"
+			// Cloud cluster (e.g. MongoDB Atlas SRV)
+			mongoURI = fmt.Sprintf("mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority", url.QueryEscape(user), url.QueryEscape(pass), host)
 		}
+	} else {
+		mongoURI = "mongodb://localhost:27017"
 	}
 
-	dbName := os.Getenv("MONGODB_DATABASE")
+	dbName := strings.TrimSpace(os.Getenv("MONGODB_DATABASE"))
 	if dbName == "" {
 		switch appEnv {
-		case "production":
-			dbName = "househelp_prod"
-		case "test":
-			dbName = "househelp_test"
+		case "production", "prod":
+			dbName = "hearth-prod"
+		case "development", "dev":
+			dbName = "hearth-dev"
 		default:
-			dbName = "househelp_dev"
+			dbName = "hearth-local"
 		}
 	}
 

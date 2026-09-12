@@ -9,9 +9,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
-	mealplannerHttp "house-help-budget/backend/internal/modules/mealplanner/http"
-	staffbudgetHttp "house-help-budget/backend/internal/modules/staffbudget/http"
-	"house-help-budget/backend/internal/static"
+	mealplannerHttp "hearth/backend/internal/modules/mealplanner/http"
+	staffbudgetHttp "hearth/backend/internal/modules/staffbudget/http"
+	"hearth/backend/internal/static"
 )
 
 func NewRouter(

@@ -10,9 +10,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"house-help-budget/backend/internal/modules/mealplanner/domain"
-	mealHttp "house-help-budget/backend/internal/modules/mealplanner/http"
-	"house-help-budget/backend/internal/modules/mealplanner/storage/inmemory"
+	"hearth/backend/internal/modules/mealplanner/domain"
+	mealHttp "hearth/backend/internal/modules/mealplanner/http"
+	"hearth/backend/internal/modules/mealplanner/storage/inmemory"
 )
 
 func setupTestRouter() (http.Handler, *inmemory.Storage) {
