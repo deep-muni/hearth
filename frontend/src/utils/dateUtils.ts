@@ -106,3 +106,112 @@ export function formatCurrency(amount: number): string {
     return `₹${rounded.toLocaleString()}`;
   }
 }
+
+export function formatDateToISO(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function parseISODate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export function getWeekStartDate(dateStr?: string): string {
+  const date = dateStr ? parseISODate(dateStr) : new Date();
+  const dayOfWeek = date.getDay();
+  const sunday = new Date(date);
+  sunday.setDate(date.getDate() - dayOfWeek);
+  return formatDateToISO(sunday);
+}
+
+function getWeekEndDate(weekStartDateStr: string): string {
+  const sunday = parseISODate(weekStartDateStr);
+  const saturday = new Date(sunday);
+  saturday.setDate(sunday.getDate() + 6);
+  return formatDateToISO(saturday);
+}
+
+export function getPreviousWeek(weekStartDateStr: string): string {
+  const sunday = parseISODate(weekStartDateStr);
+  sunday.setDate(sunday.getDate() - 7);
+  return formatDateToISO(sunday);
+}
+
+export function getNextWeek(weekStartDateStr: string): string {
+  const sunday = parseISODate(weekStartDateStr);
+  sunday.setDate(sunday.getDate() + 7);
+  return formatDateToISO(sunday);
+}
+
+export interface WeekDayInfo {
+  dateStr: string;
+  dayNumber: number;
+  dayOfWeek: number;
+  dayName: string;
+  dayFullName: string;
+  monthShort: string;
+  isToday: boolean;
+  isPast: boolean;
+}
+
+export function getDaysInWeek(weekStartDateStr: string): WeekDayInfo[] {
+  const sunday = parseISODate(weekStartDateStr);
+  const todayStr = formatDateToISO(new Date());
+
+  const days: WeekDayInfo[] = [];
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayFullNames = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(sunday);
+    d.setDate(sunday.getDate() + i);
+    const dateStr = formatDateToISO(d);
+    days.push({
+      dateStr,
+      dayNumber: d.getDate(),
+      dayOfWeek: d.getDay(),
+      dayName: dayNames[d.getDay()],
+      dayFullName: dayFullNames[d.getDay()],
+      monthShort: d.toLocaleDateString('en-US', { month: 'short' }),
+      isToday: dateStr === todayStr,
+      isPast: dateStr < todayStr,
+    });
+  }
+
+  return days;
+}
+
+export function formatWeekRangeDisplay(weekStartDateStr: string): string {
+  const sunday = parseISODate(weekStartDateStr);
+  const saturday = parseISODate(getWeekEndDate(weekStartDateStr));
+
+  const sunMonth = sunday.toLocaleDateString('en-US', { month: 'short' });
+  const satMonth = saturday.toLocaleDateString('en-US', { month: 'short' });
+  const year = saturday.getFullYear();
+
+  if (sunMonth === satMonth) {
+    return `${sunMonth} ${sunday.getDate()} – ${saturday.getDate()}, ${year}`;
+  }
+  return `${sunMonth} ${sunday.getDate()} – ${satMonth} ${saturday.getDate()}, ${year}`;
+}
+
+export function formatDayDisplay(dateStr: string): string {
+  if (!dateStr) return '';
+  const d = parseISODate(dateStr);
+  return d.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+}
