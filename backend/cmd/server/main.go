@@ -22,7 +22,7 @@ import (
 func main() {
 	cfg := config.Load()
 
-	fmt.Printf("🏡 HouseHub Modular Backend API\n")
+	fmt.Printf("🏡 Hearth Modular Backend API\n")
 	fmt.Printf("   Environment: %s\n", cfg.AppEnv)
 	fmt.Printf("   Database:    %s\n", cfg.Database)
 	fmt.Printf("   Port:        %s\n", cfg.Port)
