@@ -1,4 +1,4 @@
-.PHONY: dev dev-frontend dev-backend build-frontend build-backend build format-frontend format-check-frontend lint-frontend test-frontend check-frontend format-backend format-check-backend lint-backend test-unit-backend test-e2e-backend test-backend check-backend format lint test check-all clean run
+.PHONY: dev dev-frontend dev-backend build-frontend build-backend build format-frontend format-check-frontend lint-frontend test-frontend check-frontend format-backend format-check-backend lint-backend test-backend check-backend format lint test check-all clean
 
 dev:
 	pnpm dev
@@ -7,7 +7,7 @@ dev-frontend:
 	pnpm --filter frontend dev
 
 dev-backend:
-	cd backend && APP_ENV=development go run cmd/server/main.go
+	$(MAKE) -C backend dev
 
 build-frontend:
 	pnpm --filter frontend build
@@ -15,7 +15,7 @@ build-frontend:
 	cp -r frontend/out/* backend/internal/static/dist/
 
 build-backend:
-	cd backend && CGO_ENABLED=0 go build -ldflags="-w -s" -o bin/server cmd/server/main.go
+	$(MAKE) -C backend build
 
 build: build-frontend build-backend
 
@@ -35,24 +35,19 @@ check-frontend:
 	pnpm --filter frontend check-all
 
 format-backend:
-	cd backend && gofmt -s -w .
+	$(MAKE) -C backend format
 
 format-check-backend:
-	cd backend && test -z "$$(gofmt -l .)"
+	$(MAKE) -C backend format-check
 
 lint-backend:
-	cd backend && go vet ./...
-
-test-unit-backend:
-	cd backend && APP_ENV=test go test -v ./internal/adapters/storage/... ./internal/config/...
-
-test-e2e-backend:
-	cd backend && APP_ENV=test go test -v ./internal/adapters/http/...
+	$(MAKE) -C backend lint
 
 test-backend:
-	cd backend && APP_ENV=test go test -v ./...
+	$(MAKE) -C backend test
 
-check-backend: format-check-backend lint-backend test-backend
+check-backend:
+	$(MAKE) -C backend check-all
 
 format: format-frontend format-backend
 

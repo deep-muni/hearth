@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "next": {
+    "entry": [
+      "src/app/**/page.tsx",
+      "src/app/**/layout.tsx",
+      "src/app/**/not-found.tsx",
+      "src/app/**/loading.tsx",
+      "src/app/**/error.tsx",
+      "src/app/**/route.ts"
+    ]
+  },
+  "rules": {
+    "types": "error",
+    "exports": "error",
+    "duplicates": "error"
+  },
+  "ignore": ["src/components/ui/color-mode.tsx"]
+}

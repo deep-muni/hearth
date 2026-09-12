@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
 @import 'tailwindcss';
 
 :root {
@@ -65,6 +66,19 @@
   --status-off-bg: #f8fafc;
   --status-count-bg: #eff6ff;
   --status-count-border: #bfdbfe;
+
+  /* Hearth / House Hub Design Tokens (Light) */
+  --hh-paper: #efeae2;
+  --hh-ink: #1c1a17;
+  --hh-muted: #6f665b;
+  --hh-card: #ffffff;
+  --hh-cardHover: #ffffff;
+  --hh-line: #e2dace;
+  --hh-footer: #e6ded2;
+  --hh-sunken: #efe7db;
+  --hh-accent: #2f5d8a;
+  --hh-accentSoft: color-mix(in oklab, #2f5d8a 17%, #fbf6f0);
+  --hh-accentInk: color-mix(in oklab, #2f5d8a 72%, #1c1a17);
 }
 
 .dark,
@@ -133,6 +147,58 @@
   --status-off-bg: #121215;
   --status-count-bg: rgba(59, 130, 246, 0.15);
   --status-count-border: rgba(59, 130, 246, 0.35);
+
+  /* Hearth / House Hub Design Tokens (Dark) */
+  --hh-paper: #171513;
+  --hh-ink: #f4efe7;
+  --hh-muted: #a59a8c;
+  --hh-card: #211e1a;
+  --hh-cardHover: #282420;
+  --hh-line: #332e28;
+  --hh-footer: #201c18;
+  --hh-sunken: #1e1b17;
+  --hh-accent: #2f5d8a;
+  --hh-accentSoft: color-mix(in oklab, #2f5d8a 26%, #171513);
+  --hh-accentInk: color-mix(in oklab, #2f5d8a 55%, #ffe9da);
+}
+
+@keyframes hubRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hubFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hubPop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 * {
@@ -140,8 +206,8 @@
 }
 
 body {
-  background-color: var(--bg-app);
-  color: var(--text-primary);
+  background-color: var(--hh-paper);
+  color: var(--hh-ink);
   min-height: 100vh;
   min-height: -webkit-fill-available;
   font-family:
@@ -156,6 +222,8 @@ body {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+  width: 0;
+  height: 0;
 }
 .no-scrollbar {
   -ms-overflow-style: none;

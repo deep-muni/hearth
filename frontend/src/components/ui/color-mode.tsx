@@ -2,16 +2,8 @@
 
 import type { IconButtonProps, SpanProps } from '@chakra-ui/react';
 import { ClientOnly, IconButton, Skeleton, Span } from '@chakra-ui/react';
-import { ThemeProvider, useTheme } from 'next-themes';
-import type { ThemeProviderProps } from 'next-themes';
 import * as React from 'react';
 import { LuMoon, LuSun } from 'react-icons/lu';
-
-export interface ColorModeProviderProps extends ThemeProviderProps {}
-
-export function ColorModeProvider(props: ColorModeProviderProps) {
-  return <ThemeProvider attribute="class" disableTransitionOnChange {...props} />;
-}
 
 export type ColorMode = 'light' | 'dark';
 
@@ -21,20 +13,114 @@ export interface UseColorModeReturn {
   toggleColorMode: () => void;
 }
 
-export function useColorMode(): UseColorModeReturn {
-  const { resolvedTheme, setTheme, forcedTheme } = useTheme();
-  const colorMode = forcedTheme || resolvedTheme;
-  const toggleColorMode = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
-  };
-  return {
-    colorMode: colorMode as ColorMode,
-    setColorMode: setTheme,
-    toggleColorMode,
-  };
+export interface ColorModeProviderProps {
+  children?: React.ReactNode;
+  defaultTheme?: ColorMode;
+  storageKey?: string;
+  attribute?: string;
+  disableTransitionOnChange?: boolean;
 }
 
-export function useColorModeValue<T>(light: T, dark: T) {
+const ColorModeContext = React.createContext<UseColorModeReturn>({
+  colorMode: 'light',
+  setColorMode: () => {},
+  toggleColorMode: () => {},
+});
+
+const DEFAULT_STORAGE_KEY = 'househub-theme';
+
+function getSystemTheme(): ColorMode {
+  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  return 'light';
+}
+
+function applyTheme(mode: ColorMode) {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  if (mode === 'dark') {
+    root.classList.add('dark');
+    root.setAttribute('data-theme', 'dark');
+    root.style.colorScheme = 'dark';
+  } else {
+    root.classList.remove('dark');
+    root.setAttribute('data-theme', 'light');
+    root.style.colorScheme = 'light';
+  }
+}
+
+export function ColorModeProvider({
+  children,
+  defaultTheme = 'light',
+  storageKey = DEFAULT_STORAGE_KEY,
+}: ColorModeProviderProps) {
+  const [colorMode, setColorModeState] = React.useState<ColorMode>(defaultTheme);
+
+  React.useEffect(() => {
+    try {
+      const stored = (localStorage.getItem(storageKey) ||
+        localStorage.getItem('theme')) as ColorMode | null;
+      const initial = stored === 'dark' || stored === 'light' ? stored : getSystemTheme();
+      setColorModeState(initial);
+      applyTheme(initial);
+    } catch {
+      // Fallback if localStorage is inaccessible
+    }
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      try {
+        const stored = localStorage.getItem(storageKey) || localStorage.getItem('theme');
+        if (!stored) {
+          const next = e.matches ? 'dark' : 'light';
+          setColorModeState(next);
+          applyTheme(next);
+        }
+      } catch {
+        // Fallback
+      }
+    };
+
+    media.addEventListener('change', handleChange);
+    return () => media.removeEventListener('change', handleChange);
+  }, [storageKey]);
+
+  const setColorMode = React.useCallback(
+    (mode: ColorMode) => {
+      setColorModeState(mode);
+      try {
+        localStorage.setItem(storageKey, mode);
+        localStorage.setItem('theme', mode);
+      } catch {
+        // Fallback
+      }
+      applyTheme(mode);
+    },
+    [storageKey]
+  );
+
+  const toggleColorMode = React.useCallback(() => {
+    setColorMode(colorMode === 'dark' ? 'light' : 'dark');
+  }, [colorMode, setColorMode]);
+
+  const value = React.useMemo(
+    () => ({
+      colorMode,
+      setColorMode,
+      toggleColorMode,
+    }),
+    [colorMode, setColorMode, toggleColorMode]
+  );
+
+  return <ColorModeContext.Provider value={value}>{children}</ColorModeContext.Provider>;
+}
+
+export function useColorMode(): UseColorModeReturn {
+  return React.useContext(ColorModeContext);
+}
+
+export function useColorModeValue<T>(light: T, dark: T): T {
   const { colorMode } = useColorMode();
   return colorMode === 'dark' ? dark : light;
 }
